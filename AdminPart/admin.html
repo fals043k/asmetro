@@ -13,9 +13,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
 header{background:var(--bg-surface);border-bottom:1px solid var(--border-default);padding:16px 24px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
 header h1{font-size:1.25rem;font-weight:600;letter-spacing:-0.02em;color:var(--text-primary)}
 .header-controls{display:flex;gap:12px;flex-wrap:wrap}
-.theme-toggle,.lang-toggle,.secret-btn{background:var(--bg-surface);color:var(--text-primary);border:1px solid var(--border-default);border-radius:var(--radius-md);padding:8px 16px;cursor:pointer;font-size:0.875rem;font-weight:500;transition:all var(--transition-fast);display:flex;align-items:center;gap:6px}
-.theme-toggle:hover,.lang-toggle:hover,.secret-btn:hover{background:var(--bg-elevated);border-color:var(--border-focus)}
-.theme-toggle:focus,.lang-toggle:focus,.secret-btn:focus{outline:none;box-shadow:var(--focus-ring)}
+.theme-toggle,.lang-toggle,.logout-toggle,.secret-toggle{background:var(--bg-surface);color:var(--text-primary);border:1px solid var(--border-default);border-radius:var(--radius-md);padding:8px 16px;cursor:pointer;font-size:0.875rem;font-weight:500;transition:all var(--transition-fast);display:flex;align-items:center;gap:6px}
+.theme-toggle:hover,.lang-toggle:hover,.logout-toggle:hover,.secret-toggle:hover{background:var(--bg-elevated);border-color:var(--border-focus)}
+.theme-toggle:focus,.lang-toggle:focus,.logout-toggle:focus,.secret-toggle:focus{outline:none;box-shadow:var(--focus-ring)}
+.logout-toggle{background:var(--danger-bg);color:var(--danger);border-color:var(--danger)}
+.logout-toggle:hover{background:var(--danger);color:#fff;border-color:var(--danger-hover)}
+.secret-toggle{background:var(--primary-bg);color:var(--primary);border-color:var(--primary)}
+.secret-toggle:hover{background:var(--primary);color:#fff;border-color:var(--primary-hover)}
 .theme-icon{font-size:1.2rem;transition:transform 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);display:inline-block;transform:rotate(270deg)}
 [data-theme="dark"] .theme-icon{transform:rotate(90deg)}
 .blocks-nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;padding:4px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--radius-lg);padding:6px;inline-size:fit-content;position:relative;overflow:hidden}
@@ -58,7 +62,6 @@ header h1{font-size:1.25rem;font-weight:600;letter-spacing:-0.02em;color:var(--t
 .form-group{margin-bottom:20px}
 .form-label{display:block;margin-bottom:6px;font-weight:500;font-size:0.875rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.03em}
 .form-input,.form-textarea,.form-select{width:100%;padding:10px 12px;border:1px solid var(--border-default);border-radius:var(--radius-md);font-size:0.95rem;background:var(--bg-surface);color:var(--text-primary);transition:border-color var(--transition-fast),box-shadow var(--transition-fast)}
-/* ИЗМЕНЕНИЕ 1: Все текстовые поля теперь расширяемые */
 .form-textarea{min-height:96px;resize:both;font-family:inherit}
 .form-input{min-height:40px;resize:both;overflow:auto;font-family:inherit}
 .form-input:focus,.form-textarea:focus,.form-select:focus{outline:none;border-color:var(--border-focus);box-shadow:var(--focus-ring)}
@@ -152,17 +155,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover,input[type="time"]::
 .item-preview-label{font-weight:500;color:var(--text-muted);text-transform:uppercase;font-size:0.75rem;letter-spacing:0.03em}
 .item-preview-value{color:var(--text-primary);text-align:right;max-width:60%;word-break:break-word}
 .item-card.dragging .item-preview,.item-card.drag-over .item-preview{display:none!important}
-.secret-status{font-size:0.75rem;padding:4px 8px;border-radius:4px;background:var(--success-bg);color:var(--success);font-weight:600}
-.secret-status.warning{background:var(--warning-bg);color:var(--warning)}
-.secret-status.danger{background:var(--danger-bg);color:var(--danger)}
-/* ИЗМЕНЕНИЕ 2: Универсальное правило для всех input и textarea */
-input[type="text"],
-input[type="password"],
-textarea {
-    resize: both !important;
-    overflow: auto !important;
-    min-height: 40px;
-}
+input[type="text"],input[type="password"],textarea{resize:both!important;overflow:auto!important;min-height:40px}
 </style>
 </head>
 <body>
@@ -170,7 +163,8 @@ textarea {
 <header>
 <h1 id="headerTitle">Панель управления</h1>
 <div class="header-controls">
-<button class="secret-btn" id="secretBtn">🔑 <span id="secretLabel">Ключ</span></button>
+<button class="secret-toggle" id="changeSecretBtn" title="Сменить ключ доступа"><span>🔑</span><span id="changeSecretText">Сменить ключ</span></button>
+<button class="logout-toggle" id="logoutBtn" title="Выйти из системы"><span>🚪</span><span id="logoutText">Выйти</span></button>
 <button class="lang-toggle" id="langToggle"><span>EN</span></button>
 <button class="theme-toggle" id="themeToggle"><span class="theme-icon">🌓</span><span id="themeLabel">Тёмная тема</span></button>
 </div>
@@ -189,6 +183,35 @@ textarea {
 </div>
 </section>
 </div>
+
+<div class="modal" id="secretModal" role="dialog" aria-modal="true">
+<div class="modal-content" style="max-width: 480px;">
+<div class="modal-header">
+<h3 class="modal-title" id="secretModalTitle">Смена ключа доступа</h3>
+<button class="modal-close" id="secretModalClose" aria-label="Закрыть">&times;</button>
+</div>
+<form id="secretForm" novalidate>
+<!-- Текущий ключ не показываем пользователю, но передаем в скрипте -->
+<div class="form-group">
+<label class="form-label" for="newSecret" id="newSecretLabel">НОВЫЙ КЛЮЧ</label>
+<input type="password" class="form-input" id="newSecret" required autocomplete="off" minlength="6">
+</div>
+<div class="form-group">
+<label class="form-label" for="confirmSecret" id="confirmSecretLabel">ПОДТВЕРДИТЕ НОВЫЙ КЛЮЧ</label>
+<input type="password" class="form-input" id="confirmSecret" required autocomplete="off">
+</div>
+<div class="error-msg" id="secretErrorMsg" style="display: none;">
+<span class="error-icon">⚠</span>
+<span id="secretErrorText"></span>
+</div>
+<div class="form-actions">
+<button type="button" class="btn btn-secondary" id="secretCancelBtn">Отмена</button>
+<button type="submit" class="btn" id="secretSubmitBtn">Сменить ключ</button>
+</div>
+</form>
+</div>
+</div>
+
 <div class="modal" id="itemModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
 <div class="modal-content">
 <div class="modal-header">
@@ -201,71 +224,45 @@ textarea {
 <div id="formFields"></div>
 <div class="attachments-section" id="attachmentsSection"></div>
 <div class="form-actions">
-<button type="button" class="btn btn-secondary" id="cancelBtn" data-i18n="cancel">Отмена</button>
-<button type="submit" class="btn" data-i18n="save">Сохранить изменения</button>
+<button type="button" class="btn btn-secondary" id="cancelBtn">Отмена</button>
+<button type="submit" class="btn">Сохранить изменения</button>
 </div>
 </form>
 </div>
 </div>
+
 <div class="modal" id="createModal" role="dialog" aria-modal="true">
 <div class="modal-content">
 <div class="modal-header">
-<h3 class="modal-title" data-i18n="createTitle">Создание элемента</h3>
+<h3 class="modal-title" id="createModalTitle">Создание элемента</h3>
 <button class="modal-close" id="createModalClose" aria-label="Закрыть">&times;</button>
 </div>
 <form id="createForm" novalidate>
 <input type="hidden" id="createBlock">
 <div class="form-group">
-<label class="form-label" for="createName" data-i18n="itemNameLabel">Название элемента</label>
-<input type="text" class="form-input" id="createName" required data-i18n-placeholder="itemNamePlaceholder">
+<label class="form-label" for="createName" id="createNameLabel">Название элемента</label>
+<input type="text" class="form-input" id="createName" required placeholder="Введите уникальное название...">
 </div>
 <div class="form-actions">
-<button type="button" class="btn btn-secondary" id="createCancelBtn" data-i18n="cancel">Отмена</button>
-<button type="submit" class="btn" data-i18n="create">Создать</button>
+<button type="button" class="btn btn-secondary" id="createCancelBtn">Отмена</button>
+<button type="submit" class="btn">Создать</button>
 </div>
 </form>
 </div>
 </div>
-<div class="modal" id="secretModal" role="dialog" aria-modal="true">
-<div class="modal-content">
-<div class="modal-header">
-<h3 class="modal-title" data-i18n="secretTitle">Управление секретным ключом</h3>
-<button class="modal-close" id="secretModalClose" aria-label="Закрыть">&times;</button>
-</div>
-<form id="secretForm" novalidate>
-<div class="form-group">
-<label class="form-label" for="currentSecret" data-i18n="currentSecretLabel">Текущий ключ</label>
-<input type="password" class="form-input" id="currentSecret" required data-i18n-placeholder="currentSecretPlaceholder">
-<div class="secret-status" id="secretStatus"></div>
-</div>
-<div class="form-group">
-<label class="form-label" for="newSecret" data-i18n="newSecretLabel">Новый ключ</label>
-<input type="password" class="form-input" id="newSecret" required data-i18n-placeholder="newSecretPlaceholder">
-</div>
-<div class="form-group">
-<label class="form-label" for="confirmSecret" data-i18n="confirmSecretLabel">Подтверждение нового ключа</label>
-<input type="password" class="form-input" id="confirmSecret" required data-i18n-placeholder="confirmSecretPlaceholder">
-<div class="error-msg" id="secretError"></div>
-<div class="success-msg" id="secretSuccess"></div>
-</div>
-<div class="form-actions">
-<button type="button" class="btn btn-secondary" id="secretCancelBtn" data-i18n="cancel">Отмена</button>
-<button type="button" class="btn btn-secondary" id="secretLocalBtn" data-i18n="changeLocal">Изменить локально</button>
-<button type="submit" class="btn" data-i18n="changeServer">Изменить на сервере</button>
-</div>
-</form>
-</div>
-</div>
+
 <div class="context-menu" id="contextMenu">
-<div class="context-menu-item" id="ctxHide"><span>👁</span><span data-i18n="hide">Скрыть</span></div>
-<div class="context-menu-item danger" id="ctxDelete"><span>🗑</span><span data-i18n="delete">Удалить</span></div>
+<div class="context-menu-item" id="ctxHide"><span>👁</span><span id="ctxHideText">Скрыть</span></div>
+<div class="context-menu-item danger" id="ctxDelete"><span>🗑</span><span id="ctxDeleteText">Удалить</span></div>
 </div>
 <div class="drag-indicator" id="dragIndicator"></div>
 <div class="item-preview" id="itemPreview"></div>
+
 <script>
 const API_BASE = '/api/v1/content';
 const DRAG_DELAY = 400;
-let SECRET = localStorage.getItem('api_secret') || 'default-secret-key';
+
+let SECRET = '';
 let currentBlock = null;
 let blockRequires = null;
 let visibleItems = [];
@@ -284,6 +281,7 @@ let isMouseDown = false;
 let previewTimer = null;
 let previewTarget = null;
 let currentMousePos = {x: 0, y: 0};
+
 const translations = {
 ru: {
 headerTitle: 'Панель управления',
@@ -323,20 +321,16 @@ attachmentPending: 'Ожидает сохранения',
 chooseFile: 'Выбрать файл',
 noFileChosen: 'Файл не выбран',
 fileSelected: 'Выбран: ',
-secretTitle: 'Управление секретным ключом',
-currentSecretLabel: 'ТЕКУЩИЙ КЛЮЧ',
-currentSecretPlaceholder: 'Введите текущий секретный ключ',
-newSecretLabel: 'НОВЫЙ КЛЮЧ',
-newSecretPlaceholder: 'Введите новый секретный ключ',
-confirmSecretLabel: 'ПОДТВЕРЖДЕНИЕ НОВОГО КЛЮЧА',
-confirmSecretPlaceholder: 'Повторите новый секретный ключ',
-changeLocal: 'Изменить локально',
-changeServer: 'Изменить на сервере',
-secretChanged: 'Ключ успешно изменен',
-secretError: 'Ошибка изменения ключа',
+logout: 'Выйти',
+logoutConfirm: 'Вы действительно хотите выйти из системы?',
+changeSecret: 'Сменить ключ',
+changeSecretTitle: 'Смена ключа доступа',
+newSecret: 'НОВЫЙ КЛЮЧ',
+confirmSecret: 'ПОДТВЕРДИТЕ НОВЫЙ КЛЮЧ',
 secretMismatch: 'Новые ключи не совпадают',
-secretEmpty: 'Поля не могут быть пустыми',
-secretLocalChanged: 'Локальный ключ изменён',
+secretTooShort: 'Новый ключ должен содержать минимум 6 символов',
+secretChangeSuccess: 'Ключ успешно изменен. Войдите снова.',
+secretChangeError: 'Ошибка при смене ключа.',
 error: {
 loadBlocks: 'Не удалось загрузить список блоков',
 loadFields: 'Не удалось загрузить конфигурацию полей',
@@ -352,7 +346,8 @@ server: 'Ошибка сервера',
 loadAttachments: 'Не удалось загрузить список вложений',
 visibility: 'Ошибка изменения видимости',
 alreadyExists: 'Элемент с таким именем уже существует',
-noAttachment: 'Вложение с таким именем не предусмотрено'
+noAttachment: 'Вложение с таким именем не предусмотрено',
+changeSecret: 'Не удалось изменить ключ доступа'
 }
 },
 en: {
@@ -393,20 +388,16 @@ attachmentPending: 'Pending Save',
 chooseFile: 'Choose File',
 noFileChosen: 'No file chosen',
 fileSelected: 'Selected: ',
-secretTitle: 'Secret Key Management',
-currentSecretLabel: 'CURRENT KEY',
-currentSecretPlaceholder: 'Enter current secret key',
-newSecretLabel: 'NEW KEY',
-newSecretPlaceholder: 'Enter new secret key',
-confirmSecretLabel: 'CONFIRM NEW KEY',
-confirmSecretPlaceholder: 'Repeat new secret key',
-changeLocal: 'Change Locally',
-changeServer: 'Change on Server',
-secretChanged: 'Key successfully changed',
-secretError: 'Key change error',
+logout: 'Logout',
+logoutConfirm: 'Are you sure you want to logout?',
+changeSecret: 'Change Key',
+changeSecretTitle: 'Change Access Key',
+newSecret: 'NEW KEY',
+confirmSecret: 'CONFIRM NEW KEY',
 secretMismatch: 'New keys do not match',
-secretEmpty: 'Fields cannot be empty',
-secretLocalChanged: 'Local key changed',
+secretTooShort: 'New key must be at least 6 characters long',
+secretChangeSuccess: 'Key changed successfully. Please login again.',
+secretChangeError: 'Failed to change key.',
 error: {
 loadBlocks: 'Failed to load blocks',
 loadFields: 'Failed to load field configuration',
@@ -422,10 +413,12 @@ server: 'Server error',
 loadAttachments: 'Failed to load attachments list',
 visibility: 'Failed to change visibility',
 alreadyExists: 'Item with this name already exists',
-noAttachment: 'Attachment with this name is not configured'
+noAttachment: 'Attachment with this name is not configured',
+changeSecret: 'Failed to change access key'
 }
 }
 };
+
 function t(key, params = {}) {
 const lang = translations[currentLang];
 let result = key.split('.').reduce((obj, k) => obj?.[k], lang);
@@ -436,65 +429,134 @@ result = result.replace(`{${k}}`, v);
 }
 return result || key;
 }
+
+function getSecretFromUrl() {
+const urlParams = new URLSearchParams(window.location.search);
+const urlSecret = urlParams.get('secret');
+if (urlSecret && urlSecret.trim()) {
+return urlSecret.trim();
+}
+return null;
+}
+
+function initSecret() {
+const urlSecret = getSecretFromUrl();
+if (urlSecret) {
+SECRET = urlSecret;
+localStorage.setItem('api_secret', SECRET);
+const url = new URL(window.location);
+url.searchParams.delete('secret');
+window.history.replaceState({}, document.title, url.toString());
+} else {
+const savedSecret = localStorage.getItem('api_secret');
+if (savedSecret) {
+SECRET = savedSecret;
+}
+}
+}
+
+function logout() {
+if (confirm(t('logoutConfirm'))) {
+localStorage.removeItem('api_secret');
+document.cookie = "admin_secret=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+window.location.href = '/';
+}
+}
+
+function showSecretError(message) {
+const errorMsg = document.getElementById('secretErrorMsg');
+const errorText = document.getElementById('secretErrorText');
+errorText.textContent = message;
+errorMsg.style.display = 'flex';
+setTimeout(() => {
+errorMsg.style.display = 'none';
+}, 3000);
+}
+
+function hideSecretError() {
+document.getElementById('secretErrorMsg').style.display = 'none';
+}
+
+async function changeSecret(newSecret) {
+try {
+const formData = new FormData();
+formData.append('secret', SECRET);
+formData.append('new', newSecret);
+
+const response = await fetch(`${API_BASE}/secret`, {
+method: 'POST',
+body: formData
+});
+
+const result = await response.json();
+
+if (result.status === 'ok') {
+alert(t('secretChangeSuccess'));
+localStorage.removeItem('api_secret');
+document.cookie = "admin_secret=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+window.location.href = '/';
+} else {
+showSecretError(t('secretChangeError'));
+}
+} catch (error) {
+showSecretError(t('secretChangeError'));
+}
+}
+
 function applyTranslations() {
 document.documentElement.lang = currentLang;
 document.getElementById('headerTitle').textContent = t('headerTitle');
 document.getElementById('themeLabel').textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? t('lightTheme') : t('darkTheme');
 document.getElementById('langToggle').querySelector('span').textContent = currentLang === 'ru' ? 'EN' : 'RU';
+document.getElementById('logoutText').textContent = t('logout');
+document.getElementById('changeSecretText').textContent = t('changeSecret');
+document.getElementById('secretModalTitle').textContent = t('changeSecretTitle');
+document.getElementById('newSecretLabel').textContent = t('newSecret');
+document.getElementById('confirmSecretLabel').textContent = t('confirmSecret');
+document.getElementById('secretCancelBtn').textContent = t('cancel');
+document.getElementById('secretSubmitBtn').textContent = t('changeSecret');
+document.getElementById('createModalTitle').textContent = t('createTitle');
+document.getElementById('createNameLabel').textContent = t('itemNameLabel');
+document.getElementById('createName').placeholder = t('itemNamePlaceholder');
+document.getElementById('createCancelBtn').textContent = t('cancel');
+document.getElementById('cancelBtn').textContent = t('cancel');
+document.getElementById('ctxHideText').textContent = t('hide');
+document.getElementById('ctxDeleteText').textContent = t('delete');
+
 if (!currentBlock) {
 document.getElementById('panelTitle').textContent = t('selectBlock');
 } else {
 document.getElementById('panelTitle').textContent = currentBlock.charAt(0).toUpperCase() + currentBlock.slice(1);
 }
 document.getElementById('dragHint').textContent = t('dragHint');
-if (document.getElementById('itemName').value) {
-document.getElementById('modalTitle').textContent = t('editTitle') + document.getElementById('itemName').value;
-}
-document.querySelectorAll('[data-i18n]').forEach(el => {
-el.textContent = t(el.dataset.i18n);
-});
-document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-el.placeholder = t(el.dataset.i18nPlaceholder);
-});
+
 document.querySelectorAll('.section-title').forEach(el => {
-if (el.textContent === 'Видимые' || el.textContent === 'Visible') {
-el.textContent = t('visible');
-} else if (el.textContent === 'Скрытые' || el.textContent === 'Hidden') {
-el.textContent = t('invisible');
-}
-});
-const attachmentsSection = document.getElementById('attachmentsSection');
-if (attachmentsSection && !attachmentsSection.classList.contains('hidden')) {
-const titleEl = attachmentsSection.querySelector('div[style*="font-weight"]');
-if (titleEl) titleEl.textContent = t('attachments');
-attachmentsSection.querySelectorAll('.attachment-item').forEach(item => {
-const downloadBtn = item.querySelector('.btn-secondary');
-const removeBtn = item.querySelector('.btn-danger');
-if (downloadBtn) downloadBtn.textContent = t('download');
-if (removeBtn) removeBtn.textContent = t('remove');
-const statusEl = item.querySelector('.attachment-status');
-if (statusEl) {
-if (statusEl.classList.contains('exists')) statusEl.textContent = t('attachmentExists');
-else if (statusEl.classList.contains('pending')) statusEl.textContent = t('attachmentPending');
-else statusEl.textContent = t('attachmentMissing');
-}
-});
-attachmentsSection.querySelectorAll('.file-input-btn').forEach(el => {
-el.textContent = t('chooseFile');
-});
-attachmentsSection.querySelectorAll('.file-input-text').forEach(el => {
-const wrapper = el.closest('.file-input-wrapper');
-if (!wrapper.classList.contains('has-file')) {
-el.textContent = t('noFileChosen');
+if (el.textContent === 'Видимые' || el.textContent === 'Visible' || el.textContent === 'visible' || el.textContent === 'invisible') {
+el.textContent = t(el.textContent.toLowerCase() === 'visible' ? 'visible' : 'invisible');
 }
 });
 }
-const ctxHide = document.getElementById('ctxHide');
-const ctxDelete = document.getElementById('ctxDelete');
-if (ctxHide) ctxHide.querySelector('span:last-child').textContent = t('hide');
-if (ctxDelete) ctxDelete.querySelector('span:last-child').textContent = t('delete');
-updateSecretStatus();
+
+function initTheme() {
+const saved = localStorage.getItem('theme');
+const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+document.documentElement.setAttribute('data-theme', theme);
+updateThemeToggle();
 }
+
+function toggleTheme() {
+const current = document.documentElement.getAttribute('data-theme');
+const next = current === 'dark' ? 'light' : 'dark';
+document.documentElement.setAttribute('data-theme', next);
+localStorage.setItem('theme', next);
+updateThemeToggle();
+applyTranslations();
+}
+
+function updateThemeToggle() {
+document.getElementById('themeLabel').textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? t('lightTheme') : t('darkTheme');
+}
+
 function toggleLang() {
 currentLang = currentLang === 'ru' ? 'en' : 'ru';
 localStorage.setItem('lang', currentLang);
@@ -511,212 +573,7 @@ loadItemData(itemName);
 }
 renderItemsList();
 }
-document.getElementById('langToggle').onclick = toggleLang;
-function initTheme() {
-const saved = localStorage.getItem('theme');
-const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-document.documentElement.setAttribute('data-theme', theme);
-updateThemeToggle();
-}
-function toggleTheme() {
-const current = document.documentElement.getAttribute('data-theme');
-const next = current === 'dark' ? 'light' : 'dark';
-document.documentElement.setAttribute('data-theme', next);
-localStorage.setItem('theme', next);
-updateThemeToggle();
-applyTranslations();
-}
-function updateThemeToggle() {
-document.getElementById('themeLabel').textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? t('lightTheme') : t('darkTheme');
-}
-document.getElementById('themeToggle').onclick = toggleTheme;
-function updateSecretStatus() {
-const statusEl = document.getElementById('secretStatus');
-if (!statusEl) return;
-const savedSecret = localStorage.getItem('api_secret');
-if (!savedSecret) {
-statusEl.textContent = 'Ключ по умолчанию';
-statusEl.className = 'secret-status warning';
-} else {
-statusEl.textContent = '✓ Ключ сохранён';
-statusEl.className = 'secret-status';
-}
-document.getElementById('secretLabel').textContent = SECRET.substring(0, 8) + '...';
-}
-function openSecretModal() {
-document.getElementById('currentSecret').value = SECRET;
-document.getElementById('newSecret').value = '';
-document.getElementById('confirmSecret').value = '';
-document.getElementById('secretError').textContent = '';
-document.getElementById('secretSuccess').textContent = '';
-updateSecretStatus();
-document.getElementById('secretModal').classList.add('active');
-}
-function closeSecretModal() {
-document.getElementById('secretModal').classList.remove('active');
-document.getElementById('secretError').textContent = '';
-document.getElementById('secretSuccess').textContent = '';
-}
-async function changeLocalSecret() {
-const newSecret = document.getElementById('newSecret').value.trim();
-const confirmSecret = document.getElementById('confirmSecret').value.trim();
-const errorEl = document.getElementById('secretError');
-const successEl = document.getElementById('secretSuccess');
-errorEl.textContent = '';
-successEl.textContent = '';
-if (!newSecret || !confirmSecret) {
-errorEl.textContent = t('secretEmpty');
-return;
-}
-if (newSecret !== confirmSecret) {
-errorEl.textContent = t('secretMismatch');
-return;
-}
-SECRET = newSecret;
-localStorage.setItem('api_secret', SECRET);
-successEl.textContent = t('secretLocalChanged');
-updateSecretStatus();
-setTimeout(() => {
-closeSecretModal();
-}, 1500);
-}
-async function changeServerSecret() {
-const currentSecret = document.getElementById('currentSecret').value.trim();
-const newSecret = document.getElementById('newSecret').value.trim();
-const confirmSecret = document.getElementById('confirmSecret').value.trim();
-const errorEl = document.getElementById('secretError');
-const successEl = document.getElementById('secretSuccess');
-errorEl.textContent = '';
-successEl.textContent = '';
-if (!currentSecret || !newSecret || !confirmSecret) {
-errorEl.textContent = t('secretEmpty');
-return;
-}
-if (newSecret !== confirmSecret) {
-errorEl.textContent = t('secretMismatch');
-return;
-}
-try {
-const formData = new FormData();
-formData.append('secret', currentSecret);
-formData.append('new', newSecret);
-const res = await fetch(`${API_BASE}/secret`, {
-method: 'POST',
-body: formData
-});
-const result = await res.json();
-if (result.status === 'ok') {
-SECRET = newSecret;
-localStorage.setItem('api_secret', SECRET);
-successEl.textContent = t('secretChanged');
-updateSecretStatus();
-setTimeout(() => {
-closeSecretModal();
-}, 1500);
-} else {
-errorEl.textContent = result.message || t('secretError');
-}
-} catch (e) {
-errorEl.textContent = t('error.server');
-}
-}
-document.getElementById('secretBtn').onclick = openSecretModal;
-document.getElementById('secretModalClose').onclick = closeSecretModal;
-document.getElementById('secretCancelBtn').onclick = closeSecretModal;
-document.getElementById('secretLocalBtn').onclick = changeLocalSecret;
-document.getElementById('secretForm').onsubmit = async (e) => {
-e.preventDefault();
-await changeServerSecret();
-};
-document.addEventListener('keydown', (e) => {
-if (e.key === 'Escape') {
-closeModals();
-hideContextMenu();
-hideDragIndicator();
-hidePreview();
-closeSecretModal();
-}
-});
-function hideDragIndicator() {
-clearTimeout(longPressTimer);
-document.getElementById('dragIndicator').classList.remove('active');
-document.removeEventListener('mousemove', handleDragMove);
-document.removeEventListener('mouseup', handleDragEnd);
-draggedItem = null;
-longPressActive = false;
-}
-function hidePreview() {
-clearTimeout(previewTimer);
-previewTarget = null;
-const preview = document.getElementById('itemPreview');
-preview.classList.remove('active');
-}
-function movePreview(e) {
-currentMousePos = {x: e.clientX, y: e.clientY};
-const preview = document.getElementById('itemPreview');
-if (preview.classList.contains('active')) {
-preview.style.left = (currentMousePos.x + 15) + 'px';
-preview.style.top = (currentMousePos.y + 15) + 'px';
-}
-}
-async function showPreview(e, name) {
-if (longPressActive || draggedItem || isTransitioning) return;
-previewTarget = name;
-currentMousePos = {x: e.clientX, y: e.clientY};
-clearTimeout(previewTimer);
-previewTimer = setTimeout(async () => {
-if (longPressActive || draggedItem || !previewTarget) return;
-const preview = document.getElementById('itemPreview');
-try {
-const res = await fetch(`${API_BASE}/${currentBlock}/content?name=${encodeURIComponent(previewTarget)}&secret=${encodeURIComponent(SECRET)}`, {
-headers: {'Cache-Control': 'no-cache'}
-});
-if (res.status === 404) return;
-const data = await res.json();
-let html = `<div class="item-preview-title">${previewTarget}</div><div class="item-preview-content">`;
-if (blockRequires && blockRequires.json) {
-blockRequires.json.forEach(([sysname, ftype, displayname]) => {
-if (data[sysname] !== undefined && data[sysname] !== null && data[sysname] !== '') {
-html += `<div class="item-preview-field"><span class="item-preview-label">${displayname}</span><span class="item-preview-value">${data[sysname]}</span></div>`;
-}
-});
-}
-html += '</div>';
-preview.innerHTML = html;
-preview.style.left = (currentMousePos.x + 15) + 'px';
-preview.style.top = (currentMousePos.y + 15) + 'px';
-preview.classList.add('active');
-} catch (err) {}
-}, 500);
-}
-function startTransition() {
-if (isTransitioning) return Promise.reject();
-isTransitioning = true;
-const panel = document.getElementById('contentPanel');
-const itemsList = document.getElementById('itemsList');
-const panelTitle = document.getElementById('panelTitle');
-const createBtn = document.getElementById('createBtn');
-panel.classList.add('is-loading');
-itemsList.classList.add('fade-out');
-panelTitle.style.opacity = '0';
-createBtn.disabled = true;
-return new Promise(resolve => setTimeout(resolve, 250));
-}
-function endTransition() {
-const panel = document.getElementById('contentPanel');
-const itemsList = document.getElementById('itemsList');
-const panelTitle = document.getElementById('panelTitle');
-const createBtn = document.getElementById('createBtn');
-panel.classList.remove('is-loading');
-itemsList.classList.remove('fade-out');
-itemsList.classList.add('fade-in');
-panelTitle.style.opacity = '1';
-createBtn.disabled = !currentBlock;
-setTimeout(() => {
-itemsList.classList.remove('fade-in');
-isTransitioning = false;
-}, 250);
-}
+
 async function fetchBlocks() {
 try {
 const res = await fetch(`${API_BASE}/list?secret=${encodeURIComponent(SECRET)}`);
@@ -733,11 +590,12 @@ selectBlock(blocks[0], firstBtn);
 document.getElementById('blocksNav').innerHTML = '<div style="color:var(--danger);padding:12px">' + t('error.loadBlocks') + '</div>';
 }
 }
+
 function renderBlocksNav(blocks) {
 const nav = document.getElementById('blocksNav');
 nav.innerHTML = '<div class="nav-indicator" id="navIndicator"></div>';
 if (!blocks || blocks.length === 0) {
-nav.innerHTML += '<div style="color:var(--text-muted);padding:12px">' + t('emptyState').replace('Элементы', 'Блоки') + '</div>';
+nav.innerHTML += '<div style="color:var(--text-muted);padding:12px">' + t('emptyState') + '</div>';
 return;
 }
 blocks.forEach(block => {
@@ -750,12 +608,14 @@ btn.onclick = function() { selectBlock(block, this); };
 nav.appendChild(btn);
 });
 }
+
 function updateIndicator(btn) {
 const indicator = document.getElementById('navIndicator');
 if (!indicator || !btn) return;
 indicator.style.width = `${btn.offsetWidth}px`;
 indicator.style.transform = `translateX(${btn.offsetLeft}px)`;
 }
+
 async function selectBlock(block, btnElement) {
 if (isTransitioning) return;
 await startTransition();
@@ -780,6 +640,7 @@ await loadItems();
 } catch (e) {}
 endTransition();
 }
+
 async function loadItems() {
 if (!currentBlock) return;
 try {
@@ -793,6 +654,7 @@ invisibleItems = data.invisible || [];
 renderItemsList();
 } catch (e) {}
 }
+
 function renderItemsList() {
 const list = document.getElementById('itemsList');
 list.innerHTML = '';
@@ -829,6 +691,7 @@ invisibleSection.appendChild(card);
 list.appendChild(invisibleSection);
 }
 }
+
 function createItemCard(name, index, isInvisible) {
 const card = document.createElement('div');
 card.className = 'item-card' + (isInvisible ? ' invisible' : '');
@@ -859,6 +722,7 @@ content.appendChild(badge);
 card.appendChild(content);
 return card;
 }
+
 function handleMouseDown(e) {
 if (e.button !== 0) return;
 const card = this;
@@ -890,6 +754,7 @@ document.addEventListener('mouseup', handleDragEnd);
 }, DRAG_DELAY);
 }
 }
+
 function handleDragMove(e) {
 if (!longPressActive || !draggedItem) return;
 const indicator = document.getElementById('dragIndicator');
@@ -897,6 +762,7 @@ indicator.style.left = (e.clientX - 12) + 'px';
 indicator.style.top = (e.clientY - 12) + 'px';
 highlightDropTarget(e);
 }
+
 function highlightDropTarget(e) {
 const list = document.getElementById('itemsList');
 const cards = Array.from(list.querySelectorAll('.item-card:not(.invisible)'));
@@ -913,6 +779,7 @@ if (target && target !== draggedItem) {
 target.classList.add('drag-over');
 }
 }
+
 function handleDragEnd(e) {
 clearTimeout(longPressTimer);
 document.removeEventListener('mousemove', handleDragMove);
@@ -937,6 +804,29 @@ saveOrder();
 }
 hideDragIndicator();
 }
+
+function updateVisibleOrder() {
+const list = document.getElementById('itemsList');
+visibleItems = Array.from(list.querySelectorAll('.item-card:not(.invisible)')).map(card => card.dataset.name);
+}
+
+async function saveOrder() {
+if (!currentBlock) return;
+try {
+const formData = new FormData();
+formData.append('data', JSON.stringify(visibleItems));
+formData.append('secret', SECRET);
+const res = await fetch(`${API_BASE}/${currentBlock}/list`, {
+method: 'POST',
+body: formData
+});
+const result = await res.json();
+if (result.status !== 'ok') await loadItems();
+} catch (e) {
+await loadItems();
+}
+}
+
 function handleContextMenu(e, name, isInvisible) {
 e.preventDefault();
 e.stopPropagation();
@@ -944,34 +834,17 @@ hideDragIndicator();
 hidePreview();
 contextTarget = {name, isInvisible};
 const menu = document.getElementById('contextMenu');
-const ctxHide = document.getElementById('ctxHide');
-if (ctxHide) {
-ctxHide.querySelector('span:last-child').textContent = isInvisible ? t('show') : t('hide');
-}
-const ctxDelete = document.getElementById('ctxDelete');
-if (ctxDelete) ctxDelete.querySelector('span:last-child').textContent = t('delete');
+document.getElementById('ctxHideText').textContent = isInvisible ? t('show') : t('hide');
 menu.style.left = `${e.pageX}px`;
 menu.style.top = `${e.pageY}px`;
 menu.classList.add('active');
 }
+
 function hideContextMenu() {
 document.getElementById('contextMenu').classList.remove('active');
 contextTarget = null;
 }
-document.getElementById('ctxHide').onclick = () => {
-if (contextTarget) {
-toggleVisibility(contextTarget.name, contextTarget.isInvisible);
-}
-hideContextMenu();
-};
-document.getElementById('ctxDelete').onclick = () => {
-if (contextTarget) {
-deleteItem(contextTarget.name);
-}
-hideContextMenu();
-};
-document.addEventListener('click', hideContextMenu);
-document.addEventListener('scroll', hideContextMenu);
+
 async function toggleVisibility(name, isInvisible) {
 try {
 let order = [...visibleItems];
@@ -993,44 +866,108 @@ await loadItems();
 }
 } catch (e) {}
 }
-function updateVisibleOrder() {
-const list = document.getElementById('itemsList');
-visibleItems = Array.from(list.querySelectorAll('.item-card:not(.invisible)')).map(card => card.dataset.name);
-}
-async function saveOrder() {
-if (!currentBlock) return;
+
+async function deleteItem(itemName) {
+if (!confirm(t('deleteConfirm', {name: itemName}))) return;
 try {
 const formData = new FormData();
-formData.append('data', JSON.stringify(visibleItems));
+formData.append('name', itemName);
 formData.append('secret', SECRET);
-const res = await fetch(`${API_BASE}/${currentBlock}/list`, {
+const res = await fetch(`${API_BASE}/${currentBlock}/remove`, {
 method: 'POST',
 body: formData
 });
 const result = await res.json();
-if (result.status !== 'ok') await loadItems();
-} catch (e) {
-await loadItems();
-}
-}
-async function openEditModal(itemName) {
-hideDragIndicator();
-hidePreview();
-document.getElementById('itemName').value = itemName;
-document.getElementById('currentBlock').value = currentBlock;
-document.getElementById('modalTitle').textContent = t('editTitle') + itemName;
-existingAttachments = [];
-pendingAttachments = {};
-try {
-const res = await fetch(`${API_BASE}/${currentBlock}/attachments?name=${encodeURIComponent(itemName)}&secret=${encodeURIComponent(SECRET)}`);
-if (res.ok) existingAttachments = await res.json();
+if (result.status === 'ok') await loadItems();
 } catch (e) {}
-generateFormFields();
-generateAttachmentsSection(itemName);
-loadItemData(itemName);
-document.getElementById('itemModal').classList.add('active');
 }
-// ИЗМЕНЕНИЕ 3: Все текстовые поля теперь создаются как textarea
+
+function hideDragIndicator() {
+clearTimeout(longPressTimer);
+document.getElementById('dragIndicator').classList.remove('active');
+document.removeEventListener('mousemove', handleDragMove);
+document.removeEventListener('mouseup', handleDragEnd);
+draggedItem = null;
+longPressActive = false;
+}
+
+function hidePreview() {
+clearTimeout(previewTimer);
+previewTarget = null;
+const preview = document.getElementById('itemPreview');
+preview.classList.remove('active');
+}
+
+function movePreview(e) {
+currentMousePos = {x: e.clientX, y: e.clientY};
+const preview = document.getElementById('itemPreview');
+if (preview.classList.contains('active')) {
+preview.style.left = (currentMousePos.x + 15) + 'px';
+preview.style.top = (currentMousePos.y + 15) + 'px';
+}
+}
+
+async function showPreview(e, name) {
+if (longPressActive || draggedItem || isTransitioning) return;
+previewTarget = name;
+currentMousePos = {x: e.clientX, y: e.clientY};
+clearTimeout(previewTimer);
+previewTimer = setTimeout(async () => {
+if (longPressActive || draggedItem || !previewTarget) return;
+const preview = document.getElementById('itemPreview');
+try {
+const res = await fetch(`${API_BASE}/${currentBlock}/content?name=${encodeURIComponent(previewTarget)}&secret=${encodeURIComponent(SECRET)}`, {
+headers: {'Cache-Control': 'no-cache'}
+});
+if (res.status === 404) return;
+const data = await res.json();
+let html = `<div class="item-preview-title">${previewTarget}</div><div class="item-preview-content">`;
+if (blockRequires && blockRequires.json) {
+blockRequires.json.forEach(([sysname, ftype, displayname]) => {
+if (data[sysname] !== undefined && data[sysname] !== null && data[sysname] !== '') {
+html += `<div class="item-preview-field"><span class="item-preview-label">${displayname}</span><span class="item-preview-value">${data[sysname]}</span></div>`;
+}
+});
+}
+html += '</div>';
+preview.innerHTML = html;
+preview.style.left = (currentMousePos.x + 15) + 'px';
+preview.style.top = (currentMousePos.y + 15) + 'px';
+preview.classList.add('active');
+} catch (err) {}
+}, 500);
+}
+
+function startTransition() {
+if (isTransitioning) return Promise.reject();
+isTransitioning = true;
+const panel = document.getElementById('contentPanel');
+const itemsList = document.getElementById('itemsList');
+const panelTitle = document.getElementById('panelTitle');
+const createBtn = document.getElementById('createBtn');
+panel.classList.add('is-loading');
+itemsList.classList.add('fade-out');
+panelTitle.style.opacity = '0';
+createBtn.disabled = true;
+return new Promise(resolve => setTimeout(resolve, 250));
+}
+
+function endTransition() {
+const panel = document.getElementById('contentPanel');
+const itemsList = document.getElementById('itemsList');
+const panelTitle = document.getElementById('panelTitle');
+const createBtn = document.getElementById('createBtn');
+panel.classList.remove('is-loading');
+itemsList.classList.remove('fade-out');
+itemsList.classList.add('fade-in');
+panelTitle.style.opacity = '1';
+createBtn.disabled = !currentBlock;
+setTimeout(() => {
+itemsList.classList.remove('fade-in');
+isTransitioning = false;
+}, 250);
+}
+
 function generateFormFields() {
 const container = document.getElementById('formFields');
 container.innerHTML = '';
@@ -1094,7 +1031,6 @@ input.type = 'number';
 input.step = ftype === 'float' ? 'any' : '1';
 input.id = `field_${sysname}`;
 } else {
-// ИЗМЕНЕНИЕ: Все строковые поля теперь textarea
 input = document.createElement('textarea');
 input.className = 'form-textarea';
 input.id = `field_${sysname}`;
@@ -1104,6 +1040,7 @@ group.appendChild(input);
 container.appendChild(group);
 });
 }
+
 function addTag(container, value) {
 const tag = document.createElement('span');
 tag.className = 'tag';
@@ -1111,12 +1048,15 @@ tag.innerHTML = `${value}<span class="tag-remove" aria-label="Удалить т�
 tag.querySelector('.tag-remove').onclick = () => tag.remove();
 container.insertBefore(tag, container.lastElementChild);
 }
+
 function attachmentExists(sysname) {
 return existingAttachments.includes(sysname);
 }
+
 function attachmentPending(sysname) {
 return pendingAttachments[sysname] !== undefined;
 }
+
 function getExtensionFromMime(mime) {
 const mapping = {
 'text/plain': '.txt', 'text/html': '.html', 'text/css': '.css',
@@ -1126,6 +1066,7 @@ const mapping = {
 };
 return mapping[mime] || '.bin';
 }
+
 function generateAttachmentsSection(itemName) {
 const section = document.getElementById('attachmentsSection');
 section.innerHTML = '';
@@ -1247,6 +1188,69 @@ uploadGroup.appendChild(fileWrapper);
 section.appendChild(uploadGroup);
 });
 }
+
+async function downloadAttachment(itemName, sysname, mime) {
+window.open(`${API_BASE}/${currentBlock}/attachment?name=${encodeURIComponent(itemName)}&attachment=${encodeURIComponent(sysname)}&secret=${encodeURIComponent(SECRET)}`, '_blank');
+}
+
+async function uploadPendingAttachments(itemName) {
+for (const [sysname, file] of Object.entries(pendingAttachments)) {
+const mime = blockRequires.attachments.find(([s, m]) => s === sysname)?.[1];
+if (!mime) continue;
+const formData = new FormData();
+formData.append('name', itemName);
+formData.append('attachment', sysname);
+formData.append('file', file);
+formData.append('secret', SECRET);
+const res = await fetch(`${API_BASE}/${currentBlock}/attach`, {
+method: 'POST',
+body: formData
+});
+const result = await res.json();
+if (result.status !== 'ok') {
+return false;
+}
+}
+return true;
+}
+
+async function detachAttachment(itemName, sysname, mime) {
+if (!confirm(t('removeAttachmentConfirm'))) return;
+try {
+const formData = new FormData();
+formData.append('name', itemName);
+formData.append('attachment', sysname);
+formData.append('secret', SECRET);
+const res = await fetch(`${API_BASE}/${currentBlock}/detach`, {
+method: 'POST',
+body: formData
+});
+const result = await res.json();
+if (result.status === 'ok') {
+existingAttachments = existingAttachments.filter(s => s !== sysname);
+generateAttachmentsSection(itemName);
+}
+} catch (e) {}
+}
+
+async function openEditModal(itemName) {
+hideDragIndicator();
+hidePreview();
+document.getElementById('itemName').value = itemName;
+document.getElementById('currentBlock').value = currentBlock;
+document.getElementById('modalTitle').textContent = t('editTitle') + itemName;
+existingAttachments = [];
+pendingAttachments = {};
+try {
+const res = await fetch(`${API_BASE}/${currentBlock}/attachments?name=${encodeURIComponent(itemName)}&secret=${encodeURIComponent(SECRET)}`);
+if (res.ok) existingAttachments = await res.json();
+} catch (e) {}
+generateFormFields();
+generateAttachmentsSection(itemName);
+loadItemData(itemName);
+document.getElementById('itemModal').classList.add('active');
+}
+
 async function loadItemData(itemName) {
 if (!blockRequires || !blockRequires.json) return;
 try {
@@ -1285,47 +1289,68 @@ container.insertBefore(badge, container.firstChild);
 }
 } catch (e) {}
 }
-async function downloadAttachment(itemName, sysname, mime) {
-window.open(`${API_BASE}/${currentBlock}/attachment?name=${encodeURIComponent(itemName)}&attachment=${encodeURIComponent(sysname)}&secret=${encodeURIComponent(SECRET)}`, '_blank');
+
+function closeModal(id) {
+document.getElementById(id).classList.remove('active');
+if (id === 'createModal') document.getElementById('createName').value = '';
 }
-async function uploadPendingAttachments(itemName) {
-for (const [sysname, file] of Object.entries(pendingAttachments)) {
-const mime = blockRequires.attachments.find(([s, m]) => s === sysname)?.[1];
-if (!mime) continue;
-const formData = new FormData();
-formData.append('name', itemName);
-formData.append('attachment', sysname);
-formData.append('file', file);
-formData.append('secret', SECRET);
-const res = await fetch(`${API_BASE}/${currentBlock}/attach`, {
-method: 'POST',
-body: formData
+
+function closeModals() {
+document.querySelectorAll('.modal').forEach(m => {
+m.classList.remove('active');
+if (m.id === 'createModal') document.getElementById('createName').value = '';
 });
-const result = await res.json();
-if (result.status !== 'ok') {
-return false;
+hideDragIndicator();
+hidePreview();
 }
+
+document.getElementById('langToggle').onclick = toggleLang;
+document.getElementById('themeToggle').onclick = toggleTheme;
+document.getElementById('logoutBtn').onclick = logout;
+document.getElementById('changeSecretBtn').onclick = () => {
+document.getElementById('newSecret').value = '';
+document.getElementById('confirmSecret').value = '';
+hideSecretError();
+document.getElementById('secretModal').classList.add('active');
+};
+document.getElementById('secretModalClose').onclick = () => closeModal('secretModal');
+document.getElementById('secretCancelBtn').onclick = () => closeModal('secretModal');
+document.getElementById('modalClose').onclick = () => closeModal('itemModal');
+document.getElementById('cancelBtn').onclick = () => closeModal('itemModal');
+document.getElementById('createModalClose').onclick = () => closeModal('createModal');
+document.getElementById('createCancelBtn').onclick = () => closeModal('createModal');
+document.getElementById('createBtn').onclick = () => document.getElementById('createModal').classList.add('active');
+document.getElementById('ctxHide').onclick = () => {
+if (contextTarget) {
+toggleVisibility(contextTarget.name, contextTarget.isInvisible);
 }
-return true;
+hideContextMenu();
+};
+document.getElementById('ctxDelete').onclick = () => {
+if (contextTarget) {
+deleteItem(contextTarget.name);
 }
-async function detachAttachment(itemName, sysname, mime) {
-if (!confirm(t('removeAttachmentConfirm'))) return;
-try {
-const formData = new FormData();
-formData.append('name', itemName);
-formData.append('attachment', sysname);
-formData.append('secret', SECRET);
-const res = await fetch(`${API_BASE}/${currentBlock}/detach`, {
-method: 'POST',
-body: formData
-});
-const result = await res.json();
-if (result.status === 'ok') {
-existingAttachments = existingAttachments.filter(s => s !== sysname);
-generateAttachmentsSection(itemName);
+hideContextMenu();
+};
+document.getElementById('secretForm').onsubmit = async (e) => {
+e.preventDefault();
+const newSecret = document.getElementById('newSecret').value.trim();
+const confirmSecret = document.getElementById('confirmSecret').value.trim();
+hideSecretError();
+if (!newSecret || !confirmSecret) {
+showSecretError(t('error.server'));
+return;
 }
-} catch (e) {}
+if (newSecret.length < 6) {
+showSecretError(t('secretTooShort'));
+return;
 }
+if (newSecret !== confirmSecret) {
+showSecretError(t('secretMismatch'));
+return;
+}
+await changeSecret(newSecret);
+};
 document.getElementById('itemForm').onsubmit = async (e) => {
 e.preventDefault();
 const itemName = document.getElementById('itemName').value;
@@ -1391,39 +1416,16 @@ await loadItems();
 }
 } catch (e) {}
 };
-async function deleteItem(itemName) {
-if (!confirm(t('deleteConfirm', {name: itemName}))) return;
-try {
-const formData = new FormData();
-formData.append('name', itemName);
-formData.append('secret', SECRET);
-const res = await fetch(`${API_BASE}/${currentBlock}/remove`, {
-method: 'POST',
-body: formData
-});
-const result = await res.json();
-if (result.status === 'ok') await loadItems();
-} catch (e) {}
-}
-function closeModal(id) {
-document.getElementById(id).classList.remove('active');
-}
-function closeModals() {
-document.querySelectorAll('.modal').forEach(m => {
-m.classList.remove('active');
-if (m.id === 'createModal') document.getElementById('createName').value = '';
-});
+document.addEventListener('keydown', (e) => {
+if (e.key === 'Escape') {
+closeModals();
+hideContextMenu();
 hideDragIndicator();
 hidePreview();
 }
-document.getElementById('modalClose').onclick = () => closeModal('itemModal');
-document.getElementById('cancelBtn').onclick = () => closeModal('itemModal');
-document.getElementById('createModalClose').onclick = () => closeModal('createModal');
-document.getElementById('createCancelBtn').onclick = () => {
-closeModal('createModal');
-document.getElementById('createName').value = '';
-};
-document.getElementById('createBtn').onclick = () => document.getElementById('createModal').classList.add('active');
+});
+document.addEventListener('click', hideContextMenu);
+document.addEventListener('scroll', hideContextMenu);
 document.querySelectorAll('.modal').forEach(m => {
 m.onclick = (e) => {
 if (e.target === m) {
@@ -1437,7 +1439,9 @@ const activeBtn = document.querySelector('.block-btn.active');
 if (activeBtn) updateIndicator(activeBtn);
 }
 });
+
 initTheme();
+initSecret();
 applyTranslations();
 fetchBlocks();
 </script>

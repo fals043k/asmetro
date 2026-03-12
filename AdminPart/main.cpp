@@ -143,8 +143,16 @@ int main( ) {
     } });
 
 
+    serv.add_callback({ "GET", { "" }, [](std::shared_ptr<server_request> request) {
+        return std::make_shared<file_response>(request->socket, 200, "OK", "text/html", "logon.html", "logon.html", OpenType::INLINE);
+    } });
+
+
     serv.add_callback({ "GET", { "admin" }, [](std::shared_ptr<server_request> request) {
-        return std::make_shared<file_response>(request->socket, 200, "OK", "text/html", "admin.html", "admin.html", OpenType::INLINE);
+        if (request->query.contains ( "secret" ) && request->query ["secret"] == secret)
+            return std::make_shared<file_response>(request->socket, 200, "OK", "text/html", "admin.html", "admin.html", OpenType::INLINE);
+
+        return std::make_shared<file_response> ( );
     } });
 
 
