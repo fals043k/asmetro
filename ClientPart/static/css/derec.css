@@ -108,7 +108,7 @@
 }
 
 .slider::-webkit-scrollbar {
-    display: block;
+    display: none;
 }
 
 .slider > * {
@@ -188,12 +188,12 @@
     width: 100%;
     text-align: center;
     padding: 40px;
-    color: #666;
+    color: #666666;
     font-size: 16px;
 }
 
 .slider__error {
-    color: #dc3545;
+    color: #d32f2f;
 }
 
 /* Секция Основные задачи */

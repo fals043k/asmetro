@@ -104,12 +104,14 @@
     color: #ffffff;
 }
 
+/* Сетка мероприятий */
 .events-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
 }
 
+/* Карточка мероприятия */
 .events-card {
     background: #ffffff;
     border-radius: 12px;
@@ -173,6 +175,7 @@
     filter: brightness(0) invert(1);
 }
 
+/* Events Popup */
 .events-popup {
     position: fixed;
     top: 0;
@@ -235,7 +238,7 @@
     font-weight: 700;
     font-size: 24px;
     line-height: 130%;
-    color: #000000;
+    color: #1a5c9e;
     margin-bottom: 16px;
     padding-right: 30px;
 }
@@ -244,7 +247,7 @@
     font-weight: 400;
     font-size: 16px;
     line-height: 150%;
-    color: #000000;
+    color: #666666;
     margin-bottom: 24px;
 }
 
@@ -252,12 +255,12 @@
     font-weight: 400;
     font-size: 14px;
     line-height: 150%;
-    color: #000000;
+    color: #333333;
 }
 
 .events-popup__text p {
     margin-bottom: 12px;
-    color: #000000;
+    color: #333333;
 }
 
 .events-popup__text p:last-child {
@@ -265,14 +268,14 @@
 }
 
 .events-popup__text a {
-    color: #000000;
+    color: #1a5c9e;
     text-decoration: underline;
     word-break: break-word;
     transition: color 0.2s;
 }
 
 .events-popup__text a:hover {
-    color: #000000;
+    color: #0d3a5c;
 }
 
 .events-popup__list {
@@ -288,19 +291,58 @@
     font-weight: 400;
     font-size: 14px;
     line-height: 150%;
-    color: #000000;
+    color: #333333;
 }
 
 .events-popup__list li::before {
     content: '•';
     position: absolute;
     left: 0;
-    color: #000000;
+    color: #1a5c9e;
     font-size: 18px;
     line-height: 150%;
 }
 
+/* Адаптация сетки */
+@media (max-width: 1200px) {
+    .events-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .events-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 @media (max-width: 768px) {
+    .events-section {
+        padding: 40px 0 60px;
+    }
+
+    .events-filter {
+        justify-content: center;
+    }
+
+    .dropdown {
+        width: 100%;
+        max-width: 320px;
+    }
+
+    .events-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .events-card {
+        min-height: 180px;
+    }
+
+    .events-card__title {
+        font-size: 15px;
+    }
+
+    /* Events Popup адаптация */
     .events-popup__content {
         padding: 24px;
         width: 95%;
@@ -308,7 +350,7 @@
 
     .events-popup__title {
         font-size: 20px;
-        padding-right: 0;
+        padding-right: 25px;
     }
 
     .events-popup__datetime {
@@ -316,6 +358,10 @@
     }
 
     .events-popup__text {
+        font-size: 13px;
+    }
+    
+    .events-popup__list li {
         font-size: 13px;
     }
 
@@ -327,21 +373,6 @@
     .events-popup__close img {
         width: 18px;
         height: 18px;
-    }
-}
-
-@media (max-width: 480px) {
-    .events-popup__content {
-        padding: 20px;
-    }
-
-    .events-popup__title {
-        font-size: 18px;
-    }
-
-    .events-popup__close {
-        top: 10px;
-        right: 10px;
     }
 }
 
@@ -364,6 +395,7 @@
 
     .events-popup__title {
         font-size: 18px;
+        padding-right: 20px;
     }
 
     .events-popup__close {

@@ -1,4 +1,3 @@
-
 /* =============================================
    HERO СЕКЦИЯ - ЕДИНЫЙ СТИЛЬ ДЛЯ ВСЕХ СТРАНИЦ
    ============================================= */
@@ -8,6 +7,7 @@
     min-height: 580px;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 .hero::before {
@@ -19,27 +19,25 @@
     z-index: 1;
 }
 
-.hero__container::before {
-    content: '';
-    position: absolute;
-    top: -180px;
-    right: -250px;
-    width: 800px;
-    height: 800px;
-    background: url('../img/background-pattern1.png') center right/contain no-repeat;
-    opacity: 0.45;
-    pointer-events: none;
-    z-index: -4;
-}
-
 .hero__container {
     position: relative;
-    z-index: 2;
+    z-index: 3;
     flex: 1;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 40px 2vw 60px;
+    padding: 60px 2vw 60px;
     width: 100%;
+    overflow: hidden;
+}
+
+.hero__img {
+    z-index: 2;
+    position: absolute;
+    top: -180px;
+    right: -50px;
+    width: 800px;
+    height: 800px;
+    opacity: 0.45;
 }
 
 .hero__title {
@@ -75,13 +73,14 @@
     .hero__title {
         font-size: 36px;
         margin-bottom: 20px;
+        margin-top: 40px;
     }
 
     .hero__subtitle {
         font-size: 16px;
     }
 
-    .hero__container::before {
+    .hero__img {
         width: 600px;
         height: 600px;
         top: -200px;
@@ -121,6 +120,7 @@
 @media (max-width: 480px) {
     .hero__title {
         font-size: 28px;
+        margin-top: 30px;
     }
 
     .hero__subtitle {

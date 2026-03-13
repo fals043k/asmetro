@@ -1,3 +1,4 @@
+/* Модальное окно метрополитена */
 .metro-modal {
     display: none;
     position: fixed;
@@ -260,6 +261,7 @@
     margin: 4px 0;
 }
 
+/* Секция участников */
 .participants {
     background: #f5f7fa;
     padding: 60px 0 80px;
@@ -335,6 +337,7 @@
     text-align: center;
 }
 
+/* Адаптация */
 @media (max-width: 1200px) {
     .metro-grid,
     .predpriyatiya-grid {
