@@ -29,7 +29,7 @@ body {
     padding-bottom: 16px;
 }
 
-.section-title--white {
+.section-title--white{
     color: #f0f4f8;
     border-bottom: 2px solid #f0f4f8;
 }
@@ -79,3 +79,5 @@ body {
     font-size: 18px;
     line-height: 150%;
 }
+
+
