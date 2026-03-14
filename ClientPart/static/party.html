@@ -8,15 +8,17 @@
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/hero.css">
-    <link rel="stylesheet" href="css/party.css">
+    <link rel="stylesheet" href="css/party.css"> <!-- Основные стили страницы -->
     <link rel="stylesheet" href="css/footer.css">
 </head>
 <body>
     <div class="wrapper">
         <div class="content">
+            <!-- Hero секция -->
             <section class="hero">
+                <!-- Header будет загружен через JS -->
                 <div id="header-block"></div>
-                
+
                 <div class="hero__container container">
                     <h1 class="hero__title">УЧАСТНИКИ</h1>
                     <p class="hero__subtitle">Международная ассоциация «Метро» объединяет метрополитены России и стран СНГ, построенные и эксплуатируемые по одному технологическому принципу, а также предприятия-производители подвижного состава и оборудования для нужд метрополитенов</p>
@@ -24,7 +26,9 @@
                 <img class="hero__img" src="img/background-pattern1.png" alt="">
             </section>
 
+            <!-- Секция Участники -->
             <section class="participants" id="metro">
+                <!-- Метрополитены -->
                 <div class="metro-section">
                     <div class="container">
                         <h2 class="section-title section-title--underline">Метрополитены</h2>
@@ -32,6 +36,7 @@
                     </div>
                 </div>
 
+                <!-- Предприятия -->
                 <div class="predpriyatiya-section" id="companies">
                     <div class="container">
                         <h2 class="section-title section-title--underline">Предприятия</h2>
@@ -40,16 +45,21 @@
                 </div>
             </section>
 
-            <div class="metro-modal" id="metroModal">
-                <div class="modal-overlay" id="modalOverlay"></div>
-                <div class="modal-container">
-                    <div class="modal-content" id="modalContent"></div>
-                </div>
-            </div>
-
+            <!-- Footer будет загружен через JS -->
             <div id="footer-block"></div>
         </div>
     </div>
+
+    <!-- Модальное окно (изначально скрыто) -->
+    <div class="metro-modal" id="metroModal">
+        <div class="modal-overlay" id="modalOverlay"></div>
+        <div class="modal-container">
+            <div class="modal-content" id="modalContent"></div>
+        </div>
+    </div>
+
     <script src="js/party.js"></script>
+    <script src="js/header.js"></script>
+    <script src="js/footer.js"></script>
 </body>
 </html>

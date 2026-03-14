@@ -26,6 +26,7 @@ const FALLBACK_COMPANY_DATA = {
         full_desc_one: DEFAULT_TEXT,
         full_desc_two: DEFAULT_TEXT,
         spec_desc: DEFAULT_TEXT,
+        struct_desc: DEFAULT_TEXT,
         quality: DEFAULT_TEXT,
         contact: DEFAULT_TEXT
     }
@@ -82,7 +83,19 @@ function openMetroModal(metroId, metroData) {
     modalContent.innerHTML = generateMetroContent(dataToShow, metroId);
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
-    loadModalAttachments(metroId);
+
+    if (!modalContent.querySelector('.modal-close')) {
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'modal-close';
+        closeBtn.innerHTML = '×';
+        closeBtn.onclick = function() {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        };
+        modalContent.appendChild(closeBtn);
+    }
+
+    loadModalAttachments('метро', metroId);
 }
 
 function openPredpriyatiyaModal(companyId, companyData) {
@@ -98,19 +111,32 @@ function openPredpriyatiyaModal(companyId, companyData) {
     modalContent.innerHTML = generatePredpriyatiyaContent(dataToShow, companyId);
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
-    loadPredpriyatiyaModalAttachments(companyId);
+
+    if (!modalContent.querySelector('.modal-close')) {
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'modal-close';
+        closeBtn.innerHTML = '×';
+        closeBtn.onclick = function() {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        };
+        modalContent.appendChild(closeBtn);
+    }
+
+    loadModalAttachments('предприятия', companyId);
 }
 
 function generateMetroContent(data, metroId) {
-    const placeholder = 'data:image/svg+xml,Загрузка...';
+    const placeholder = 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20viewBox%3D%220%200%20400%20300%22%3E%3Crect%20fill%3D%22%23f0f0f0%22%20width%3D%22400%22%20height%3D%22300%22%2F%3E%3Ctext%20fill%3D%22%23999%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20text-anchor%3D%22middle%22%20dy%3D%22.3em%22%20font-size%3D%2220%22%3EЗагрузка...%3C%2Ftext%3E%3C%2Fsvg%3E';
+
     let html = `
-        <div class="modal-hero">
-            <div class="modal-hero__container">
-                <div class="modal-hero__content">
-                    <h1 class="modal-hero__title">${data.name || 'МЕТРОПОЛИТЕН'}</h1>
-                    <p class="modal-hero__subtitle">${formatTextWithLineBreaks(data.short_desc)}</p>
+        <div class="hero--piter">
+            <div class="hero__container">
+                <div class="hero__content">
+                    <h1 class="hero__title">${data.name || 'МЕТРОПОЛИТЕН'}</h1>
+                    <p class="hero__subtitle">${formatTextWithLineBreaks(data.short_desc)}</p>
                 </div>
-                <div class="modal-hero__logo">
+                <div class="hero__logo">
                     <img src="${placeholder}" alt="Логотип" data-metro-id="${metroId}" data-attachment="logo" class="metro-attachment">
                 </div>
             </div>
@@ -119,15 +145,15 @@ function generateMetroContent(data, metroId) {
 
     if (data.full_desc_one) {
         html += `
-            <div class="modal-section modal-section--white">
-                <div class="modal-section__container">
-                    <div class="modal-section__image">
+            <div class="piter-section piter-section--white">
+                <div class="piter-section__container">
+                    <div class="piter-section__image">
                         <img src="${placeholder}" alt="" data-metro-id="${metroId}" data-attachment="desc_one" class="metro-attachment">
-                        <p class="modal-section__caption">Станция метро</p>
+                        <p class="piter-section__caption">Станция метро</p>
                     </div>
-                    <div class="modal-section__text">
-                        <h2 class="modal-section__title">ПОДРОБНО О МЕТРОПОЛИТЕНЕ</h2>
-                        <p class="modal-section__paragraph">${formatTextWithLineBreaks(data.full_desc_one)}</p>
+                    <div class="piter-section__text">
+                        <h2 class="piter-section__title">ПОДРОБНО О МЕТРОПОЛИТЕНЕ</h2>
+                        <p class="piter-section__paragraph">${formatTextWithLineBreaks(data.full_desc_one)}</p>
                     </div>
                 </div>
             </div>
@@ -136,12 +162,12 @@ function generateMetroContent(data, metroId) {
 
     if (data.full_desc_two) {
         html += `
-            <div class="modal-section modal-section--blue">
-                <div class="modal-section__container">
-                    <div class="modal-section__text">
-                        <p class="modal-section__paragraph">${formatTextWithLineBreaks(data.full_desc_two)}</p>
+            <div class="piter-section piter-section--blue">
+                <div class="piter-section__container">
+                    <div class="piter-section__text">
+                        <p class="piter-section__paragraph">${formatTextWithLineBreaks(data.full_desc_two)}</p>
                     </div>
-                    <div class="modal-section__image">
+                    <div class="piter-section__image">
                         <img src="${placeholder}" alt="" data-metro-id="${metroId}" data-attachment="desc_two" class="metro-attachment">
                     </div>
                 </div>
@@ -151,15 +177,15 @@ function generateMetroContent(data, metroId) {
 
     if (data.scheme_desc) {
         html += `
-            <div class="modal-section modal-section--white">
-                <div class="modal-section__container">
-                    <div class="modal-section__image">
+            <div class="piter-section piter-section--white">
+                <div class="piter-section__container">
+                    <div class="piter-section__image">
                         <img src="${placeholder}" alt="" data-metro-id="${metroId}" data-attachment="scheme" class="metro-attachment">
-                        <p class="modal-section__caption">Схема линий</p>
+                        <p class="piter-section__caption">Схема линий</p>
                     </div>
-                    <div class="modal-section__text">
-                        <h2 class="modal-section__title">СХЕМА ЛИНИЙ</h2>
-                        <p class="modal-section__paragraph">${formatTextWithLineBreaks(data.scheme_desc)}</p>
+                    <div class="piter-section__text">
+                        <h2 class="piter-section__title">СХЕМА ЛИНИЙ</h2>
+                        <p class="piter-section__paragraph">${formatTextWithLineBreaks(data.scheme_desc)}</p>
                     </div>
                 </div>
             </div>
@@ -168,13 +194,13 @@ function generateMetroContent(data, metroId) {
 
     if (data.modern_desc) {
         html += `
-            <div class="modal-section modal-section--blue">
-                <div class="modal-section__container">
-                    <div class="modal-section__text">
-                        <h2 class="modal-section__title">МОДЕРНИЗАЦИЯ</h2>
-                        <p class="modal-section__paragraph">${formatTextWithLineBreaks(data.modern_desc)}</p>
+            <div class="piter-section piter-section--blue">
+                <div class="piter-section__container">
+                    <div class="piter-section__text">
+                        <h2 class="piter-section__title">МОДЕРНИЗАЦИЯ</h2>
+                        <p class="piter-section__paragraph">${formatTextWithLineBreaks(data.modern_desc)}</p>
                     </div>
-                    <div class="modal-section__image">
+                    <div class="piter-section__image">
                         <img src="${placeholder}" alt="" data-metro-id="${metroId}" data-attachment="modern" class="metro-attachment">
                     </div>
                 </div>
@@ -184,14 +210,14 @@ function generateMetroContent(data, metroId) {
 
     if (data.struct_desc) {
         html += `
-            <div class="modal-section modal-section--white">
-                <div class="modal-section__container">
-                    <div class="modal-section__image">
+            <div class="piter-section piter-section--white">
+                <div class="piter-section__container">
+                    <div class="piter-section__image">
                         <img src="${placeholder}" alt="" data-metro-id="${metroId}" data-attachment="struct" class="metro-attachment">
                     </div>
-                    <div class="modal-section__text">
-                        <h2 class="modal-section__title">ИНФРАСТРУКТУРА</h2>
-                        <p class="modal-section__paragraph">${formatTextWithLineBreaks(data.struct_desc)}</p>
+                    <div class="piter-section__text">
+                        <h2 class="piter-section__title">ИНФРАСТРУКТУРА</h2>
+                        <p class="piter-section__paragraph">${formatTextWithLineBreaks(data.struct_desc)}</p>
                     </div>
                 </div>
             </div>
@@ -200,13 +226,13 @@ function generateMetroContent(data, metroId) {
 
     if (data.partnership_desc) {
         html += `
-            <div class="modal-section modal-section--blue">
-                <div class="modal-section__container">
-                    <div class="modal-section__text">
-                        <h2 class="modal-section__title">РАЗВИТИЕ И ПАРТНЁРСТВО</h2>
-                        <p class="modal-section__paragraph">${formatTextWithLineBreaks(data.partnership_desc)}</p>
+            <div class="piter-section piter-section--blue">
+                <div class="piter-section__container">
+                    <div class="piter-section__text">
+                        <h2 class="piter-section__title">РАЗВИТИЕ И ПАРТНЁРСТВО</h2>
+                        <p class="piter-section__paragraph">${formatTextWithLineBreaks(data.partnership_desc)}</p>
                     </div>
-                    <div class="modal-section__image">
+                    <div class="piter-section__image">
                         <img src="${placeholder}" alt="" data-metro-id="${metroId}" data-attachment="partnership" class="metro-attachment">
                     </div>
                 </div>
@@ -216,18 +242,18 @@ function generateMetroContent(data, metroId) {
 
     if (data.safety_desc || data.acessable_desc) {
         html += `
-            <div class="modal-section modal-section--white modal-section--double-text">
-                <div class="modal-section__container">
+            <div class="piter-section piter-section--white piter-section--double-text">
+                <div class="piter-section__container">
                     ${data.safety_desc ? `
-                        <div class="modal-section__text-block">
-                            <h2 class="modal-section__title">БЕЗОПАСНОСТЬ</h2>
-                            <p class="modal-section__paragraph">${formatTextWithLineBreaks(data.safety_desc)}</p>
+                        <div class="piter-section__text-block">
+                            <h2 class="piter-section__title">БЕЗОПАСНОСТЬ</h2>
+                            <p class="piter-section__paragraph">${formatTextWithLineBreaks(data.safety_desc)}</p>
                         </div>
                     ` : ''}
                     ${data.acessable_desc ? `
-                        <div class="modal-section__text-block">
-                            <h2 class="modal-section__title">ДОСТУПНОСТЬ</h2>
-                            <p class="modal-section__paragraph">${formatTextWithLineBreaks(data.acessable_desc)}</p>
+                        <div class="piter-section__text-block">
+                            <h2 class="piter-section__title">ДОСТУПНОСТЬ</h2>
+                            <p class="piter-section__paragraph">${formatTextWithLineBreaks(data.acessable_desc)}</p>
                         </div>
                     ` : ''}
                 </div>
@@ -235,24 +261,20 @@ function generateMetroContent(data, metroId) {
         `;
     }
 
-    if (!document.querySelector('.modal-close')) {
-        html += `<button class="modal-close" onclick="document.getElementById('${MODAL_ID}').classList.remove('active'); document.body.style.overflow = '';">×</button>`;
-    }
-
     return html;
 }
 
 function generatePredpriyatiyaContent(data, companyId) {
-    const placeholder = 'data:image/svg+xml,Загрузка...';
-    
+    const placeholder = 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20viewBox%3D%220%200%20400%20300%22%3E%3Crect%20fill%3D%22%23f0f0f0%22%20width%3D%22400%22%20height%3D%22300%22%2F%3E%3Ctext%20fill%3D%22%23999%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20text-anchor%3D%22middle%22%20dy%3D%22.3em%22%20font-size%3D%2220%22%3EЗагрузка...%3C%2Ftext%3E%3C%2Fsvg%3E';
+
     let html = `
-        <div class="modal-hero">
-            <div class="modal-hero__container">
-                <div class="modal-hero__content">
-                    <h1 class="modal-hero__title">${data.name || 'ПРЕДПРИЯТИЕ'}</h1>
-                    <p class="modal-hero__subtitle">${formatTextWithLineBreaks(data.short_desc)}</p>
+        <div class="hero--piter">
+            <div class="hero__container">
+                <div class="hero__content">
+                    <h1 class="hero__title">${data.name || 'ПРЕДПРИЯТИЕ'}</h1>
+                    <p class="hero__subtitle">${formatTextWithLineBreaks(data.short_desc)}</p>
                 </div>
-                <div class="modal-hero__logo">
+                <div class="hero__logo">
                     <img src="${placeholder}" alt="Логотип" data-metro-id="${companyId}" data-attachment="logo" class="metro-attachment">
                 </div>
             </div>
@@ -261,15 +283,15 @@ function generatePredpriyatiyaContent(data, companyId) {
 
     if (data.full_desc_one) {
         html += `
-            <div class="modal-section modal-section--white">
-                <div class="modal-section__container">
-                    <div class="modal-section__image">
+            <div class="piter-section piter-section--white">
+                <div class="piter-section__container">
+                    <div class="piter-section__image">
                         <img src="${placeholder}" alt="" data-metro-id="${companyId}" data-attachment="desc_one" class="metro-attachment">
-                        <p class="modal-section__caption">Производство</p>
+                        <p class="piter-section__caption">Производство</p>
                     </div>
-                    <div class="modal-section__text">
-                        <h2 class="modal-section__title">О ПРЕДПРИЯТИИ</h2>
-                        <p class="modal-section__paragraph">${formatTextWithLineBreaks(data.full_desc_one)}</p>
+                    <div class="piter-section__text">
+                        <h2 class="piter-section__title">О ПРЕДПРИЯТИИ</h2>
+                        <p class="piter-section__paragraph">${formatTextWithLineBreaks(data.full_desc_one)}</p>
                     </div>
                 </div>
             </div>
@@ -278,12 +300,12 @@ function generatePredpriyatiyaContent(data, companyId) {
 
     if (data.full_desc_two) {
         html += `
-            <div class="modal-section modal-section--blue">
-                <div class="modal-section__container">
-                    <div class="modal-section__text">
-                        <p class="modal-section__paragraph">${formatTextWithLineBreaks(data.full_desc_two)}</p>
+            <div class="piter-section piter-section--blue">
+                <div class="piter-section__container">
+                    <div class="piter-section__text">
+                        <p class="piter-section__paragraph">${formatTextWithLineBreaks(data.full_desc_two)}</p>
                     </div>
-                    <div class="modal-section__image">
+                    <div class="piter-section__image">
                         <img src="${placeholder}" alt="" data-metro-id="${companyId}" data-attachment="desc_two" class="metro-attachment">
                     </div>
                 </div>
@@ -293,15 +315,32 @@ function generatePredpriyatiyaContent(data, companyId) {
 
     if (data.spec_desc) {
         html += `
-            <div class="modal-section modal-section--white">
-                <div class="modal-section__container">
-                    <div class="modal-section__image">
+            <div class="piter-section piter-section--white">
+                <div class="piter-section__container">
+                    <div class="piter-section__image">
                         <img src="${placeholder}" alt="" data-metro-id="${companyId}" data-attachment="spec" class="metro-attachment">
-                        <p class="modal-section__caption">Специализация</p>
+                        <p class="piter-section__caption">Специализация</p>
                     </div>
-                    <div class="modal-section__text">
-                        <h2 class="modal-section__title">СПЕЦИАЛИЗАЦИЯ</h2>
-                        <p class="modal-section__paragraph">${formatTextWithLineBreaks(data.spec_desc)}</p>
+                    <div class="piter-section__text">
+                        <h2 class="piter-section__title">СПЕЦИАЛИЗАЦИЯ</h2>
+                        <p class="piter-section__paragraph">${formatTextWithLineBreaks(data.spec_desc)}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    if (data.struct_desc) {
+        html += `
+            <div class="piter-section piter-section--blue">
+                <div class="piter-section__container">
+                    <div class="piter-section__text">
+                        <h2 class="piter-section__title">ИНФРАСТРУКТУРА</h2>
+                        <p class="piter-section__paragraph">${formatTextWithLineBreaks(data.struct_desc)}</p>
+                    </div>
+                    <div class="piter-section__image">
+                        <img src="${placeholder}" alt="" data-metro-id="${companyId}" data-attachment="struct" class="metro-attachment">
+                        <p class="piter-section__caption">Инфраструктура</p>
                     </div>
                 </div>
             </div>
@@ -310,18 +349,18 @@ function generatePredpriyatiyaContent(data, companyId) {
 
     if (data.quality || data.contact) {
         html += `
-            <div class="modal-section modal-section--blue modal-section--double-text">
-                <div class="modal-section__container">
+            <div class="piter-section piter-section--white piter-section--double-text">
+                <div class="piter-section__container">
                     ${data.quality ? `
-                        <div class="modal-section__text-block">
-                            <h2 class="modal-section__title">КАЧЕСТВО</h2>
-                            <p class="modal-section__paragraph">${formatTextWithLineBreaks(data.quality)}</p>
+                        <div class="piter-section__text-block">
+                            <h2 class="piter-section__title">КАЧЕСТВО</h2>
+                            <p class="piter-section__paragraph">${formatTextWithLineBreaks(data.quality)}</p>
                         </div>
                     ` : ''}
                     ${data.contact ? `
-                        <div class="modal-section__text-block">
-                            <h2 class="modal-section__title">КОНТАКТЫ</h2>
-                            <p class="modal-section__paragraph">${formatTextWithLineBreaks(data.contact)}</p>
+                        <div class="piter-section__text-block">
+                            <h2 class="piter-section__title">КОНТАКТЫ</h2>
+                            <p class="piter-section__paragraph">${formatTextWithLineBreaks(data.contact)}</p>
                         </div>
                     ` : ''}
                 </div>
@@ -329,19 +368,15 @@ function generatePredpriyatiyaContent(data, companyId) {
         `;
     }
 
-    if (!document.querySelector('.modal-close')) {
-        html += `<button class="modal-close" onclick="document.getElementById('${MODAL_ID}').classList.remove('active'); document.body.style.overflow = '';">×</button>`;
-    }
-
     return html;
 }
 
-function loadModalAttachments(metroId) {
-    const images = document.querySelectorAll(`.metro-attachment[data-metro-id="${metroId}"]`);
+function loadModalAttachments(type, id) {
+    const images = document.querySelectorAll(`.metro-attachment[data-metro-id="${id}"]`);
     images.forEach(img => {
         if (img.dataset.loaded) return;
         const attachment = img.dataset.attachment;
-        fetch(`${API_BASE_URL}/api/v1/content/метро/attachment?name=${encodeURIComponent(metroId)}&attachment=${encodeURIComponent(attachment)}`)
+        fetch(`${API_BASE_URL}/api/v1/content/${type}/attachment?name=${encodeURIComponent(id)}&attachment=${encodeURIComponent(attachment)}`)
             .then(response => {
                 if (!response.ok) throw new Error('Network error');
                 return response.blob();
@@ -353,30 +388,7 @@ function loadModalAttachments(metroId) {
                 img.onload = () => URL.revokeObjectURL(src);
             })
             .catch(() => {
-                img.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400"><rect fill="%23f0f0f0" width="600" height="400"/><text fill="%23999" x="50%" y="50%" text-anchor="middle" dy=".3em" font-size="24">Нет фото</text></svg>';
-                img.dataset.loaded = 'true';
-            });
-    });
-}
-
-function loadPredpriyatiyaModalAttachments(companyId) {
-    const images = document.querySelectorAll(`.metro-attachment[data-metro-id="${companyId}"]`);
-    images.forEach(img => {
-        if (img.dataset.loaded) return;
-        const attachment = img.dataset.attachment;
-        fetch(`${API_BASE_URL}/api/v1/content/предприятия/attachment?name=${encodeURIComponent(companyId)}&attachment=${encodeURIComponent(attachment)}`)
-            .then(response => {
-                if (!response.ok) throw new Error('Network error');
-                return response.blob();
-            })
-            .then(blob => {
-                const src = URL.createObjectURL(blob);
-                img.src = src;
-                img.dataset.loaded = 'true';
-                img.onload = () => URL.revokeObjectURL(src);
-            })
-            .catch(() => {
-                img.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400"><rect fill="%23f0f0f0" width="600" height="400"/><text fill="%23999" x="50%" y="50%" text-anchor="middle" dy=".3em" font-size="24">Нет фото</text></svg>';
+                img.src = 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22400%22%20viewBox%3D%220%200%20600%20400%22%3E%3Crect%20fill%3D%22%23f0f0f0%22%20width%3D%22600%22%20height%3D%22400%22%2F%3E%3Ctext%20fill%3D%22%23999%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20text-anchor%3D%22middle%22%20dy%3D%22.3em%22%20font-size%3D%2224%22%3E%D0%9D%D0%B5%D1%82%20%D1%84%D0%BE%D1%82%D0%BE%3C%2Ftext%3E%3C%2Fsvg%3E';
                 img.dataset.loaded = 'true';
             });
     });
@@ -466,7 +478,7 @@ function loadMetroLogo(id, imgElement) {
             imgElement.onload = () => URL.revokeObjectURL(src);
         })
         .catch(() => {
-            imgElement.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><rect fill="%23e0e0e0" width="120" height="120"/><text fill="%23999" x="50%" y="50%" text-anchor="middle" dy=".3em" font-size="14">Нет лого</text></svg>';
+            imgElement.src = 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%20viewBox%3D%220%200%20120%20120%22%3E%3Crect%20fill%3D%22%23e0e0e0%22%20width%3D%22120%22%20height%3D%22120%22%2F%3E%3Ctext%20fill%3D%22%23999%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20text-anchor%3D%22middle%22%20dy%3D%22.3em%22%20font-size%3D%2214%22%3E%D0%9D%D0%B5%D1%82%20%D0%BB%D0%BE%D0%B3%D0%BE%3C%2Ftext%3E%3C%2Fsvg%3E';
             imgElement.dataset.loaded = 'true';
         });
 }
@@ -478,7 +490,7 @@ function createMetroCard(name, data, id) {
     card.style.cursor = 'pointer';
     card.innerHTML = `
         <div class="metro-item__image">
-            <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><rect fill='%23e0e0e0' width='120' height='120'/></svg>" alt="${name}" loading="lazy">
+            <img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%20viewBox%3D%220%200%20120%20120%22%3E%3Crect%20fill%3D%22%23e0e0e0%22%20width%3D%22120%22%20height%3D%22120%22%2F%3E%3C%2Fsvg%3E" alt="${name}" loading="lazy">
         </div>
         <p class="metro-item__name">${name}</p>
     `;
@@ -544,7 +556,7 @@ function loadPredpriyatiyaLogo(id, imgElement) {
             imgElement.onload = () => URL.revokeObjectURL(src);
         })
         .catch(() => {
-            imgElement.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><rect fill="%23e0e0e0" width="120" height="120"/><text fill="%23999" x="50%" y="50%" text-anchor="middle" dy=".3em" font-size="14">Нет лого</text></svg>';
+            imgElement.src = 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%20viewBox%3D%220%200%20120%20120%22%3E%3Crect%20fill%3D%22%23e0e0e0%22%20width%3D%22120%22%20height%3D%22120%22%2F%3E%3Ctext%20fill%3D%22%23999%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20text-anchor%3D%22middle%22%20dy%3D%22.3em%22%20font-size%3D%2214%22%3E%D0%9D%D0%B5%D1%82%20%D0%BB%D0%BE%D0%B3%D0%BE%3C%2Ftext%3E%3C%2Fsvg%3E';
             imgElement.dataset.loaded = 'true';
         });
 }
@@ -556,7 +568,7 @@ function createPredpriyatiyaCard(name, data, id) {
     card.style.cursor = 'pointer';
     card.innerHTML = `
         <div class="predpriyatiya-item__image">
-            <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><rect fill='%23e0e0e0' width='120' height='120'/></svg>" alt="${name}" loading="lazy">
+            <img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%20viewBox%3D%220%200%20120%20120%22%3E%3Crect%20fill%3D%22%23e0e0e0%22%20width%3D%22120%22%20height%3D%22120%22%2F%3E%3C%2Fsvg%3E" alt="${name}" loading="lazy">
         </div>
         <p class="predpriyatiya-item__name">${name}</p>
     `;

@@ -1,4 +1,73 @@
-/* Модальное окно метрополитена */
+/* =============================================
+   СЕКЦИЯ УЧАСТНИКОВ (ОСНОВНАЯ СТРАНИЦА)
+   ============================================= */
+.participants {
+    background: #f5f7fa;
+    padding: 60px 0 80px;
+}
+
+.metro-section {
+    margin-bottom: 80px;
+}
+
+.predpriyatiya-section {
+    margin-bottom: 40px;
+}
+
+.metro-grid,
+.predpriyatiya-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px 24px;
+    margin-top: 40px;
+}
+
+.metro-item,
+.predpriyatiya-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s;
+    cursor: pointer;
+}
+
+.metro-item:hover,
+.predpriyatiya-item:hover {
+    transform: scale(1.05);
+}
+
+.metro-item__image,
+.predpriyatiya-item__image {
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.metro-item__image img,
+.predpriyatiya-item__image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.metro-item__name,
+.predpriyatiya-item__name {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 140%;
+    color: #333333;
+    text-align: center;
+}
+
+/* =============================================
+   МОДАЛЬНОЕ ОКНО (СТИЛЬ PITER-METRO)
+   ============================================= */
 .metro-modal {
     display: none;
     position: fixed;
@@ -36,6 +105,14 @@
     z-index: 1001;
 }
 
+.modal-content {
+    height: 100%;
+    overflow-y: auto;
+    padding: 0;
+    scroll-behavior: smooth;
+}
+
+/* Кнопка закрытия */
 .modal-close {
     position: absolute;
     top: 20px;
@@ -62,35 +139,30 @@
     transform: scale(1.1);
 }
 
-.modal-content {
-    height: 100%;
-    overflow-y: auto;
-    padding: 0;
-    scroll-behavior: smooth;
-}
-
-.modal-hero {
-    background: linear-gradient(135deg, #0047ab 0%, #1a5c9e 100%);
-    color: white;
+/* Hero секция внутри модалки */
+.hero--piter {
+    background: linear-gradient(180deg, #1a5c9e 0%, #0d4a7a 100%);
     padding: 60px 0;
     margin-bottom: 0;
+    color: white;
 }
 
-.modal-hero__container {
+.hero--piter .hero__container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     gap: 40px;
 }
 
-.modal-hero__content {
+.hero--piter .hero__content {
     flex: 1;
+    max-width: 700px;
 }
 
-.modal-hero__title {
+.hero--piter .hero__title {
     font-size: 48px;
     font-weight: 700;
     margin-bottom: 20px;
@@ -98,346 +170,265 @@
     text-transform: uppercase;
 }
 
-.modal-hero__subtitle {
+.hero--piter .hero__subtitle {
     font-size: 18px;
     line-height: 1.6;
     opacity: 0.9;
     margin: 0;
+    white-space: pre-line;
 }
 
-.modal-hero__logo {
+.hero--piter .hero__logo {
+    flex-shrink: 0;
     width: 200px;
     height: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
 }
 
-.modal-hero__logo img {
+.hero--piter .hero__logo img {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
-    filter: brightness(0) invert(1);
+    filter: brightness(0) invert(1); /* Для цветных логотипов на синем фоне */
 }
 
-.modal-section {
-    padding: 60px 0;
+/* =============================================
+   ОБЩИЕ СТИЛИ ДЛЯ СЕКЦИЙ В МОДАЛКЕ
+   ============================================= */
+.piter-section {
+    padding: 80px 0;
 }
 
-.modal-section--white {
-    background: white;
-}
-
-.modal-section--blue {
-    background: #1a5c9e;
-}
-
-.modal-section__container {
+.piter-section__container {
+    display: flex;
+    align-items: center;
+    gap: 60px;
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    align-items: center;
 }
 
-.modal-section--white .modal-section__container {
-    grid-template-areas: "image text";
+.piter-section__image {
+    flex-shrink: 0;
+    width: 48%;
 }
 
-.modal-section--white .modal-section__image {
-    grid-area: image;
-}
-
-.modal-section--white .modal-section__text {
-    grid-area: text;
-}
-
-.modal-section--blue .modal-section__container {
-    grid-template-areas: "text image";
-}
-
-.modal-section--blue .modal-section__image {
-    grid-area: image;
-}
-
-.modal-section--blue .modal-section__text {
-    grid-area: text;
-}
-
-.modal-section--double-text .modal-section__container {
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    grid-template-areas: "block1 block2";
-}
-
-.modal-section--double-text .modal-section__text-block:first-child {
-    grid-area: block1;
-}
-
-.modal-section--double-text .modal-section__text-block:last-child {
-    grid-area: block2;
-}
-
-.modal-section__image {
-    position: relative;
-}
-
-.modal-section__image img {
+.piter-section__image img {
     width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
     display: block;
 }
 
-.modal-section__caption {
-    margin-top: 10px;
+.piter-section__image img:hover {
+    transform: scale(1.02);
+}
+
+.piter-section__caption {
+    font-weight: 400;
     font-size: 14px;
+    line-height: 150%;
     color: #666;
     text-align: center;
+    margin-top: 12px;
 }
 
-.modal-section__title {
-    font-size: 32px;
+.piter-section__text {
+    width: 48%;
+}
+
+.piter-section__title {
     font-weight: 700;
-    margin-bottom: 24px;
-    line-height: 1.2;
+    font-size: 24px;
+    line-height: 130%;
     text-transform: uppercase;
+    margin-bottom: 24px;
 }
 
-.modal-section--white .modal-section__title {
-    color: #0047ab;
-}
-
-.modal-section--blue .modal-section__title {
-    color: white;
-}
-
-.modal-section__paragraph {
+.piter-section__paragraph {
+    font-weight: 400;
     font-size: 16px;
-    line-height: 1.8;
-    margin-bottom: 20px;
-}
-
-.modal-section--white .modal-section__paragraph {
-    color: #333;
-}
-
-.modal-section--blue .modal-section__paragraph {
-    color: white;
-    opacity: 0.9;
-}
-
-.modal-section__paragraph:last-child {
-    margin-bottom: 0;
-}
-
-.modal-section__text-block {
-    background: white;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-    height: 100%;
-}
-
-.modal-section__text-block .modal-section__title {
-    color: #0047ab;
-}
-
-.modal-section__text-block .modal-section__paragraph {
-    color: #333;
-}
-
-.modal-section__paragraph,
-.modal-hero__subtitle {
+    line-height: 160%;
+    margin-bottom: 16px;
     white-space: pre-line;
 }
 
-.text-with-breaks br {
-    display: block;
-    margin: 4px 0;
+.piter-section__paragraph:last-child {
+    margin-bottom: 0;
 }
 
-/* Секция участников */
-.participants {
-    background: #f5f7fa;
-    padding: 60px 0 80px;
+/* =============================================
+   БЕЛАЯ СЕКЦИЯ (светлый фон, тёмный текст)
+   ============================================= */
+.piter-section--white {
+    background-color: #ffffff;
 }
 
-.metro-section {
-    margin-bottom: 80px;
+.piter-section--white .piter-section__title {
+    color: #1a5c9e;
 }
 
-.predpriyatiya-section {
-    margin-bottom: 40px;
-}
-
-.metro-grid,
-.predpriyatiya-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 32px 24px;
-    margin-top: 40px;
-}
-
-.metro-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    cursor: pointer;
-    color: inherit;
-    transition: transform 0.3s;
-}
-
-.metro-item:hover {
-    transform: scale(1.05);
-}
-
-.predpriyatiya-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    text-decoration: none;
-    color: inherit;
-    transition: transform 0.3s;
-}
-
-.predpriyatiya-item:hover {
-    transform: scale(1.05);
-}
-
-.metro-item__image,
-.predpriyatiya-item__image {
-    width: 120px;
-    height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 16px;
-}
-
-.metro-item__image img,
-.predpriyatiya-item__image img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-}
-
-.metro-item__name,
-.predpriyatiya-item__name {
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 140%;
+.piter-section--white .piter-section__paragraph {
     color: #333333;
-    text-align: center;
 }
 
-/* Адаптация */
-@media (max-width: 1200px) {
-    .metro-grid,
-    .predpriyatiya-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
+.piter-section--white .piter-section__caption {
+    color: #666666;
 }
 
-@media (max-width: 992px) {
-    .metro-grid,
-    .predpriyatiya-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .modal-container {
-        width: 95%;
-        height: 95vh;
-        margin: 2.5vh auto;
-    }
-
-    .modal-hero__title {
-        font-size: 36px;
-    }
-
-    .modal-section__container,
-    .modal-section--white .modal-section__container,
-    .modal-section--blue .modal-section__container,
-    .modal-section--double-text .modal-section__container {
-        grid-template-columns: 1fr;
-        grid-template-areas: 
-            "image"
-            "text";
-        gap: 40px;
-    }
-
-    .modal-section--double-text .modal-section__container {
-        grid-template-areas: 
-            "block1"
-            "block2";
-    }
-
-    .modal-section--blue .modal-section__container {
-        grid-template-areas: 
-            "image"
-            "text";
-    }
-
-    .modal-section__title {
-        font-size: 28px;
-    }
+/* =============================================
+   СИНЯЯ СЕКЦИЯ (тёмный фон, светлый текст)
+   ============================================= */
+.piter-section--blue {
+    background-color: #1a5c9e;
 }
 
-@media (max-width: 768px) {
+.piter-section--blue .piter-section__title {
+    color: #ffffff;
+}
+
+.piter-section--blue .piter-section__paragraph {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.piter-section--blue .piter-section__caption {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* =============================================
+   СЕКЦИЯ С ДВУМЯ ТЕКСТОВЫМИ БЛОКАМИ (БЕЗ ОБВОДКИ)
+   ============================================= */
+.piter-section--double-text .piter-section__container {
+    display: flex;
+    justify-content: space-between;
+    gap: 60px;
+}
+
+.piter-section--double-text .piter-section__text-block {
+    width: 48%;
+    /* Убраны background, padding, box-shadow - теперь без обводки */
+}
+
+.piter-section--double-text .piter-section__text-block .piter-section__title {
+    color: #1a5c9e;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.piter-section--double-text .piter-section__text-block .piter-section__paragraph {
+    color: #333333;
+    font-size: 15px;
+}
+
+/* =============================================
+   АДАПТАЦИЯ ДЛЯ ЭКРАНОВ ДО 430px
+   ============================================= */
+@media (max-width: 430px) {
+    /* Основная страница */
     .participants {
-        padding: 40px 0 60px;
+        padding: 40px 16px;
     }
 
     .metro-section {
-        margin-bottom: 60px;
+        margin-bottom: 44px;
+    }
+
+    .predpriyatiya-section {
+        margin-bottom: 24px;
+    }
+
+    .section-title {
+        font-size: 22px;
+        margin-bottom: 20px;
     }
 
     .metro-grid,
     .predpriyatiya-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 24px 20px;
+        gap: 18px 14px;
+        margin-top: 24px;
     }
 
     .metro-item__image,
     .predpriyatiya-item__image {
-        width: 100px;
-        height: 100px;
+        width: 110px;
+        height: 110px;
+        margin-bottom: 0;
     }
 
-    .metro-item__name,
-    .predpriyatiya-item__name {
-        font-size: 13px;
+    /* Модальное окно */
+    .modal-container {
+        width: 100%;
+        height: 100vh;
+        margin: 0;
+        border-radius: 0;
     }
 
-    .modal-hero__container {
+    .hero--piter {
+        padding-top: 100px;
+    }
+
+    .hero--piter .hero__container {
         flex-direction: column;
+        align-items: center;
         text-align: center;
+        gap: 18px;
+        padding-inline: 16px;
     }
 
-    .modal-hero__logo {
-        margin-top: 20px;
+    .hero--piter .hero__logo {
+        width: 180px;
+        height: 180px;
+        margin-top: 10px;
+        order: -1;
     }
 
-    .modal-hero__title {
+    .hero--piter .hero__title {
         font-size: 28px;
     }
 
-    .modal-section {
-        padding: 40px 0;
+    .piter-section {
+        padding: 40px 0 48px;
     }
 
-    .modal-section__title {
-        font-size: 24px;
+    .piter-section__container {
+        flex-direction: column;
+        gap: 16px;
+        padding: 0 16px;
+        align-items: stretch;
     }
 
-    .modal-section__text-block {
-        padding: 30px;
+    .piter-section__image,
+    .piter-section__text {
+        width: 100%;
+    }
+
+    .piter-section__caption {
+        font-size: 12px;
+        margin-top: 8px;
+    }
+
+    .piter-section__title {
+        font-size: 18px;
+        margin-bottom: 14px;
+        text-align: left;
+    }
+
+    .piter-section__paragraph {
+        font-size: 13px;
+        line-height: 150%;
+    }
+
+    .piter-section--double-text .piter-section__container {
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .piter-section--double-text .piter-section__text-block {
+        width: 100%;
     }
 
     .modal-close {
@@ -446,46 +437,5 @@
         width: 35px;
         height: 35px;
         font-size: 24px;
-    }
-}
-
-@media (max-width: 480px) {
-    .metro-grid,
-    .predpriyatiya-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .metro-item__image,
-    .predpriyatiya-item__image {
-        width: 120px;
-        height: 120px;
-    }
-
-    .metro-item__name,
-    .predpriyatiya-item__name {
-        font-size: 14px;
-    }
-
-    .modal-container {
-        width: 100%;
-        height: 100vh;
-        margin: 0;
-        border-radius: 0;
-    }
-
-    .modal-content {
-        padding: 0;
-    }
-
-    .modal-hero {
-        padding: 40px 0;
-    }
-
-    .modal-hero__title {
-        font-size: 24px;
-    }
-
-    .modal-section__text-block {
-        padding: 20px;
     }
 }

@@ -1,3 +1,5 @@
+// home.js – адаптированный скрипт для работы с новым дизайном и API
+
 const API_BASE_URL = `http://${window.location.hostname}:8080`;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -8,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadEvents();
 });
 
+// --- Загрузка шапки и подвала ---
 async function loadHeader() {
     try {
         const response = await fetch('1header.html');
@@ -19,7 +22,12 @@ async function loadHeader() {
             const block = document.getElementById('header-block');
             if (block) block.appendChild(headerContent);
         }
-    } catch {}
+        // Инициализация выпадающих меню, если функции существуют
+        if (typeof initHeaderDropdown === 'function') initHeaderDropdown();
+        if (typeof initMobileHeader === 'function') initMobileHeader();
+    } catch (e) {
+        console.warn('Header load failed', e);
+    }
 }
 
 async function loadFooter() {
@@ -33,9 +41,12 @@ async function loadFooter() {
             const block = document.getElementById('footer-block');
             if (block) block.appendChild(footerContent);
         }
-    } catch {}
+    } catch (e) {
+        console.warn('Footer load failed', e);
+    }
 }
 
+// --- Попап «Об ассоциации» (статика) ---
 function initAboutPopup() {
     const aboutBtn = document.querySelector('.about__btn');
     const aboutPopup = document.getElementById('about-popup');
@@ -64,6 +75,7 @@ function initAboutPopup() {
     });
 }
 
+// --- Новости ---
 let newsPopupElement = null;
 
 async function loadNews() {
@@ -73,17 +85,19 @@ async function loadNews() {
     const allNewsItems = newsList.querySelectorAll('a.news__item');
     if (!allNewsItems.length) return;
 
+    // Скрываем все карточки сразу
+    allNewsItems.forEach(item => item.style.display = 'none');
+
     try {
         const listResp = await fetch(`${API_BASE_URL}/api/v1/content/новости/list`);
-        if (!listResp.ok) return;
+        if (!listResp.ok) {
+            console.warn('Не удалось загрузить список новостей');
+            return;
+        }
         
         const ids = await listResp.json();
         const newsIds = Array.isArray(ids) ? ids : [];
         
-        allNewsItems.forEach(item => item.style.display = 'none');
-
-        if (!newsIds.length) return;
-
         for (let i = 0; i < newsIds.length && i < allNewsItems.length; i++) {
             const id = newsIds[i];
             const item = allNewsItems[i];
@@ -92,9 +106,11 @@ async function loadNews() {
             if (!contentData) continue;
             
             updateNewsCard(item, id, contentData);
-            item.style.display = 'flex';
+            item.style.display = 'flex'; // показываем только наполненные
         }
-    } catch {}
+    } catch (e) {
+        console.error('Ошибка загрузки новостей:', e);
+    }
 }
 
 async function fetchNewsContent(id) {
@@ -120,6 +136,7 @@ function updateNewsCard(item, id, data) {
         dateEl.textContent = formatDate(data.date);
     }
     
+    // Загружаем миниатюру
     if (data.header) {
         loadNewsImage(id, 'mini').then(url => {
             if (url) {
@@ -128,6 +145,7 @@ function updateNewsCard(item, id, data) {
         });
     }
     
+    // Обработчик клика – открывает динамический попап
     item.onclick = (e) => {
         e.preventDefault();
         openNewsPopup(id, data);
@@ -157,6 +175,7 @@ function formatDate(dateStr) {
     }
 }
 
+// Создание динамического попапа новости
 function createNewsPopup() {
     const popup = document.createElement('div');
     popup.className = 'news-popup';
@@ -170,6 +189,7 @@ function createNewsPopup() {
                 <h3 class="news-popup__title"></h3>
                 <p class="news-popup__subtitle"></p>
                 <div class="news-popup__section">
+                    <!-- Сюда будет вставлен текст новости -->
                     <div class="news-popup__body-content"></div>
                 </div>
             </div>
@@ -210,14 +230,18 @@ function closeNewsPopup() {
     }
 }
 
+// Форматирование текста: замена ссылок и переносов строк
 function formatBodyContent(text) {
     if (!text) return '';
+    // Заменяем переводы строк на <br>
     let formatted = text.replace(/\n/g, '<br>');
+    // Оборачиваем ссылки
     const urlRegex = /(?:https?:\/\/|www\.)[^\s<]+/gi;
-    return formatted.replace(urlRegex, (url) => {
+    formatted = formatted.replace(urlRegex, (url) => {
         const href = url.startsWith('http') ? url : `https://${url}`;
         return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="news-popup__link">${url}</a>`;
     });
+    return formatted;
 }
 
 async function openNewsPopup(id, cachedData) {
@@ -239,8 +263,9 @@ async function openNewsPopup(id, cachedData) {
     
     if (titleEl) titleEl.textContent = contentData.header || '';
     
+    // Если API возвращает отдельное поле для подзаголовка, можно его использовать
     if (subtitleEl) {
-        subtitleEl.textContent = '';
+        subtitleEl.textContent = ''; // пока оставляем пустым
     }
     
     if (bodyEl && contentData.body) {
@@ -259,6 +284,7 @@ async function openNewsPopup(id, cachedData) {
     document.body.style.overflow = 'hidden';
 }
 
+// --- Мероприятия ---
 let eventsPopupElement = null;
 
 async function loadEvents() {
@@ -289,7 +315,9 @@ async function loadEvents() {
             updateEventCard(item, id, contentData);
             item.style.display = 'flex';
         }
-    } catch {}
+    } catch (e) {
+        console.warn('Events loading failed', e);
+    }
 }
 
 async function fetchEventContent(id) {
@@ -410,6 +438,7 @@ async function openEventPopup(id, cachedData) {
     }
     
     if (bodyEl && contentData.body) {
+        // Для мероприятий используем тот же формат с параграфами и ссылками
         bodyEl.innerHTML = formatBodyContent(contentData.body);
     }
     

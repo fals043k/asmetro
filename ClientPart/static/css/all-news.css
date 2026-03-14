@@ -1,8 +1,10 @@
+
 .news-section {
     background: #f5f7fa;
     padding: 60px 0 80px;
     min-height: 60vh;
 }
+
 
 .news-filter {
     display: flex;
@@ -111,19 +113,6 @@
     gap: 24px;
 }
 
-.news-grid__empty,
-.news-grid__error {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 60px 20px;
-    font-size: 16px;
-    color: #666666;
-}
-
-.news-grid__error {
-    color: #d32f2f;
-}
-
 /* Карточка новости */
 .news-card {
     position: relative;
@@ -176,6 +165,53 @@
     color: rgba(255, 255, 255, 0.9);
 }
 
+/* Адаптация */
+@media (max-width: 430px) {
+    .news-section {
+        padding: 40px 16px;
+    }
+
+    .news-filter {
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .dropdown {
+        width: 100%;
+        max-width: 340px;
+    }
+
+    .dropdown__button {
+        padding: 12px 16px;
+    }
+
+    .section-title {
+        font-size: 22px;
+        margin-bottom: 20px;
+    }
+
+    .news-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .news-card {
+        min-height: 180px;
+        padding: 14px 12px;
+        border-radius: 10px;
+    }
+
+    .news-card__title {
+        font-size: 12px;
+        line-height: 140%;
+        margin-bottom: 8px;
+    }
+
+    .news-card__date {
+        font-size: 11px;
+    }
+}
+
 /* News Popup */
 .news-popup {
     position: fixed;
@@ -214,8 +250,8 @@
 
 .news-popup__close {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 10px;
+    right: 10px;
     background: transparent;
     border: none;
     cursor: pointer;
@@ -239,22 +275,22 @@
 
 .news-popup__text-wrapper {
     flex: 1;
+    overflow: hidden;
 }
 
 .news-popup__title {
     font-weight: 700;
     font-size: 28px;
     line-height: 120%;
-    color: #1a5c9e;
+    color: #000000;
     margin-bottom: 12px;
-    padding-right: 30px;
 }
 
 .news-popup__subtitle {
     font-weight: 400;
     font-size: 16px;
     line-height: 150%;
-    color: #333333;
+    color: #000000;
     margin-bottom: 24px;
 }
 
@@ -266,7 +302,7 @@
     font-weight: 600;
     font-size: 16px;
     line-height: 140%;
-    color: #1a5c9e;
+    color: #000000;
     margin-bottom: 12px;
 }
 
@@ -283,33 +319,33 @@
     font-weight: 400;
     font-size: 14px;
     line-height: 150%;
-    color: #333333;
+    color: #000000;
 }
 
 .news-popup__list li::before {
     content: '•';
     position: absolute;
     left: 0;
-    color: #1a5c9e;
+    color: #000000;
     font-size: 18px;
     line-height: 150%;
 }
 
 .news-popup__link {
-    color: #1a5c9e;
+    color: #000000;
     text-decoration: underline;
     transition: color 0.2s;
 }
 
 .news-popup__link:hover {
-    color: #0d3a5c;
+    color: #000000;
 }
 
 .news-popup__paragraph {
     font-weight: 400;
     font-size: 14px;
     line-height: 150%;
-    color: #333333;
+    color: #000000;
     margin-bottom: 12px;
 }
 
@@ -332,115 +368,38 @@
     object-fit: cover;
 }
 
-/* Адаптация сетки */
-@media (max-width: 1200px) {
-    .news-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 992px) {
-    .news-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .news-section {
-        padding: 40px 0 60px;
-    }
-
-    .news-filter {
-        justify-content: center;
-    }
-
-    .dropdown {
-        width: 100%;
-        max-width: 320px;
-    }
-
-    .news-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .news-card {
-        min-height: 360px;
-    }
-
-    .news-card__title {
-        font-size: 16px;
-    }
-
-    /* News Popup адаптация */
+/* Адаптация попапа */
+@media (max-width: 430px) {
     .news-popup__content {
         flex-direction: column;
-        padding: 24px;
-        width: 95%;
-    }
-
-    .news-popup__image {
         width: 100%;
-        max-height: 300px;
-        order: -1;
+        max-width: 100%;
+        max-height: 100vh;
+        height: 100vh;
+        border-radius: 0;
+        padding: 64px 16px 20px;
+        gap: 16px;
     }
 
     .news-popup__title {
-        font-size: 22px;
-        padding-right: 25px;
+        font-size: 20px;
     }
 
     .news-popup__subtitle {
         font-size: 14px;
     }
 
-    .news-popup__section-title {
-        font-size: 15px;
-    }
-
-    .news-popup__list li,
-    .news-popup__paragraph {
+    .news-popup__paragraph,
+    .news-popup__list li {
         font-size: 13px;
-    }
-
-    .news-popup__close {
-        top: 12px;
-        right: 12px;
-    }
-
-    .news-popup__close img {
-        width: 18px;
-        height: 18px;
-    }
-}
-
-@media (max-width: 480px) {
-    .news-card {
-        padding: 20px;
-    }
-
-    .news-card__title {
-        font-size: 15px;
-    }
-
-    .news-card__date {
-        font-size: 13px;
-    }
-
-    .news-popup__content {
-        padding: 20px;
-    }
-
-    .news-popup__title {
-        font-size: 20px;
-        padding-right: 20px;
     }
 
     .news-popup__image {
-        max-height: 200px;
+        width: 100%;
     }
 
     .news-popup__close {
-        top: 10px;
-        right: 10px;
+        top: 16px;
+        right: 12px;
     }
 }

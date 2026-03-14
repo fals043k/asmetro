@@ -1,6 +1,7 @@
+// all-events.js
 const API_BASE_URL = `http://${window.location.hostname}:8080`;
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     loadHeader();
     loadFooter();
     initDropdown();
@@ -13,31 +14,42 @@ let eventsData = [];
 async function loadHeader() {
     try {
         const response = await fetch('1header.html');
-        if (!response.ok) return;
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
         const html = await response.text();
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
         const headerContent = doc.querySelector('.main-header');
+        
         if (headerContent) {
             const block = document.getElementById('header-block');
             if (block) block.appendChild(headerContent);
         }
-    } catch (e) {}
+        
+        if (typeof initHeaderDropdown === 'function') initHeaderDropdown();
+        if (typeof initMobileHeader === 'function') initMobileHeader();
+    } catch (error) {
+        console.error('Header load failed:', error);
+    }
 }
 
 async function loadFooter() {
     try {
         const response = await fetch('2footer.html');
-        if (!response.ok) return;
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
         const html = await response.text();
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
         const footerContent = doc.querySelector('.footer');
+        
         if (footerContent) {
             const block = document.getElementById('footer-block');
             if (block) block.appendChild(footerContent);
         }
-    } catch (e) {}
+    } catch (error) {
+        console.error('Footer load failed:', error);
+    }
 }
 
 function initDropdown() {
@@ -47,19 +59,19 @@ function initDropdown() {
 
     if (!filterButton || !filterMenu) return;
 
-    filterButton.addEventListener('click', function(e) {
-        e.stopPropagation();
+    filterButton.addEventListener('click', (event) => {
+        event.stopPropagation();
         filterButton.classList.toggle('active');
         filterMenu.classList.toggle('active');
     });
 
-    filterItems.forEach(function(item) {
-        item.addEventListener('click', function() {
-            const filterValue = this.getAttribute('data-filter');
-            const filterText = this.textContent;
+    filterItems.forEach((item) => {
+        item.addEventListener('click', () => {
+            const filterValue = item.getAttribute('data-filter');
+            const filterText = item.textContent;
 
             filterItems.forEach(i => i.classList.remove('active'));
-            this.classList.add('active');
+            item.classList.add('active');
 
             const selectedSpan = filterButton.querySelector('.dropdown__selected');
             if (selectedSpan) selectedSpan.textContent = filterText;
@@ -72,8 +84,8 @@ function initDropdown() {
         });
     });
 
-    document.addEventListener('click', function(e) {
-        if (!filterMenu.contains(e.target) && !filterButton.contains(e.target)) {
+    document.addEventListener('click', (event) => {
+        if (!filterMenu.contains(event.target) && !filterButton.contains(event.target)) {
             filterButton.classList.remove('active');
             filterMenu.classList.remove('active');
         }
@@ -85,28 +97,29 @@ async function loadEvents() {
     if (!eventsGrid) return;
 
     try {
-        const listResp = await fetch(`${API_BASE_URL}/api/v1/content/мероприятия/list`);
+        const listResponse = await fetch(`${API_BASE_URL}/api/v1/content/мероприятия/list`);
         
-        if (!listResp.ok) {
+        if (!listResponse.ok) {
             eventsGrid.innerHTML = '<div class="news-grid__error">Ошибка загрузки</div>';
             return;
         }
         
-        const ids = await listResp.json();
-        
+        const ids = await listResponse.json();
         const eventIds = Array.isArray(ids) ? ids : [];
+        
         if (!eventIds.length) {
             eventsGrid.innerHTML = '<div class="news-grid__empty">Нет мероприятий</div>';
             return;
         }
 
         eventsData = [];
+        
         for (const id of eventIds) {
             try {
                 const contentData = await fetchEventContent(id);
                 if (contentData) {
                     eventsData.push({
-                        id: id,
+                        id,
                         title: contentData.header || 'Без названия',
                         datetime: formatEventDate(contentData.date),
                         year: extractYear(contentData.date),
@@ -114,23 +127,26 @@ async function loadEvents() {
                         dateRaw: contentData.date
                     });
                 }
-            } catch (e) {}
+            } catch (error) {
+                console.warn(`Failed to load event ${id}:`, error);
+            }
         }
 
         renderEvents(eventsData);
         
     } catch (error) {
+        console.error('Events load failed:', error);
         eventsGrid.innerHTML = '<div class="news-grid__error">Ошибка загрузки</div>';
     }
 }
 
 async function fetchEventContent(id) {
     try {
-        const resp = await fetch(
+        const response = await fetch(
             `${API_BASE_URL}/api/v1/content/мероприятия/content?name=${encodeURIComponent(id)}`
         );
-        if (!resp.ok) return null;
-        return await resp.json();
+        if (!response.ok) return null;
+        return await response.json();
     } catch {
         return null;
     }
@@ -138,16 +154,18 @@ async function fetchEventContent(id) {
 
 function formatEventDate(dateStr) {
     if (!dateStr) return '';
+    
     try {
-        const parts = dateStr.split('T');
-        const datePart = parts[0];
-        const timePart = parts[1] || '';
+        const [datePart, timePart] = dateStr.split('T');
         const [year, month, day] = datePart.split('-');
+        
         let result = `${day}.${month}.${year}`;
+        
         if (timePart) {
             const [hours, minutes] = timePart.split(':');
             result += ` в ${hours}:${minutes}`;
         }
+        
         return result;
     } catch {
         return dateStr;
@@ -156,6 +174,7 @@ function formatEventDate(dateStr) {
 
 function extractYear(dateStr) {
     if (!dateStr) return '';
+    
     try {
         return dateStr.split('-')[0];
     } catch {
@@ -164,14 +183,24 @@ function extractYear(dateStr) {
 }
 
 function escapeHtml(text) {
+    if (!text) return '';
+    
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
 }
 
 function createEventsCard(event) {
+    const datePart = event.datetime.split(' ')[0] || '';
+    const [day, month, year] = datePart.split('.');
+    const dayMonth = day && month ? `${day}.${month}` : datePart;
+
     return `
         <div class="events-card" data-event-id="${escapeHtml(event.id)}">
+            <div class="events-card__badge">
+                <p class="events-card__badge-day">${escapeHtml(dayMonth)}</p>
+                <p class="events-card__badge-year">${escapeHtml(year || event.year || '')}</p>
+            </div>
             <h3 class="events-card__title">${escapeHtml(event.title)}</h3>
             <div class="events-card__footer">
                 <p class="events-card__date">${escapeHtml(event.datetime)}</p>
@@ -187,10 +216,9 @@ function renderEvents(eventsArray) {
     const eventsGrid = document.getElementById('events-grid');
     if (!eventsGrid) return;
 
-    let filteredEvents = eventsArray;
-    if (currentFilter !== 'all') {
-        filteredEvents = eventsArray.filter(event => event.year === currentFilter);
-    }
+    const filteredEvents = currentFilter === 'all' 
+        ? eventsArray 
+        : eventsArray.filter(event => event.year === currentFilter);
 
     if (!filteredEvents.length) {
         eventsGrid.innerHTML = '<div class="news-grid__empty">Нет мероприятий за выбранный период</div>';
@@ -204,13 +232,14 @@ function renderEvents(eventsArray) {
 function initEventsCardClicks() {
     const eventsCards = document.querySelectorAll('.events-card');
     
-    eventsCards.forEach(function(card) {
-        card.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            const eventId = this.getAttribute('data-event-id');
+    eventsCards.forEach((card) => {
+        card.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
             
+            const eventId = card.getAttribute('data-event-id');
             const eventData = eventsData.find(e => e.id === eventId);
+            
             if (eventData) {
                 openEventPopup(eventData);
             }
@@ -224,56 +253,64 @@ function createEventPopup() {
     const popup = document.createElement('div');
     popup.className = 'events-popup';
     popup.id = 'event-popup-dynamic';
+    popup.setAttribute('aria-hidden', 'true');
+    
     popup.innerHTML = `
-        <div class="events-popup__content">
-            <button class="events-popup__close" id="event-popup-close-btn">
-                <img src="img/cross-icon.svg" alt="Закрыть">
+        <div class="events-popup__content" role="dialog" aria-modal="true" aria-label="Детали мероприятия">
+            <button class="events-popup__close" id="event-popup-close-btn" aria-label="Закрыть">
+                <img src="img/cross-icon.svg" alt="" aria-hidden="true">
             </button>
             <h3 class="events-popup__title"></h3>
             <p class="events-popup__datetime"></p>
             <div class="events-popup__text"></div>
         </div>
     `;
+    
     document.body.appendChild(popup);
     return popup;
 }
 
 function initEventPopupHandlers() {
-    if (eventsPopupElement) {
-        const closeBtn = eventsPopupElement.querySelector('#event-popup-close-btn');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', closeEventPopup);
-        }
-        eventsPopupElement.addEventListener('click', (e) => {
-            if (e.target === eventsPopupElement) closeEventPopup();
-        });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && eventsPopupElement.classList.contains('active')) {
-                closeEventPopup();
-            }
-        });
+    if (!eventsPopupElement) return;
+    
+    const closeBtn = eventsPopupElement.querySelector('#event-popup-close-btn');
+    
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeEventPopup);
     }
+    
+    eventsPopupElement.addEventListener('click', (event) => {
+        if (event.target === eventsPopupElement) {
+            closeEventPopup();
+        }
+    });
+    
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && eventsPopupElement?.classList.contains('active')) {
+            closeEventPopup();
+        }
+    });
 }
 
 function closeEventPopup() {
-    if (eventsPopupElement) {
-        eventsPopupElement.classList.remove('active');
-        document.body.style.overflow = '';
-    }
+    if (!eventsPopupElement) return;
+    
+    eventsPopupElement.classList.remove('active');
+    eventsPopupElement.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
 }
 
 function formatBodyContent(text) {
     if (!text) return '';
     
     const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim());
-    
     const urlRegex = /(?:https?:\/\/|www\.)[^\s<]+/gi;
     
     return paragraphs.map(paragraph => {
         let processed = paragraph.trim();
         processed = processed.replace(urlRegex, (url) => {
             const href = url.startsWith('http') ? url : `https://${url}`;
-            return `<a href="${href}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+            return `<a href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(url)}</a>`;
         });
         return `<p>${processed}</p>`;
     }).join('');
@@ -286,24 +323,30 @@ async function openEventPopup(eventData) {
     }
 
     let content = eventData;
+    
     if (!content.body) {
         const fresh = await fetchEventContent(eventData.id);
         if (fresh) content = fresh;
     }
 
-    const titleEl = eventsPopupElement.querySelector('.events-popup__title');
-    const datetimeEl = eventsPopupElement.querySelector('.events-popup__datetime');
-    const bodyEl = eventsPopupElement.querySelector('.events-popup__text');
+    const titleElement = eventsPopupElement.querySelector('.events-popup__title');
+    const datetimeElement = eventsPopupElement.querySelector('.events-popup__datetime');
+    const bodyElement = eventsPopupElement.querySelector('.events-popup__text');
 
-    if (titleEl) titleEl.textContent = content.header || eventData.title || '';
-    if (datetimeEl && (content.date || eventData.dateRaw)) {
-        datetimeEl.textContent = formatEventDate(content.date || eventData.dateRaw);
+    if (titleElement) {
+        titleElement.textContent = content.header || eventData.title || '';
     }
-    if (bodyEl && content.body) {
-        bodyEl.innerHTML = formatBodyContent(content.body);
+    
+    if (datetimeElement) {
+        const date = content.date || eventData.dateRaw;
+        datetimeElement.textContent = date ? formatEventDate(date) : '';
+    }
+    
+    if (bodyElement && content.body) {
+        bodyElement.innerHTML = formatBodyContent(content.body);
     }
 
     eventsPopupElement.classList.add('active');
-    
+    eventsPopupElement.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
 }

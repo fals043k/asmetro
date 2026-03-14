@@ -1,6 +1,7 @@
+// all-news.js
 const API_BASE_URL = `http://${window.location.hostname}:8080`;
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     loadHeader();
     loadFooter();
     initDropdown();
@@ -11,6 +12,47 @@ let currentFilter = 'all';
 let newsData = [];
 let newsPopupElement = null;
 
+async function loadHeader() {
+    try {
+        const response = await fetch('1header.html');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        const html = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const headerContent = doc.querySelector('.main-header');
+        
+        if (headerContent) {
+            const headerBlock = document.getElementById('header-block');
+            if (headerBlock) headerBlock.appendChild(headerContent);
+        }
+        
+        if (typeof initHeaderDropdown === 'function') initHeaderDropdown();
+        if (typeof initMobileHeader === 'function') initMobileHeader();
+    } catch (error) {
+        console.error('Header load failed:', error);
+    }
+}
+
+async function loadFooter() {
+    try {
+        const response = await fetch('2footer.html');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        
+        const html = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const footerContent = doc.querySelector('.footer');
+        
+        if (footerContent) {
+            const footerBlock = document.getElementById('footer-block');
+            if (footerBlock) footerBlock.appendChild(footerContent);
+        }
+    } catch (error) {
+        console.error('Footer load failed:', error);
+    }
+}
+
 function initDropdown() {
     const filterButton = document.getElementById('filter-button');
     const filterMenu = document.getElementById('filter-menu');
@@ -18,26 +60,22 @@ function initDropdown() {
 
     if (!filterButton || !filterMenu) return;
 
-    filterButton.addEventListener('click', function(e) {
-        e.stopPropagation();
+    filterButton.addEventListener('click', (event) => {
+        event.stopPropagation();
         filterButton.classList.toggle('active');
         filterMenu.classList.toggle('active');
     });
 
-    filterItems.forEach(function(item) {
-        item.addEventListener('click', function() {
-            const filterValue = this.getAttribute('data-filter');
-            const filterText = this.textContent;
+    filterItems.forEach((item) => {
+        item.addEventListener('click', () => {
+            const filterValue = item.getAttribute('data-filter');
+            const filterText = item.textContent;
 
-            filterItems.forEach(function(i) {
-                i.classList.remove('active');
-            });
-            this.classList.add('active');
+            filterItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
 
             const selectedSpan = filterButton.querySelector('.dropdown__selected');
-            if (selectedSpan) {
-                selectedSpan.textContent = filterText;
-            }
+            if (selectedSpan) selectedSpan.textContent = filterText;
 
             currentFilter = filterValue;
             renderNews(newsData);
@@ -47,8 +85,8 @@ function initDropdown() {
         });
     });
 
-    document.addEventListener('click', function(e) {
-        if (!filterMenu.contains(e.target)) {
+    document.addEventListener('click', (event) => {
+        if (!filterMenu.contains(event.target) && !filterButton.contains(event.target)) {
             filterButton.classList.remove('active');
             filterMenu.classList.remove('active');
         }
@@ -60,13 +98,14 @@ async function loadNews() {
     if (!newsGrid) return;
 
     try {
-        const listResp = await fetch(`${API_BASE_URL}/api/v1/content/новости/list`);
-        if (!listResp.ok) {
+        const listResponse = await fetch(`${API_BASE_URL}/api/v1/content/новости/list`);
+        
+        if (!listResponse.ok) {
             newsGrid.innerHTML = '<div class="news-grid__empty">Нет новостей</div>';
             return;
         }
 
-        const ids = await listResp.json();
+        const ids = await listResponse.json();
         const newsIds = Array.isArray(ids) ? ids : [];
 
         if (newsIds.length === 0) {
@@ -77,32 +116,39 @@ async function loadNews() {
         newsData = [];
 
         for (const id of newsIds) {
-            const contentData = await fetchNewsContent(id);
-            if (contentData) {
-                newsData.push({
-                    id: id,
-                    header: contentData.header || '',
-                    body: contentData.body || '',
-                    date: contentData.date || '',
-                    year: extractYear(contentData.date)
-                });
+            try {
+                const contentData = await fetchNewsContent(id);
+                if (contentData) {
+                    newsData.push({
+                        id,
+                        header: contentData.header || '',
+                        body: contentData.body || '',
+                        date: contentData.date || '',
+                        year: extractYear(contentData.date)
+                    });
+                }
+            } catch (error) {
+                console.warn(`Failed to load news ${id}:`, error);
             }
         }
 
         renderNews(newsData);
     } catch (error) {
-        console.error('Error loading news:', error);
-        newsGrid.innerHTML = '<div class="news-grid__error">Ошибка загрузки новостей</div>';
+        console.error('News load failed:', error);
+        const newsGrid = document.getElementById('news-grid');
+        if (newsGrid) {
+            newsGrid.innerHTML = '<div class="news-grid__error">Ошибка загрузки новостей</div>';
+        }
     }
 }
 
 async function fetchNewsContent(id) {
     try {
-        const resp = await fetch(
+        const response = await fetch(
             `${API_BASE_URL}/api/v1/content/новости/content?name=${encodeURIComponent(id)}`
         );
-        if (!resp.ok) return null;
-        return await resp.json();
+        if (!response.ok) return null;
+        return await response.json();
     } catch {
         return null;
     }
@@ -110,6 +156,7 @@ async function fetchNewsContent(id) {
 
 function extractYear(dateStr) {
     if (!dateStr) return '';
+    
     try {
         const [year] = dateStr.split('-');
         return year;
@@ -120,6 +167,7 @@ function extractYear(dateStr) {
 
 function formatDate(dateStr) {
     if (!dateStr) return '';
+    
     try {
         const [year, month, day] = dateStr.split('-');
         return `${day}.${month}.${year}`;
@@ -128,10 +176,32 @@ function formatDate(dateStr) {
     }
 }
 
+async function loadNewsImage(id, type = 'mini') {
+    try {
+        const url = `${API_BASE_URL}/api/v1/content/новости/attachment?name=${encodeURIComponent(id)}&attachment=${type}`;
+        const response = await fetch(url);
+        
+        if (!response.ok) return null;
+        
+        const blob = await response.blob();
+        return URL.createObjectURL(blob);
+    } catch {
+        return null;
+    }
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 function createNewsCard(news) {
     const card = document.createElement('div');
     card.className = 'news-card';
-    card.setAttribute('data-news-id', news.id);
+    card.dataset.newsId = news.id;
     card.style.cursor = 'pointer';
 
     const content = document.createElement('div');
@@ -149,14 +219,16 @@ function createNewsCard(news) {
     content.appendChild(date);
     card.appendChild(content);
 
-    loadNewsImage(news.id, 'mini').then(url => {
-        if (url) {
-            card.style.backgroundImage = `url('${url}')`;
-        }
-    });
+    loadNewsImage(news.id, 'mini')
+        .then(url => {
+            if (url) {
+                card.style.backgroundImage = `url('${url}')`;
+            }
+        })
+        .catch(() => {});
 
-    card.addEventListener('click', function(e) {
-        e.preventDefault();
+    card.addEventListener('click', (event) => {
+        event.preventDefault();
         openNewsPopup(news.id, news);
     });
 
@@ -167,12 +239,9 @@ function renderNews(newsArray) {
     const newsGrid = document.getElementById('news-grid');
     if (!newsGrid) return;
 
-    let filteredNews = newsArray;
-    if (currentFilter !== 'all') {
-        filteredNews = newsArray.filter(function(news) {
-            return news.year === currentFilter;
-        });
-    }
+    const filteredNews = currentFilter === 'all' 
+        ? newsArray 
+        : newsArray.filter(news => news.year === currentFilter);
 
     newsGrid.innerHTML = '';
 
@@ -181,31 +250,21 @@ function renderNews(newsArray) {
         return;
     }
 
-    filteredNews.forEach(function(news) {
+    filteredNews.forEach(news => {
         newsGrid.appendChild(createNewsCard(news));
     });
-}
-
-async function loadNewsImage(id, type = 'mini') {
-    try {
-        const url = `${API_BASE_URL}/api/v1/content/новости/attachment?name=${encodeURIComponent(id)}&attachment=${type}`;
-        const response = await fetch(url);
-        if (!response.ok) return null;
-        const blob = await response.blob();
-        return URL.createObjectURL(blob);
-    } catch {
-        return null;
-    }
 }
 
 function createNewsPopup() {
     const popup = document.createElement('div');
     popup.className = 'news-popup';
     popup.id = 'news-popup-dynamic';
+    popup.setAttribute('aria-hidden', 'true');
+    
     popup.innerHTML = `
-        <div class="news-popup__content">
-            <button class="news-popup__close" id="news-popup-close-btn">
-                <img src="img/cross-icon.svg" alt="Закрыть">
+        <div class="news-popup__content" role="dialog" aria-modal="true" aria-label="Новость">
+            <button class="news-popup__close" id="news-popup-close-btn" aria-label="Закрыть">
+                <img src="img/cross-icon.svg" alt="" aria-hidden="true">
             </button>
             <div class="news-popup__text-wrapper">
                 <h3 class="news-popup__title"></h3>
@@ -219,46 +278,64 @@ function createNewsPopup() {
             </div>
         </div>
     `;
+    
     document.body.appendChild(popup);
     return popup;
 }
 
 function initNewsPopupHandlers() {
-    if (newsPopupElement) {
-        const closeBtn = newsPopupElement.querySelector('#news-popup-close-btn');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', closeNewsPopup);
-        }
-
-        newsPopupElement.addEventListener('click', (e) => {
-            if (e.target === newsPopupElement) {
-                closeNewsPopup();
-            }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && newsPopupElement.classList.contains('active')) {
-                closeNewsPopup();
-            }
-        });
+    if (!newsPopupElement) return;
+    
+    const closeBtn = newsPopupElement.querySelector('#news-popup-close-btn');
+    
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeNewsPopup);
     }
+
+    newsPopupElement.addEventListener('click', (event) => {
+        if (event.target === newsPopupElement) {
+            closeNewsPopup();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && newsPopupElement?.classList.contains('active')) {
+            closeNewsPopup();
+        }
+    });
 }
 
 function closeNewsPopup() {
-    if (newsPopupElement) {
-        newsPopupElement.classList.remove('active');
-        document.body.style.overflow = '';
-    }
+    if (!newsPopupElement) return;
+    
+    newsPopupElement.classList.remove('active');
+    newsPopupElement.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
 }
 
 function formatBodyContent(text) {
     if (!text) return '';
-    let formatted = text.replace(/\n/g, '<br>');
+    
+    const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim());
     const urlRegex = /(?:https?:\/\/|www\.)[^\s<]+/gi;
-    return formatted.replace(urlRegex, (url) => {
-        const href = url.startsWith('http') ? url : `https://${url}`;
-        return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="news-popup__link">${url}</a>`;
-    });
+    
+    if (paragraphs.length > 1) {
+        return paragraphs.map(paragraph => {
+            let processed = paragraph.trim().replace(/\n/g, ' ');
+            processed = processed.replace(urlRegex, (url) => {
+                const href = url.startsWith('http') ? url : `https://${url}`;
+                return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="news-popup__link">${escapeHtml(url)}</a>`;
+            });
+            return `<p class="news-popup__paragraph">${processed}</p>`;
+        }).join('');
+    } else {
+        let formatted = text.replace(/\n/g, '<br>');
+        formatted = formatted.replace(urlRegex, (url) => {
+            const href = url.startsWith('http') ? url : `https://${url}`;
+            return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="news-popup__link">${escapeHtml(url)}</a>`;
+        });
+        return `<p class="news-popup__paragraph">${formatted}</p>`;
+    }
 }
 
 async function openNewsPopup(id, cachedData) {
@@ -268,64 +345,43 @@ async function openNewsPopup(id, cachedData) {
     }
 
     let contentData = cachedData;
-    if (!contentData || !contentData.body) {
+    
+    if (!contentData?.body) {
         contentData = await fetchNewsContent(id);
         if (!contentData) return;
     }
 
-    const titleEl = newsPopupElement.querySelector('.news-popup__title');
-    const subtitleEl = newsPopupElement.querySelector('.news-popup__subtitle');
-    const bodyEl = newsPopupElement.querySelector('.news-popup__body-content');
-    const imgEl = newsPopupElement.querySelector('.news-popup__image img');
+    const titleElement = newsPopupElement.querySelector('.news-popup__title');
+    const subtitleElement = newsPopupElement.querySelector('.news-popup__subtitle');
+    const bodyElement = newsPopupElement.querySelector('.news-popup__body-content');
+    const imageElement = newsPopupElement.querySelector('.news-popup__image img');
+    const imageContainer = newsPopupElement.querySelector('.news-popup__image');
 
-    if (titleEl) titleEl.textContent = contentData.header || '';
-
-    if (subtitleEl) {
-        subtitleEl.textContent = '';
+    if (titleElement) {
+        titleElement.textContent = contentData.header || '';
     }
 
-    if (bodyEl && contentData.body) {
-        bodyEl.innerHTML = formatBodyContent(contentData.body);
+    if (subtitleElement) {
+        subtitleElement.style.display = 'none';
     }
 
-    if (imgEl) {
-        const fullUrl = await loadNewsImage(id, 'full');
-        if (fullUrl) {
-            imgEl.src = fullUrl;
-            imgEl.alt = contentData.header || '';
+    if (bodyElement && contentData.body) {
+        bodyElement.innerHTML = formatBodyContent(contentData.body);
+    }
+
+    if (imageElement && imageContainer) {
+        const fullImageUrl = await loadNewsImage(id, 'full');
+        
+        if (fullImageUrl) {
+            imageElement.src = fullImageUrl;
+            imageElement.alt = contentData.header || '';
+            imageContainer.style.display = '';
+        } else {
+            imageContainer.style.display = 'none';
         }
     }
 
     newsPopupElement.classList.add('active');
+    newsPopupElement.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
-}
-
-async function loadHeader() {
-    try {
-        const response = await fetch('1header.html');
-        if (!response.ok) return;
-        const html = await response.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const headerContent = doc.querySelector('.main-header');
-        if (headerContent) {
-            const headerBlock = document.getElementById('header-block');
-            if (headerBlock) headerBlock.appendChild(headerContent);
-        }
-    } catch {}
-}
-
-async function loadFooter() {
-    try {
-        const response = await fetch('2footer.html');
-        if (!response.ok) return;
-        const html = await response.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const footerContent = doc.querySelector('.footer');
-        if (footerContent) {
-            const footerBlock = document.getElementById('footer-block');
-            if (footerBlock) footerBlock.appendChild(footerContent);
-        }
-    } catch {}
 }
