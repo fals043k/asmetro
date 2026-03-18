@@ -44,10 +44,34 @@ function formatTextWithLineBreaks(text) {
 document.addEventListener('DOMContentLoaded', function() {
     loadHeader();
     loadFooter();
+    loadPartyText(); // Загружаем описание для hero секции
     loadMetro();
     loadPredpriyatiya();
     initModal();
 });
+
+// Загрузка текста для страницы Участники
+async function loadPartyText() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/v1/locale/party`);
+        if (!response.ok) {
+            console.warn('Не удалось загрузить описание для страницы участников');
+            return;
+        }
+        
+        const data = await response.json();
+        
+        // Заполняем описание в hero секции
+        const heroSubtitle = document.querySelector('.hero__subtitle');
+        if (heroSubtitle && data.описание) {
+            heroSubtitle.textContent = data.описание;
+        }
+        
+        console.log('Party text loaded:', data); // Для отладки
+    } catch (error) {
+        console.error('Ошибка загрузки описания для страницы участников:', error);
+    }
+}
 
 function initModal() {
     const modal = document.getElementById(MODAL_ID);
@@ -376,7 +400,7 @@ function loadModalAttachments(type, id) {
     images.forEach(img => {
         if (img.dataset.loaded) return;
         const attachment = img.dataset.attachment;
-        fetch(`${API_BASE_URL}/api/v1/content/${type}/attachment?name=${encodeURIComponent(id)}&attachment=${encodeURIComponent(attachment)}`)
+        fetch(`${API_BASE_URL}/api/v1/block/${type}/attachment?name=${encodeURIComponent(id)}&attachment=${encodeURIComponent(attachment)}`)
             .then(response => {
                 if (!response.ok) throw new Error('Network error');
                 return response.blob();
@@ -428,7 +452,7 @@ async function loadMetro() {
     const grid = document.getElementById('metro-grid');
     if (!grid) return;
     try {
-        const listResp = await fetch(`${API_BASE_URL}/api/v1/content/метро/list`);
+        const listResp = await fetch(`${API_BASE_URL}/api/v1/block/метро/order`);
         if (!listResp.ok) throw new Error(`HTTP ${listResp.status}`);
         const listData = await listResp.json();
         const ids = Array.isArray(listData) ? listData : [];
@@ -440,7 +464,7 @@ async function loadMetro() {
         for (const id of ids) {
             try {
                 const contentResp = await fetch(
-                    `${API_BASE_URL}/api/v1/content/метро/content?name=${encodeURIComponent(id)}`
+                    `${API_BASE_URL}/api/v1/block/метро/content?name=${encodeURIComponent(id)}`
                 );
                 if (!contentResp.ok) continue;
                 const contentData = await contentResp.json();
@@ -466,7 +490,7 @@ async function loadMetro() {
 
 function loadMetroLogo(id, imgElement) {
     if (!imgElement || imgElement.dataset.loaded) return;
-    fetch(`${API_BASE_URL}/api/v1/content/метро/attachment?name=${encodeURIComponent(id)}&attachment=logo`)
+    fetch(`${API_BASE_URL}/api/v1/block/метро/attachment?name=${encodeURIComponent(id)}&attachment=logo`)
         .then(response => {
             if (!response.ok) throw new Error('Network error');
             return response.blob();
@@ -509,7 +533,7 @@ async function loadPredpriyatiya() {
     const grid = document.getElementById('predpriyatiya-grid');
     if (!grid) return;
     try {
-        const listResp = await fetch(`${API_BASE_URL}/api/v1/content/предприятия/list`);
+        const listResp = await fetch(`${API_BASE_URL}/api/v1/block/предприятия/order`);
         if (!listResp.ok) throw new Error(`HTTP ${listResp.status}`);
         const listData = await listResp.json();
         const ids = Array.isArray(listData) ? listData : [];
@@ -523,7 +547,7 @@ async function loadPredpriyatiya() {
             let name = id;
             try {
                 const contentResp = await fetch(
-                    `${API_BASE_URL}/api/v1/content/предприятия/content?name=${encodeURIComponent(id)}`
+                    `${API_BASE_URL}/api/v1/block/предприятия/content?name=${encodeURIComponent(id)}`
                 );
                 if (contentResp.ok) {
                     contentData = await contentResp.json();
@@ -544,7 +568,7 @@ async function loadPredpriyatiya() {
 
 function loadPredpriyatiyaLogo(id, imgElement) {
     if (!imgElement || imgElement.dataset.loaded) return;
-    fetch(`${API_BASE_URL}/api/v1/content/предприятия/attachment?name=${encodeURIComponent(id)}&attachment=logo`)
+    fetch(`${API_BASE_URL}/api/v1/block/предприятия/attachment?name=${encodeURIComponent(id)}&attachment=logo`)
         .then(response => {
             if (!response.ok) throw new Error('Network error');
             return response.blob();

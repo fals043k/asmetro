@@ -97,7 +97,7 @@ async function loadEvents() {
     if (!eventsGrid) return;
 
     try {
-        const listResponse = await fetch(`${API_BASE_URL}/api/v1/content/мероприятия/list`);
+        const listResponse = await fetch(`${API_BASE_URL}/api/v1/block/мероприятия/order`);
         
         if (!listResponse.ok) {
             eventsGrid.innerHTML = '<div class="news-grid__error">Ошибка загрузки</div>';
@@ -143,7 +143,7 @@ async function loadEvents() {
 async function fetchEventContent(id) {
     try {
         const response = await fetch(
-            `${API_BASE_URL}/api/v1/content/мероприятия/content?name=${encodeURIComponent(id)}`
+            `${API_BASE_URL}/api/v1/block/мероприятия/content?name=${encodeURIComponent(id)}`
         );
         if (!response.ok) return null;
         return await response.json();

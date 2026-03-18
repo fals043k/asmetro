@@ -1,4 +1,3 @@
-
 .about {
     background: #ffffff;
     padding: 60px 0 80px;
@@ -79,6 +78,8 @@
     border-radius: 8px;
     transition: background 0.3s, transform 0.2s;
     cursor: pointer;
+    text-decoration: none;
+    border: none;
 }
 
 .about__btn:hover {
@@ -153,6 +154,7 @@
     padding: 24px;
     transition: transform 0.3s, box-shadow 0.3s;
     cursor: pointer;
+    text-decoration: none;
 }
 
 .news__item::before {
@@ -316,8 +318,7 @@
     transform: translateY(-2px);
 }
 
-
-/* About Popup */
+/* About Popup - ОБНОВЛЕННАЯ ВЕРСИЯ */
 .about-popup {
     position: fixed;
     top: 0;
@@ -331,6 +332,9 @@
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s, visibility 0.3s;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    padding: 20px;
 }
 
 .about-popup.active {
@@ -342,13 +346,16 @@
     position: relative;
     background: #ffffff;
     border-radius: 16px;
-    max-width: 720px;
-    width: 90%;
+    max-width: 1000px;
+    width: 100%;
     max-height: 85vh;
-    overflow-y: auto;
-    padding: 40px 50px 40px 40px;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 30px;
+    padding: 40px;
     z-index: 10000;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
 }
 
 .about-popup__close {
@@ -359,12 +366,14 @@
     border: none;
     cursor: pointer;
     padding: 8px;
-    /* display: flex; */
+    display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 8px;
     transition: background 0.2s;
     z-index: 10001;
+    width: 36px;
+    height: 36px;
 }
 
 .about-popup__close:hover {
@@ -377,33 +386,36 @@
 }
 
 .about-popup__photo {
-    float: left;
-    width: 220px;
-    margin: 0 24px 16px 0;
+    position: sticky;
+    top: 0;
     border-radius: 8px;
     overflow: hidden;
+    align-self: start;
+    width: 100%;
 }
 
 .about-popup__photo img {
     width: 100%;
     height: auto;
     display: block;
+    object-fit: cover;
 }
 
-.about-popup__text {
-    overflow: hidden;
-    display: block;
+.about-popup__text-wrapper {
+    overflow-y: auto;
+    padding-right: 10px;
+    max-height: calc(85vh - 80px);
 }
 
-.about-popup__text--1{
+.about-popup__text--1 {
     font-weight: 400;
     font-size: 14px;
     line-height: 150%;
     color: #333333;
     text-align: justify;
-    width: 360px;
-    display: inline-block;
-    margin: 0 0 12px 0;
+    margin: 0 0 20px 0;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(26, 92, 158, 0.1);
 }
 
 .about-popup__text p {
@@ -412,7 +424,7 @@
     line-height: 150%;
     color: #333333;
     text-align: justify;
-    margin: 0 0 12px 0;
+    margin: 0 0 15px 0;
 }
 
 .about-popup__text p:last-child {
@@ -433,6 +445,9 @@
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s, visibility 0.3s;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    padding: 20px;
 }
 
 .news-popup.active {
@@ -447,7 +462,7 @@
     background: #ffffff;
     border-radius: 16px;
     max-width: 1000px;
-    width: 90%;
+    width: 100%;
     max-height: 85vh;
     overflow-y: auto;
     padding: 40px;
@@ -469,6 +484,8 @@
     border-radius: 8px;
     transition: background 0.2s;
     z-index: 10001;
+    width: 36px;
+    height: 36px;
 }
 
 .news-popup__close:hover {
@@ -482,7 +499,9 @@
 
 .news-popup__text-wrapper {
     flex: 1;
-    overflow: hidden;
+    overflow-y: auto;
+    max-height: calc(85vh - 80px);
+    padding-right: 10px;
 }
 
 .news-popup__title {
@@ -503,6 +522,21 @@
 
 .news-popup__section {
     margin-bottom: 24px;
+}
+
+.news-popup__body-content {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 150%;
+    color: #000000;
+}
+
+.news-popup__body-content p {
+    margin-bottom: 15px;
+}
+
+.news-popup__body-content p:last-child {
+    margin-bottom: 0;
 }
 
 .news-popup__section-title {
@@ -566,6 +600,8 @@
     border-radius: 12px;
     overflow: hidden;
     align-self: flex-start;
+    position: sticky;
+    top: 0;
 }
 
 .news-popup__image img {
@@ -574,7 +610,6 @@
     display: block;
     object-fit: cover;
 }
-
 
 /* Events Popup */
 .events-popup {
@@ -590,6 +625,9 @@
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s, visibility 0.3s;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    padding: 20px;
 }
 
 .events-popup.active {
@@ -602,7 +640,7 @@
     background: #ffffff;
     border-radius: 16px;
     max-width: 680px;
-    width: 90%;
+    width: 100%;
     max-height: 85vh;
     overflow-y: auto;
     padding: 40px;
@@ -624,6 +662,8 @@
     border-radius: 8px;
     transition: background 0.2s;
     z-index: 10001;
+    width: 36px;
+    height: 36px;
 }
 
 .events-popup__close:hover {
@@ -656,6 +696,9 @@
     font-size: 14px;
     line-height: 150%;
     color: #333333;
+    overflow-y: auto;
+    max-height: calc(85vh - 200px);
+    padding-right: 10px;
 }
 
 .events-popup__text p {
@@ -686,7 +729,6 @@
     font-size: 18px;
     line-height: 150%;
 }
-
 
 /* Адаптация home страницы */
 @media (max-width: 430px) {
@@ -816,25 +858,43 @@
         width: 100%;
     }
 
-    /* About popup */
+    /* About popup - мобильная адаптация */
+    .about-popup {
+        padding: 0;
+    }
+
     .about-popup__content {
+        grid-template-columns: 1fr;
+        gap: 20px;
         width: 100%;
         max-width: 100%;
         max-height: 100vh;
         height: 100vh;
         border-radius: 0;
-        padding: 64px 16px 20px;
+        padding: 60px 16px 20px;
+        overflow-y: auto;
     }
 
     .about-popup__photo {
-        float: none;
-        width: 100%;
-        margin: 0 0 16px 0;
+        position: static;
+        max-width: 250px;
+        margin: 0 auto;
+    }
+
+    .about-popup__text-wrapper {
+        max-height: none;
+        overflow-y: visible;
+        padding-right: 0;
     }
 
     .about-popup__text--1 {
         width: 100%;
         display: block;
+        font-size: 13px;
+    }
+
+    .about-popup__text p {
+        font-size: 13px;
     }
 
     .about-popup__close {
@@ -842,7 +902,11 @@
         right: 12px;
     }
 
-    /* News popup */
+    /* News popup - мобильная адаптация */
+    .news-popup {
+        padding: 0;
+    }
+
     .news-popup__content {
         flex-direction: column;
         width: 100%;
@@ -850,8 +914,15 @@
         max-height: 100vh;
         height: 100vh;
         border-radius: 0;
-        padding: 64px 16px 20px;
-        gap: 16px;
+        padding: 60px 16px 20px;
+        gap: 20px;
+        overflow-y: auto;
+    }
+
+    .news-popup__text-wrapper {
+        max-height: none;
+        overflow-y: visible;
+        padding-right: 0;
     }
 
     .news-popup__title {
@@ -872,6 +943,7 @@
 
     .news-popup__image {
         width: 100%;
+        position: static;
     }
 
     .news-popup__close {
@@ -879,14 +951,19 @@
         right: 12px;
     }
 
-    /* Events popup */
+    /* Events popup - мобильная адаптация */
+    .events-popup {
+        padding: 0;
+    }
+
     .events-popup__content {
         width: 100%;
         max-width: 100%;
         max-height: 100vh;
         height: 100vh;
         border-radius: 0;
-        padding: 64px 16px 20px;
+        padding: 60px 16px 20px;
+        overflow-y: auto;
     }
 
     .events-popup__title {
@@ -899,6 +976,9 @@
 
     .events-popup__text {
         font-size: 13px;
+        max-height: none;
+        overflow-y: visible;
+        padding-right: 0;
     }
 
     .events-popup__close {
@@ -907,4 +987,20 @@
     }
 }
 
+/* Дополнительная адаптация для планшетов */
+@media (min-width: 431px) and (max-width: 768px) {
+    .about-popup__content {
+        grid-template-columns: 220px 1fr;
+        gap: 20px;
+        padding: 30px;
+    }
 
+    .news-popup__content {
+        flex-direction: column;
+    }
+
+    .news-popup__image {
+        width: 100%;
+        position: static;
+    }
+}

@@ -12,6 +12,9 @@
 using boost::asio::ip::tcp;
 
 
+#define req std::shared_ptr<server_request>
+
+
 class multipart_parser {
 public:
     struct file {

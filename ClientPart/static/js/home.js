@@ -2,9 +2,10 @@
 
 const API_BASE_URL = `http://${window.location.hostname}:8080`;
 
-document.addEventListener('DOMContentLoaded', () => {
-    loadHeader();
-    loadFooter();
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadHeader();
+    await loadFooter();
+    await loadMainPageTexts(); // <-- Новая функция для загрузки текстов с сервера
     initAboutPopup();
     loadNews();
     loadEvents();
@@ -46,7 +47,67 @@ async function loadFooter() {
     }
 }
 
-// --- Попап «Об ассоциации» (статика) ---
+// --- Загрузка текстов для главной страницы ---
+async function loadMainPageTexts() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/v1/locale/main`);
+        if (!response.ok) {
+            console.warn('Не удалось загрузить тексты для главной');
+            return;
+        }
+        
+        const data = await response.json();
+        
+        // Заполняем заголовок hero
+        const heroTitle = document.querySelector('.hero__title');
+        if (heroTitle && data.название) {
+            heroTitle.textContent = data.название;
+        }
+        
+        // Заполняем подзаголовок hero
+        const heroSubtitle = document.querySelector('.hero__subtitle');
+        if (heroSubtitle && data.описание) {
+            heroSubtitle.textContent = data.описание;
+        }
+        
+        // Заполняем краткий текст в секции about (первый абзац)
+        const aboutText = document.querySelector('.about__text');
+        if (aboutText && data.подробнее) {
+            aboutText.textContent = data.подробнее;
+        }
+        
+        // Сохраняем полный текст для попапа (используем data-атрибут или глобальную переменную)
+        if (data.полное) {
+            const aboutPopupText1 = document.querySelector('.about-popup__text--1');
+            const aboutPopupText = document.querySelector('.about-popup__text');
+            
+            // Очищаем статическое содержимое
+            if (aboutPopupText1) aboutPopupText1.innerHTML = '';
+            if (aboutPopupText) aboutPopupText.innerHTML = '';
+            
+            // Разбиваем полный текст на абзацы (по двойному переносу строки)
+            const paragraphs = data.полное.split('\n\n').filter(p => p.trim() !== '');
+            
+            // Если есть первый абзац, помещаем его в about-popup__text--1
+            if (paragraphs.length > 0 && aboutPopupText1) {
+                aboutPopupText1.innerHTML = `<p>${paragraphs[0]}</p>`;
+            }
+            
+            // Остальные абзацы - в about-popup__text
+            if (aboutPopupText) {
+                for (let i = 1; i < paragraphs.length; i++) {
+                    const p = document.createElement('p');
+                    p.textContent = paragraphs[i];
+                    aboutPopupText.appendChild(p);
+                }
+            }
+        }
+    } catch (e) {
+        console.error('Ошибка загрузки текстов для главной:', e);
+    }
+}
+
+// --- Попап «Об ассоциации» (обновлен стиль для корректного отображения) ---
 function initAboutPopup() {
     const aboutBtn = document.querySelector('.about__btn');
     const aboutPopup = document.getElementById('about-popup');
@@ -66,6 +127,13 @@ function initAboutPopup() {
             document.body.style.overflow = '';
         });
     }
+    
+    aboutPopup.addEventListener('click', (e) => {
+        if (e.target === aboutPopup) {
+            aboutPopup.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
     
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && aboutPopup.classList.contains('active')) {
@@ -89,7 +157,7 @@ async function loadNews() {
     allNewsItems.forEach(item => item.style.display = 'none');
 
     try {
-        const listResp = await fetch(`${API_BASE_URL}/api/v1/content/новости/list`);
+        const listResp = await fetch(`${API_BASE_URL}/api/v1/block/новости/order`);
         if (!listResp.ok) {
             console.warn('Не удалось загрузить список новостей');
             return;
@@ -116,7 +184,7 @@ async function loadNews() {
 async function fetchNewsContent(id) {
     try {
         const resp = await fetch(
-            `${API_BASE_URL}/api/v1/content/новости/content?name=${encodeURIComponent(id)}`
+            `${API_BASE_URL}/api/v1/block/новости/content?name=${encodeURIComponent(id)}`
         );
         if (!resp.ok) return null;
         return await resp.json();
@@ -155,7 +223,7 @@ function updateNewsCard(item, id, data) {
 
 async function loadNewsImage(id, type = 'mini') {
     try {
-        const url = `${API_BASE_URL}/api/v1/content/новости/attachment?name=${encodeURIComponent(id)}&attachment=${type}`;
+        const url = `${API_BASE_URL}/api/v1/block/новости/attachment?name=${encodeURIComponent(id)}&attachment=${type}`;
         const response = await fetch(url);
         if (!response.ok) return null;
         const blob = await response.blob();
@@ -295,7 +363,7 @@ async function loadEvents() {
     if (!allEventItems.length) return;
 
     try {
-        const listResp = await fetch(`${API_BASE_URL}/api/v1/content/мероприятия/list`);
+        const listResp = await fetch(`${API_BASE_URL}/api/v1/block/мероприятия/order`);
         if (!listResp.ok) return;
         
         const ids = await listResp.json();
@@ -323,7 +391,7 @@ async function loadEvents() {
 async function fetchEventContent(id) {
     try {
         const resp = await fetch(
-            `${API_BASE_URL}/api/v1/content/мероприятия/content?name=${encodeURIComponent(id)}`
+            `${API_BASE_URL}/api/v1/block/мероприятия/content?name=${encodeURIComponent(id)}`
         );
         if (!resp.ok) return null;
         return await resp.json();

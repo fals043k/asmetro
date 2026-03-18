@@ -98,7 +98,7 @@ async function loadNews() {
     if (!newsGrid) return;
 
     try {
-        const listResponse = await fetch(`${API_BASE_URL}/api/v1/content/новости/list`);
+        const listResponse = await fetch(`${API_BASE_URL}/api/v1/block/новости/order`);
         
         if (!listResponse.ok) {
             newsGrid.innerHTML = '<div class="news-grid__empty">Нет новостей</div>';
@@ -145,7 +145,7 @@ async function loadNews() {
 async function fetchNewsContent(id) {
     try {
         const response = await fetch(
-            `${API_BASE_URL}/api/v1/content/новости/content?name=${encodeURIComponent(id)}`
+            `${API_BASE_URL}/api/v1/block/новости/content?name=${encodeURIComponent(id)}`
         );
         if (!response.ok) return null;
         return await response.json();
@@ -178,7 +178,7 @@ function formatDate(dateStr) {
 
 async function loadNewsImage(id, type = 'mini') {
     try {
-        const url = `${API_BASE_URL}/api/v1/content/новости/attachment?name=${encodeURIComponent(id)}&attachment=${type}`;
+        const url = `${API_BASE_URL}/api/v1/block/новости/attachment?name=${encodeURIComponent(id)}&attachment=${type}`;
         const response = await fetch(url);
         
         if (!response.ok) return null;

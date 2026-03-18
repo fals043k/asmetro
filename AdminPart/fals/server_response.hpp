@@ -9,6 +9,11 @@
 #include <map>
 
 
+#define text_resp(...) std::static_pointer_cast<server_response>(std::make_shared<text_response>(__VA_ARGS__))
+#define file_resp(...) std::static_pointer_cast<server_response>(std::make_shared<file_response>(__VA_ARGS__))
+#define redirect_resp(...) std::static_pointer_cast<server_response>(std::make_shared<redirect_response>(__VA_ARGS__))
+
+
 using boost::asio::ip::tcp;
 
 
@@ -76,6 +81,43 @@ public:
                         }
                 );
         }
+};
+
+
+class redirect_response : public server_response {
+public:
+    std::string location;
+
+    redirect_response(
+        std::shared_ptr<tcp::socket> socket = nullptr,
+        int status = 404,
+        std::string status_text = "",
+        std::string location = ""
+    )
+        : server_response(std::move(socket), status, std::move(status_text), ""),
+        location(std::move(location)) {
+    }
+
+
+    void pack() override {
+        if (!socket || !socket->is_open()) return;
+
+        header_builder hb;
+        hb.status(this->status, this->status_text)
+            .header("Location", this->location);
+
+        for (const auto& [key, value] : headers) {
+            hb.header(key, value);
+        }
+
+        std::string response = hb.build();
+
+        boost::asio::async_write(*socket, boost::asio::buffer(response),
+            [self = this->shared_from_this()](const boost::system::error_code& err, size_t) {
+                self->socket->close();
+            }
+        );
+    }
 };
 
 
