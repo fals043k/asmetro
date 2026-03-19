@@ -32,7 +32,7 @@
 
 .team__main-info {
     flex: 1;
-    min-width: 0; /* Предотвращает переполнение */
+    min-width: 0;
 }
 
 .team__main-name {
@@ -41,7 +41,7 @@
     line-height: 120%;
     color: #1a5c9e;
     margin-bottom: 20px;
-    word-wrap: break-word; /* Перенос длинных слов */
+    word-wrap: break-word;
 }
 
 .team__main-list {
@@ -95,10 +95,9 @@
 }
 
 .team__main-text:last-child {
-    margin-bottom: 0; /* Убираем отступ у последнего абзаца */
+    margin-bottom: 0;
 }
 
-/* Слайдер */
 .slider-container {
     margin-top: 40px;
 }
@@ -109,13 +108,14 @@
     overflow-x: auto;
     gap: 20px;
     scroll-behavior: smooth;
-    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
     scrollbar-width: none;
     padding: 10px;
+    cursor: grab;
 }
 
 .slider::-webkit-scrollbar {
-    display: none; /* Скрываем скроллбар для красоты */
+    display: none;
 }
 
 .slider > * {
@@ -125,7 +125,7 @@
 .slider__link {
     display: block;
     flex-shrink: 0;
-    text-decoration: none; /* Убираем подчеркивание у ссылки */
+    text-decoration: none;
 }
 
 .slider__item {
@@ -177,7 +177,7 @@
     line-height: 140%;
     color: rgba(255, 255, 255, 0.8);
     margin-bottom: 12px;
-    flex: 1; /* Занимает доступное пространство */
+    flex: 1;
     word-wrap: break-word;
 }
 
@@ -201,7 +201,6 @@
     margin-bottom: 0;
 }
 
-/* Пустые состояния для слайдера */
 .slider__empty,
 .slider__error {
     width: 100%;
@@ -213,7 +212,6 @@
     border-radius: 12px;
 }
 
-/* Секция Основные задачи */
 .tasks {
     background: #f5f7fa;
     padding: 60px 0 80px;
@@ -276,7 +274,6 @@
     margin-bottom: 0;
 }
 
-/* Секция База знаний */
 .knowledge {
     background: #ffffff;
     padding: 60px 0 80px;
@@ -311,14 +308,13 @@
     text-decoration: underline;
     transition: color 0.2s;
     word-wrap: break-word;
-    display: inline-block; /* Для лучшего переноса */
+    display: inline-block;
 }
 
 .knowledge__link:hover {
     color: #0d3a5c;
 }
 
-/* Адаптация */
 @media (max-width: 430px) {
     .section-title {
         font-size: 22px;
@@ -347,18 +343,18 @@
     }
 
     .team__main-name {
-        font-size: 20px; /* Чуть крупнее на мобильных */
+        font-size: 20px;
         margin-bottom: 12px;
     }
 
     .team__main-section-title {
-        font-size: 16px; /* Чуть крупнее */
+        font-size: 16px;
         margin-bottom: 10px;
     }
 
     .team__main-text,
     .team__main-list li {
-        font-size: 14px; /* Чуть крупнее для читаемости */
+        font-size: 14px;
     }
 
     .team__main-section {
@@ -376,7 +372,7 @@
 
     .slider__item {
         width: 232px;
-        height: 340px; /* Чуть выше для контента */
+        height: 340px;
         padding: 18px 16px;
     }
 
@@ -414,7 +410,6 @@
     }
 }
 
-/* Дополнительная адаптация для планшетов */
 @media (min-width: 431px) and (max-width: 768px) {
     .team__main {
         gap: 24px;

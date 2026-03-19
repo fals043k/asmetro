@@ -152,7 +152,7 @@ int main() {
         {
             { "header", types::STR, "\u0437\u0430\u0433\u043E\u043B\u043E\u0432\u043E\u043A" },
             { "body", types::STR, "\u0441\u043E\u0434\u0435\u0440\u0436\u0438\u043C\u043E\u0435" },
-            { "date", types::DATE_TIME, "\u0432\u0440\u0435\u043C\u044F" }
+            { "date", types::STR, "\u0432\u0440\u0435\u043C\u044F" }
         },
         {
         }

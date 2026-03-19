@@ -46,13 +46,11 @@
 --invisible-opacity: 0.4;
 --calendar-filter: invert(1) brightness(1.1);
 }
-
 * {
 box-sizing: border-box;
 margin: 0;
 padding: 0;
 }
-
 body {
 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 background: var(--bg-page);
@@ -63,13 +61,11 @@ min-height: 100vh;
 -webkit-font-smoothing: antialiased;
 user-select: none;
 }
-
 .container {
 max-width: 1440px;
 margin: 0 auto;
 padding: 24px;
 }
-
 header {
 background: var(--bg-surface);
 border-bottom: 1px solid var(--border-default);
@@ -82,20 +78,17 @@ gap: 16px;
 flex-wrap: wrap;
 border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
-
 header h1 {
 font-size: 1.25rem;
 font-weight: 600;
 letter-spacing: -0.02em;
 color: var(--text-primary);
 }
-
 .header-controls {
 display: flex;
 gap: 12px;
 flex-wrap: wrap;
 }
-
 .header-btn {
 background: var(--bg-surface);
 color: var(--text-primary);
@@ -110,41 +103,34 @@ display: flex;
 align-items: center;
 gap: 6px;
 }
-
 .header-btn:hover {
 background: var(--bg-elevated);
 border-color: var(--border-focus);
 }
-
 .header-btn:focus {
 outline: none;
 box-shadow: var(--focus-ring);
 }
-
 .header-btn.danger {
 background: var(--danger-bg);
 color: var(--danger);
 border-color: var(--danger);
 }
-
 .header-btn.danger:hover {
 background: var(--danger);
 color: #fff;
 border-color: var(--danger-hover);
 }
-
 .header-btn.primary {
 background: var(--primary-bg);
 color: var(--primary);
 border-color: var(--primary);
 }
-
 .header-btn.primary:hover {
 background: var(--primary);
 color: #fff;
 border-color: var(--primary-hover);
 }
-
 .tabs {
 display: flex;
 gap: 4px;
@@ -156,7 +142,6 @@ margin-bottom: 24px;
 width: fit-content;
 box-shadow: var(--shadow-sm);
 }
-
 .tab {
 padding: 10px 24px;
 font-size: 0.95rem;
@@ -171,36 +156,40 @@ position: relative;
 z-index: 1;
 white-space: nowrap;
 }
-
 .tab:hover {
 color: var(--text-primary);
 background: var(--bg-elevated);
 }
-
 .tab.active {
 background: var(--primary);
 color: white;
 box-shadow: var(--shadow-sm);
 }
-
 .tab-content {
 transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
-
 .tab-content.hidden {
 display: none;
 }
-
 .tab-content.fade-out {
 opacity: 0;
 transform: translateY(8px);
 }
-
 .tab-content.fade-in {
 opacity: 1;
 transform: translateY(0);
+animation: tabFadeIn 0.3s ease-in-out forwards;
 }
-
+@keyframes tabFadeIn {
+0% {
+opacity: 0;
+transform: translateY(8px);
+}
+100% {
+opacity: 1;
+transform: translateY(0);
+}
+}
 .panel {
 background: var(--bg-surface);
 border-radius: var(--radius-lg);
@@ -210,17 +199,14 @@ border: 1px solid var(--border-default);
 position: relative;
 overflow: hidden;
 }
-
 .panel.is-loading .panel-content {
 opacity: 0;
 transform: translateY(8px);
 pointer-events: none;
 }
-
 .panel-content {
 transition: opacity var(--transition-normal), transform var(--transition-normal);
 }
-
 .panel-header {
 display: flex;
 justify-content: space-between;
@@ -231,7 +217,6 @@ border-bottom: 1px solid var(--border-subtle);
 flex-wrap: wrap;
 gap: 16px;
 }
-
 .panel-title {
 font-size: 1.1rem;
 font-weight: 600;
@@ -239,24 +224,20 @@ color: var(--text-primary);
 letter-spacing: -0.01em;
 transition: opacity var(--transition-fast);
 }
-
 .locale-selector {
 display: flex;
 align-items: center;
 gap: 12px;
 }
-
 .locale-selector label {
 font-size: 0.9rem;
 color: var(--text-muted);
 font-weight: 500;
 }
-
 .locale-select-container {
 position: relative;
 min-width: 180px;
 }
-
 .locale-select {
 width: 100%;
 padding: 8px 36px 8px 14px;
@@ -274,37 +255,30 @@ background-position: right 10px center;
 transition: all var(--transition-fast);
 box-shadow: var(--shadow-sm);
 }
-
 .locale-select:hover {
 border-color: var(--border-focus);
 background-color: var(--bg-hover);
 }
-
 .locale-select:focus {
 outline: none;
 border-color: var(--border-focus);
 box-shadow: var(--focus-ring);
 }
-
 .params-wrapper {
 position: relative;
 min-height: 200px;
 }
-
 .params-content {
 transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 will-change: opacity, transform;
 }
-
 .params-content.fade-out {
 opacity: 0;
 transform: translateY(-8px);
 }
-
 .params-content.fade-in {
 animation: paramsFadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
-
 @keyframes paramsFadeIn {
 0% {
 opacity: 0;
@@ -315,7 +289,6 @@ opacity: 1;
 transform: translateY(0);
 }
 }
-
 .params-table {
 border: 1px solid var(--border-default);
 border-radius: var(--radius-lg);
@@ -324,22 +297,18 @@ margin: 24px 0;
 background: var(--bg-surface);
 box-shadow: var(--shadow-sm);
 }
-
 .param-row {
 display: flex;
 border-bottom: 1px solid var(--border-subtle);
 transition: background var(--transition-fast);
 animation: rowFadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) backwards;
 }
-
 .param-row:last-child {
 border-bottom: none;
 }
-
 .param-row:hover {
 background: var(--bg-elevated);
 }
-
 .param-row.header {
 background: var(--bg-elevated);
 color: var(--text-muted);
@@ -348,28 +317,22 @@ font-weight: 600;
 text-transform: uppercase;
 letter-spacing: 0.04em;
 }
-
 .param-row.header:hover {
 background: var(--bg-elevated);
 }
-
 .param-cell {
 padding: 16px 20px;
 flex: 1;
 }
-
 .param-row:last-child .param-cell:first-child {
 border-bottom-left-radius: calc(var(--radius-lg) - 1px);
 }
-
 .param-row:last-child .param-cell:last-child {
 border-bottom-right-radius: calc(var(--radius-lg) - 1px);
 }
-
 .param-row:last-child .param-cell:first-child {
 border-right: 1px solid var(--border-subtle);
 }
-
 .param-cell:first-child {
 flex: 0 0 220px;
 background: var(--bg-elevated);
@@ -378,7 +341,6 @@ color: var(--text-secondary);
 border-right: 1px solid var(--border-subtle);
 word-break: break-word;
 }
-
 .param-cell textarea {
 width: 100%;
 padding: 10px 14px;
@@ -393,17 +355,14 @@ min-height: 70px;
 transition: all var(--transition-fast);
 box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
 }
-
 .param-cell textarea:hover {
 border-color: var(--border-focus);
 }
-
 .param-cell textarea:focus {
 outline: none;
 border-color: var(--border-focus);
 box-shadow: var(--focus-ring);
 }
-
 .empty-state {
 text-align: center;
 color: var(--text-muted);
@@ -414,12 +373,10 @@ border-radius: var(--radius-lg);
 border: 1px dashed var(--border-default);
 margin: 24px 0;
 }
-
 @keyframes rowFadeIn {
 from { opacity: 0; transform: translateX(-4px); }
 to { opacity: 1; transform: translateX(0); }
 }
-
 .save-section {
 margin-top: 24px;
 padding-top: 24px;
@@ -427,7 +384,6 @@ border-top: 1px solid var(--border-subtle);
 display: flex;
 justify-content: flex-end;
 }
-
 .btn {
 padding: 10px 24px;
 background: var(--primary);
@@ -447,7 +403,6 @@ position: relative;
 overflow: hidden;
 box-shadow: var(--shadow-sm);
 }
-
 .btn::before {
 content: '';
 position: absolute;
@@ -460,50 +415,40 @@ border-radius: 50%;
 transform: translate(-50%,-50%);
 transition: width 600ms ease-out, height 600ms ease-out, opacity 600ms ease-out;
 }
-
 .btn:active::before {
 width: 300px;
 height: 300px;
 opacity: 0;
 }
-
 .btn:hover {
 background: var(--primary-hover);
 }
-
 .btn:focus {
 outline: none;
 box-shadow: var(--focus-ring);
 }
-
 .btn:disabled {
 opacity: 0.6;
 cursor: not-allowed;
 }
-
 .btn-danger {
 background: var(--danger);
 }
-
 .btn-danger:hover {
 background: var(--danger-hover);
 }
-
 .btn-secondary {
 background: var(--secondary);
 color: #fff;
 }
-
 .btn-secondary:hover {
 background: var(--secondary-hover);
 }
-
 .btn-sm {
 padding: 6px 16px;
 font-size: 0.85rem;
 min-width: 80px;
 }
-
 .notification-container {
 position: fixed;
 top: 24px;
@@ -514,7 +459,6 @@ flex-direction: column;
 gap: 12px;
 pointer-events: none;
 }
-
 .notification {
 min-width: 320px;
 max-width: 400px;
@@ -533,52 +477,41 @@ animation: notificationSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 pointer-events: auto;
 border-left: 4px solid var(--primary);
 }
-
 .notification.success {
 border-left-color: var(--success);
 }
-
 .notification.success .notification-icon {
 color: var(--success);
 }
-
 .notification.error {
 border-left-color: var(--danger);
 }
-
 .notification.error .notification-icon {
 color: var(--danger);
 }
-
 .notification.warning {
 border-left-color: #ffa726;
 }
-
 .notification.warning .notification-icon {
 color: #ffa726;
 }
-
 .notification-icon {
 font-size: 1.4rem;
 line-height: 1;
 flex-shrink: 0;
 }
-
 .notification-content {
 flex: 1;
 }
-
 .notification-title {
 font-weight: 600;
 margin-bottom: 4px;
 color: var(--text-primary);
 }
-
 .notification-message {
 color: var(--text-secondary);
 font-size: 0.9rem;
 }
-
 .notification-close {
 background: none;
 border: none;
@@ -593,13 +526,11 @@ display: flex;
 align-items: center;
 justify-content: center;
 }
-
 .notification-close:hover {
 color: var(--text-primary);
 background: var(--bg-elevated);
 transform: rotate(90deg);
 }
-
 @keyframes notificationSlide {
 0% {
 opacity: 0;
@@ -610,7 +541,6 @@ opacity: 1;
 transform: translateX(0) translateY(0);
 }
 }
-
 @keyframes notificationExit {
 0% {
 opacity: 1;
@@ -621,11 +551,9 @@ opacity: 0;
 transform: translateX(100%) translateY(-20px);
 }
 }
-
 .notification.exiting {
 animation: notificationExit 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
-
 .blocks-nav {
 display: flex;
 gap: 8px;
@@ -640,7 +568,6 @@ width: fit-content;
 position: relative;
 overflow: hidden;
 }
-
 .block-btn {
 padding: 10px 20px;
 background: transparent;
@@ -654,16 +581,13 @@ transition: color var(--transition-fast);
 white-space: nowrap;
 position: relative;
 }
-
 .block-btn:hover {
 color: var(--text-primary);
 background: var(--bg-elevated);
 }
-
 .block-btn.active {
 color: var(--primary);
 }
-
 .nav-indicator {
 position: absolute;
 bottom: 6px;
@@ -674,7 +598,6 @@ transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s ease;
 pointer-events: none;
 border-radius: 2px;
 }
-
 .items-list {
 display: flex;
 flex-direction: column;
@@ -682,20 +605,16 @@ gap: 8px;
 min-height: 120px;
 transition: opacity var(--transition-normal);
 }
-
 .items-list.fade-out {
 opacity: 0;
 }
-
 .items-list.fade-in {
 animation: fadeIn 0.25s forwards;
 }
-
 @keyframes fadeIn {
 from { opacity: 0; transform: translateY(4px); }
 to { opacity: 1; transform: translateY(0); }
 }
-
 .section-divider {
 display: flex;
 align-items: center;
@@ -704,7 +623,6 @@ margin: 20px 0 12px;
 padding: 8px 0;
 border-bottom: 1px solid var(--border-subtle);
 }
-
 .section-divider::before,
 .section-divider::after {
 content: '';
@@ -712,7 +630,6 @@ flex: 1;
 height: 1px;
 background: var(--border-subtle);
 }
-
 .section-title {
 font-size: 0.75rem;
 font-weight: 600;
@@ -721,7 +638,6 @@ text-transform: uppercase;
 letter-spacing: 0.05em;
 white-space: nowrap;
 }
-
 .item-card {
 border: 1px solid var(--border-default);
 border-radius: var(--radius-md);
@@ -739,48 +655,40 @@ user-select: none;
 -moz-user-select: none;
 -ms-user-select: none;
 }
-
 .item-card:hover {
 border-color: var(--primary);
 background: var(--bg-elevated);
 transform: translateX(2px);
 box-shadow: var(--shadow-md);
 }
-
 .item-card.dragging {
 opacity: 0.3;
 box-shadow: var(--shadow-lg);
 border-color: var(--primary);
 }
-
 .item-card.drag-over {
 border-color: var(--primary);
 background: var(--primary-bg);
 }
-
 .item-card.invisible {
 opacity: var(--invisible-opacity);
 border-style: dashed;
 background: var(--bg-elevated);
 }
-
 .item-card.invisible:hover {
 opacity: calc(var(--invisible-opacity) + 0.1);
 }
-
 .item-card-content {
 display: flex;
 align-items: center;
 gap: 12px;
 flex: 1;
 }
-
 .item-title {
 font-weight: 500;
 color: var(--text-primary);
 font-size: 0.95rem;
 }
-
 .visibility-badge {
 display: inline-flex;
 align-items: center;
@@ -792,17 +700,14 @@ border-radius: 12px;
 text-transform: uppercase;
 letter-spacing: 0.03em;
 }
-
 .visibility-badge.visible {
 background: var(--success-bg);
 color: var(--success);
 }
-
 .visibility-badge.invisible {
 background: var(--bg-elevated);
 color: var(--text-muted);
 }
-
 @keyframes cardFadeIn {
 from {
 opacity: 0;
@@ -813,12 +718,6 @@ opacity: 1;
 transform: translateY(0);
 }
 }
-
-@keyframes fadeIn {
-from { opacity: 0; transform: translateY(10px); }
-to { opacity: 1; transform: translateY(0); }
-}
-
 .drag-indicator {
 position: fixed;
 width: 24px;
@@ -831,17 +730,14 @@ opacity: 0.6;
 box-shadow: 0 0 0 4px var(--primary-bg);
 display: none;
 }
-
 .drag-indicator.active {
 display: block;
 animation: pulse 0.8s ease-in-out infinite;
 }
-
 @keyframes pulse {
 0%, 100% { transform: scale(1); opacity: 0.6; }
 50% { transform: scale(1.2); opacity: 0.8; }
 }
-
 .context-menu {
 position: fixed;
 background: var(--bg-surface);
@@ -854,11 +750,9 @@ min-width: 140px;
 display: none;
 animation: contextFade 0.15s ease;
 }
-
 .context-menu.active {
 display: block;
 }
-
 .context-menu-item {
 padding: 8px 16px;
 cursor: pointer;
@@ -869,24 +763,19 @@ align-items: center;
 gap: 8px;
 transition: all var(--transition-fast);
 }
-
 .context-menu-item:hover {
 background: var(--bg-elevated);
 }
-
 .context-menu-item.danger {
 color: var(--danger);
 }
-
 .context-menu-item.danger:hover {
 background: var(--danger-bg);
 }
-
 @keyframes contextFade {
 from { opacity: 0; transform: scale(0.95); }
 to { opacity: 1; transform: scale(1); }
 }
-
 .item-preview {
 position: fixed;
 background: var(--bg-surface);
@@ -902,13 +791,11 @@ transform: translateY(8px);
 transition: opacity var(--transition-fast), transform var(--transition-fast);
 display: none;
 }
-
 .item-preview.active {
 display: block;
 opacity: 1;
 transform: translateY(0);
 }
-
 .item-preview-title {
 font-weight: 600;
 font-size: 1rem;
@@ -917,25 +804,21 @@ margin-bottom: 12px;
 padding-bottom: 8px;
 border-bottom: 1px solid var(--border-subtle);
 }
-
 .item-preview-content {
 font-size: 0.875rem;
 color: var(--text-secondary);
 max-height: 300px;
 overflow-y: auto;
 }
-
 .item-preview-field {
 display: flex;
 justify-content: space-between;
 padding: 4px 0;
 border-bottom: 1px dashed var(--border-subtle);
 }
-
 .item-preview-field:last-child {
 border-bottom: none;
 }
-
 .item-preview-label {
 font-weight: 500;
 color: var(--text-muted);
@@ -943,14 +826,12 @@ text-transform: uppercase;
 font-size: 0.75rem;
 letter-spacing: 0.03em;
 }
-
 .item-preview-value {
 color: var(--text-primary);
 text-align: right;
 max-width: 60%;
 word-break: break-word;
 }
-
 .drag-hint {
 font-size: 0.8rem;
 color: var(--text-muted);
@@ -960,7 +841,6 @@ font-weight: 500;
 letter-spacing: 0.02em;
 transition: opacity var(--transition-fast);
 }
-
 .modal {
 display: none;
 position: fixed;
@@ -974,11 +854,9 @@ justify-content: center;
 z-index: 1000;
 backdrop-filter: blur(4px);
 }
-
 .modal.active {
 display: flex;
 }
-
 .modal-content {
 background: var(--bg-surface);
 border-radius: var(--radius-lg);
@@ -993,12 +871,13 @@ transform: translateY(16px);
 opacity: 0;
 transition: transform var(--transition-normal), opacity var(--transition-normal);
 }
-
+.modal-content-sm {
+max-width: 480px;
+}
 .modal.active .modal-content {
 transform: translateY(0);
 opacity: 1;
 }
-
 .modal-header {
 display: flex;
 justify-content: space-between;
@@ -1011,13 +890,11 @@ top: 0;
 background: var(--bg-surface);
 z-index: 10;
 }
-
 .modal-title {
 font-size: 1.1rem;
 font-weight: 600;
 color: var(--text-primary);
 }
-
 .modal-close {
 background: none;
 border: none;
@@ -1029,17 +906,14 @@ border-radius: var(--radius-sm);
 transition: all var(--transition-fast);
 line-height: 1;
 }
-
 .modal-close:hover {
 background: var(--bg-elevated);
 color: var(--text-primary);
 transform: rotate(90deg);
 }
-
 .form-group {
 margin-bottom: 20px;
 }
-
 .form-label {
 display: block;
 margin-bottom: 6px;
@@ -1049,7 +923,6 @@ color: var(--text-secondary);
 text-transform: uppercase;
 letter-spacing: 0.03em;
 }
-
 .form-input,
 .form-textarea,
 .form-select {
@@ -1063,18 +936,15 @@ color: var(--text-primary);
 transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 font-family: inherit;
 }
-
 .form-textarea {
 min-height: 96px;
 resize: both;
 }
-
 .form-input {
 min-height: 40px;
 resize: both;
 overflow: auto;
 }
-
 .form-input:focus,
 .form-textarea:focus,
 .form-select:focus {
@@ -1082,14 +952,12 @@ outline: none;
 border-color: var(--border-focus);
 box-shadow: var(--focus-ring);
 }
-
 .form-select {
 appearance: none;
 background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%236c7078' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
 background-repeat: no-repeat;
 background-position: right 10px center;
 }
-
 .tags-input {
 display: flex;
 gap: 6px;
@@ -1101,11 +969,9 @@ border-radius: var(--radius-md);
 background: var(--bg-surface);
 transition: border-color var(--transition-fast);
 }
-
 .tags-input:focus-within {
 border-color: var(--border-focus);
 }
-
 .tag {
 background: var(--primary-bg);
 color: var(--primary);
@@ -1118,7 +984,6 @@ gap: 6px;
 font-weight: 500;
 border: 1px solid var(--border-subtle);
 }
-
 .tag-remove {
 cursor: pointer;
 font-weight: 700;
@@ -1127,19 +992,16 @@ line-height: 1;
 opacity: 0.7;
 transition: opacity var(--transition-fast), transform var(--transition-fast);
 }
-
 .tag-remove:hover {
 opacity: 1;
 transform: scale(1.2);
 }
-
 .tag-input-wrapper {
 display: flex;
 gap: 8px;
 margin-top: 8px;
 width: 100%;
 }
-
 .tag-input {
 flex: 1;
 padding: 8px 12px;
@@ -1150,24 +1012,20 @@ background: var(--bg-surface);
 color: var(--text-primary);
 transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
-
 .tag-input:focus {
 outline: none;
 border-color: var(--border-focus);
 box-shadow: var(--focus-ring);
 }
-
 .attachments-section {
 margin-top: 20px;
 padding-top: 20px;
 border-top: 1px solid var(--border-subtle);
 transition: opacity var(--transition-normal);
 }
-
 .attachments-section.hidden {
 display: none;
 }
-
 .attachment-item {
 display: flex;
 align-items: center;
@@ -1179,39 +1037,32 @@ border-radius: var(--radius-md);
 margin-bottom: 8px;
 transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
 }
-
 .attachment-item:hover {
 transform: translateX(2px);
 }
-
 .attachment-item.no-file {
 opacity: 0.7;
 background: var(--bg-surface);
 }
-
 .attachment-item.pending {
 border-color: var(--primary);
 background: var(--primary-bg);
 }
-
 .attachment-info {
 flex: 1;
 display: flex;
 flex-direction: column;
 gap: 4px;
 }
-
 .attachment-name {
 font-size: 0.9rem;
 color: var(--text-primary);
 font-weight: 500;
 }
-
 .attachment-meta {
 font-size: 0.8rem;
 color: var(--text-muted);
 }
-
 .attachment-status {
 display: inline-flex;
 align-items: center;
@@ -1224,28 +1075,23 @@ text-transform: uppercase;
 letter-spacing: 0.03em;
 transition: background var(--transition-fast), color var(--transition-fast);
 }
-
 .attachment-status.exists {
 background: var(--success-bg);
 color: var(--success);
 }
-
 .attachment-status.missing {
 background: var(--bg-elevated);
 color: var(--status-missing);
 }
-
 .attachment-status.pending {
 background: var(--primary-bg);
 color: var(--status-pending);
 }
-
 .attachment-actions {
 display: flex;
 gap: 6px;
 flex-shrink: 0;
 }
-
 .file-input-wrapper {
 position: relative;
 display: flex;
@@ -1258,17 +1104,14 @@ border-radius: var(--radius-md);
 cursor: pointer;
 transition: border-color var(--transition-fast), background var(--transition-fast);
 }
-
 .file-input-wrapper:hover {
 border-color: var(--border-focus);
 background: var(--bg-elevated);
 }
-
 .file-input-wrapper.has-file {
 border-color: var(--primary);
 background: var(--primary-bg);
 }
-
 .file-input-icon {
 width: 18px;
 height: 18px;
@@ -1279,11 +1122,9 @@ color: var(--text-muted);
 font-size: 1rem;
 transition: transform var(--transition-fast);
 }
-
 .file-input-wrapper:hover .file-input-icon {
 transform: scale(1.1);
 }
-
 .file-input-text {
 flex: 1;
 font-size: 0.9rem;
@@ -1293,12 +1134,10 @@ overflow: hidden;
 text-overflow: ellipsis;
 transition: color var(--transition-fast);
 }
-
 .file-input-wrapper.has-file .file-input-text {
 color: var(--text-primary);
 font-weight: 500;
 }
-
 .file-input-btn {
 padding: 6px 14px;
 background: var(--secondary);
@@ -1311,11 +1150,9 @@ transition: background var(--transition-fast);
 white-space: nowrap;
 font-weight: 500;
 }
-
 .file-input-btn:hover {
 background: var(--secondary-hover);
 }
-
 .file-input-hidden {
 position: absolute;
 width: 1px;
@@ -1327,7 +1164,6 @@ clip: rect(0,0,0,0);
 white-space: nowrap;
 border: 0;
 }
-
 .file-input-remove {
 padding: 4px 8px;
 background: var(--danger);
@@ -1340,16 +1176,13 @@ transition: background var(--transition-fast), transform var(--transition-fast);
 display: none;
 font-weight: 500;
 }
-
 .file-input-wrapper.has-file .file-input-remove {
 display: inline-block;
 }
-
 .file-input-remove:hover {
 background: var(--danger-hover);
 transform: scale(1.05);
 }
-
 .badge {
 display: inline-flex;
 align-items: center;
@@ -1362,11 +1195,9 @@ color: var(--text-secondary);
 border: 1px solid var(--border-subtle);
 transition: background var(--transition-fast);
 }
-
 .badge:hover {
 background: var(--bg-surface);
 }
-
 .error-msg {
 color: var(--danger);
 font-size: 0.85rem;
@@ -1379,7 +1210,6 @@ padding: 8px 12px;
 border-radius: var(--radius-md);
 border: 1px solid var(--danger);
 }
-
 .form-actions {
 display: flex;
 gap: 12px;
@@ -1389,7 +1219,6 @@ padding-top: 20px;
 border-top: 1px solid var(--border-subtle);
 flex-wrap: wrap;
 }
-
 .loading {
 display: inline-block;
 width: 18px;
@@ -1399,110 +1228,86 @@ border-top-color: white;
 border-radius: 50%;
 animation: spin 0.6s linear infinite;
 }
-
 .btn.loading .btn-text {
 display: none;
 }
-
 .btn.loading .loading {
 display: inline-block;
 }
-
 .btn .loading {
 display: none;
 }
-
 @keyframes spin {
 to { transform: rotate(360deg); }
 }
-
 .hidden {
 display: none !important;
 }
-
 .d-flex {
 display: flex;
 }
-
 .gap-8 {
 gap: 8px;
 }
-
 .align-center {
 align-items: center;
 }
-
 .mb-8 {
 margin-bottom: 8px;
 }
-
 .mt-16 {
 margin-top: 16px;
 }
-
 .justify-end {
 justify-content: flex-end;
 }
-
 .text-muted {
 color: var(--text-muted);
 }
-
 .text-primary {
 color: var(--text-primary);
 }
-
 .text-truncate {
 white-space: nowrap;
 overflow: hidden;
 text-overflow: ellipsis;
 }
-
 ::-webkit-scrollbar {
 width: 8px;
 height: 8px;
 }
-
 ::-webkit-scrollbar-track {
 background: var(--bg-page);
 }
-
 ::-webkit-scrollbar-thumb {
 background: var(--secondary);
 border-radius: 4px;
 transition: background var(--transition-fast);
 }
-
 ::-webkit-scrollbar-thumb:hover {
 background: var(--secondary-hover);
 }
-
 @media (max-width: 768px) {
 .panel-header {
 flex-direction: column;
 align-items: flex-start;
 }
-
 .item-card {
 flex-direction: column;
 align-items: flex-start;
 gap: 12px;
 }
-
 .form-actions {
 flex-direction: column;
 }
-
 .btn {
 width: 100%;
 }
-
 .header-controls {
 width: 100%;
 justify-content: space-between;
 }
 }
-
 input[type="date"]::-webkit-calendar-picker-indicator,
 input[type="time"]::-webkit-calendar-picker-indicator,
 input[type="datetime-local"]::-webkit-calendar-picker-indicator {
@@ -1510,13 +1315,11 @@ filter: var(--calendar-filter);
 cursor: pointer;
 transition: transform var(--transition-fast);
 }
-
 input[type="date"]::-webkit-calendar-picker-indicator:hover,
 input[type="time"]::-webkit-calendar-picker-indicator:hover,
 input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
 transform: scale(1.1);
 }
-
 .sr-only {
 position: absolute;
 width: 1px;
@@ -1598,9 +1401,8 @@ border: 0;
 </div>
 </div>
 </div>
-
 <div class="modal" id="keyModal">
-<div class="modal-content" style="max-width: 480px;">
+<div class="modal-content modal-content-sm">
 <div class="modal-header">
 <h3 class="modal-title">🔑 Смена ключа доступа</h3>
 <button class="modal-close" id="closeKeyModal">&times;</button>
@@ -1628,7 +1430,6 @@ border: 0;
 </form>
 </div>
 </div>
-
 <div class="modal" id="itemModal">
 <div class="modal-content">
 <div class="modal-header">
@@ -1647,7 +1448,6 @@ border: 0;
 </form>
 </div>
 </div>
-
 <div class="modal" id="createModal">
 <div class="modal-content">
 <div class="modal-header">
@@ -1667,14 +1467,12 @@ border: 0;
 </form>
 </div>
 </div>
-
 <div class="context-menu" id="contextMenu">
 <div class="context-menu-item" id="ctxHide"><span>👁</span><span id="ctxHideText">Скрыть</span></div>
 <div class="context-menu-item danger" id="ctxDelete"><span>🗑</span><span id="ctxDeleteText">Удалить</span></div>
 </div>
 <div class="drag-indicator" id="dragIndicator"></div>
 <div class="item-preview" id="itemPreview"></div>
-
 <script>
 (function() {
 let SECRET = '';
@@ -1702,11 +1500,9 @@ let previewTimer = null;
 let previewTarget = null;
 let currentMousePos = {x: 0, y: 0};
 let hasMoved = false;
-
 const API_BASE = '/api/v1';
 const DRAG_DELAY = 400;
 const MOVE_THRESHOLD = 5;
-
 const logoutBtn = document.getElementById('logoutBtn');
 const keyBtn = document.getElementById('keyBtn');
 const tabs = document.querySelectorAll('.tab');
@@ -1754,7 +1550,6 @@ const ctxDelete = document.getElementById('ctxDelete');
 const ctxDeleteText = document.getElementById('ctxDeleteText');
 const dragIndicator = document.getElementById('dragIndicator');
 const itemPreview = document.getElementById('itemPreview');
-
 const ATTACHMENT_MAPPING = {
 'text/plain': '.txt', 'text/html': '.html', 'text/css': '.css',
 'text/javascript': '.js', 'text/markdown': '.md',
@@ -1777,14 +1572,12 @@ const ATTACHMENT_MAPPING = {
 'application/x-bzip2': '.bz2', 'application/json': '.json',
 'application/xml': '.xml', 'application/octet-stream': '.bin'
 };
-
 document.addEventListener('DOMContentLoaded', async () => {
 extractAndRemoveSecret();
 await loadLocalesList();
 setupEventListeners();
 await fetchBlocks();
 });
-
 function setupEventListeners() {
 tabs.forEach(tab => {
 tab.addEventListener('click', () => {
@@ -1798,14 +1591,12 @@ animateTabSwitch(blocksTab, localesTab);
 }
 });
 });
-
 localeSelect.addEventListener('change', (e) => {
 const newLocale = e.target.value;
 if (newLocale && newLocale !== currentLocale && !isAnimating) {
 animateLocaleChange(newLocale);
 }
 });
-
 saveBtn.addEventListener('click', saveData);
 logoutBtn.addEventListener('click', logout);
 keyBtn.addEventListener('click', openKeyModal);
@@ -1815,7 +1606,6 @@ keyModal.addEventListener('click', (e) => {
 if (e.target === keyModal) closeKeyModalHandler();
 });
 keyForm.addEventListener('submit', handleKeySubmit);
-
 document.addEventListener('keydown', (e) => {
 if (e.key === 'Escape') {
 closeKeyModalHandler();
@@ -1825,31 +1615,24 @@ hideDragIndicator();
 hidePreview();
 }
 });
-
 createItemBtn.addEventListener('click', () => {
 createModal.classList.add('active');
 });
-
 modalClose.addEventListener('click', () => closeModal('itemModal'));
 cancelBtn.addEventListener('click', () => closeModal('itemModal'));
 createModalClose.addEventListener('click', () => closeModal('createModal'));
 createCancelBtn.addEventListener('click', () => closeModal('createModal'));
-
 itemForm.addEventListener('submit', handleItemSubmit);
 createForm.addEventListener('submit', handleCreateSubmit);
-
 ctxHide.addEventListener('click', handleContextHide);
 ctxDelete.addEventListener('click', handleContextDelete);
-
 document.addEventListener('click', hideContextMenu);
 document.addEventListener('scroll', hideContextMenu);
-
 document.querySelectorAll('.modal').forEach(m => {
 m.addEventListener('click', (e) => {
 if (e.target === m) closeModals();
 });
 });
-
 window.addEventListener('resize', () => {
 if (currentBlock) {
 const activeBtn = document.querySelector('.block-btn.active');
@@ -1857,7 +1640,6 @@ if (activeBtn) updateIndicator(activeBtn);
 }
 });
 }
-
 function animateTabSwitch(showTab, hideTab) {
 hideTab.classList.add('fade-out');
 setTimeout(() => {
@@ -1870,7 +1652,6 @@ setTimeout(() => {
 showTab.classList.remove('fade-in');
 }, 500);
 }
-
 async function animateLocaleChange(newLocale) {
 if (isAnimating) return;
 isAnimating = true;
@@ -1884,7 +1665,6 @@ await new Promise(resolve => setTimeout(resolve, 200));
 paramsContent.classList.remove('fade-in');
 isAnimating = false;
 }
-
 function extractAndRemoveSecret() {
 const urlParams = new URLSearchParams(window.location.search);
 const urlSecret = urlParams.get('secret');
@@ -1901,25 +1681,21 @@ if (!SECRET) {
 window.location.href = '/';
 }
 }
-
 function logout() {
 if (confirm('Выйти из системы?')) {
 localStorage.removeItem('api_secret');
 window.location.href = '/';
 }
 }
-
 function openKeyModal() {
 newKeyInput.value = '';
 confirmKeyInput.value = '';
 keyErrorMsg.style.display = 'none';
 keyModal.classList.add('active');
 }
-
 function closeKeyModalHandler() {
 keyModal.classList.remove('active');
 }
-
 function showKeyError(message) {
 keyErrorText.textContent = message;
 keyErrorMsg.style.display = 'flex';
@@ -1927,12 +1703,10 @@ setTimeout(() => {
 keyErrorMsg.style.display = 'none';
 }, 3000);
 }
-
 function setLoading(button, isLoading) {
 button.disabled = isLoading;
 button.classList.toggle('loading', isLoading);
 }
-
 function showNotification(title, message, type = 'success') {
 const id = ++notificationId;
 const notification = document.createElement('div');
@@ -1962,7 +1736,6 @@ if (notif.parentNode) notif.remove();
 }
 }, 4000);
 }
-
 async function handleKeySubmit(e) {
 e.preventDefault();
 const newKey = newKeyInput.value.trim();
@@ -2004,7 +1777,6 @@ showKeyError(error.message);
 setLoading(changeKeyBtn, false);
 }
 }
-
 async function loadLocalesList() {
 try {
 const response = await fetch('/api/v1/locale/list');
@@ -2031,7 +1803,6 @@ await fetchLocaleData(currentLocale, false);
 console.error(error);
 }
 }
-
 async function fetchLocaleData(locale, showSuccessNotification = false) {
 try {
 const response = await fetch(`/api/v1/locale/${encodeURIComponent(locale)}`);
@@ -2050,7 +1821,6 @@ console.error(error);
 renderEmptyState();
 }
 }
-
 function renderParams() {
 const header = paramsContainer.querySelector('.param-row.header');
 paramsContainer.innerHTML = '';
@@ -2081,7 +1851,6 @@ row.appendChild(valueCell);
 paramsContainer.appendChild(row);
 });
 }
-
 function renderEmptyState() {
 const header = paramsContainer.querySelector('.param-row.header');
 paramsContainer.innerHTML = '';
@@ -2091,7 +1860,6 @@ empty.className = 'empty-state';
 empty.textContent = '✨ Нет параметров для отображения';
 paramsContainer.appendChild(empty);
 }
-
 async function saveData() {
 if (!SECRET) {
 console.error('No secret');
@@ -2122,7 +1890,6 @@ console.error(error);
 setLoading(saveBtn, false);
 }
 }
-
 async function fetchBlocks() {
 try {
 const res = await fetch(`${API_BASE}/block/list?secret=${encodeURIComponent(SECRET)}`);
@@ -2139,7 +1906,6 @@ selectBlock(blocks[0], firstBtn);
 blocksNav.innerHTML = '<div style="color:var(--danger);padding:12px">Не удалось загрузить блоки</div>';
 }
 }
-
 function renderBlocksNav(blocks) {
 blocksNav.innerHTML = '<div class="nav-indicator" id="navIndicator"></div>';
 if (!blocks || blocks.length === 0) {
@@ -2160,13 +1926,11 @@ const activeBtn = blocksNav.querySelector('.block-btn.active');
 if (activeBtn) updateIndicator(activeBtn);
 }
 }
-
 function updateIndicator(btn) {
 if (!navIndicator || !btn) return;
 navIndicator.style.width = `${btn.offsetWidth}px`;
 navIndicator.style.transform = `translateX(${btn.offsetLeft}px)`;
 }
-
 async function selectBlock(block, btnElement) {
 if (isTransitioning) return;
 await startTransition();
@@ -2195,7 +1959,6 @@ console.error(e);
 }
 endTransition();
 }
-
 async function loadItems() {
 if (!currentBlock) return;
 try {
@@ -2214,7 +1977,6 @@ renderItemsList();
 console.error(e);
 }
 }
-
 function renderItemsList() {
 itemsList.innerHTML = '';
 const hasVisible = visibleItems.length > 0;
@@ -2246,7 +2008,6 @@ itemsList.appendChild(card);
 });
 }
 }
-
 function createItemCard(name, index, isInvisible) {
 const card = document.createElement('div');
 card.className = 'item-card' + (isInvisible ? ' invisible' : '');
@@ -2256,7 +2017,6 @@ card.style.userSelect = 'none';
 card.style.webkitUserSelect = 'none';
 card.style.mozUserSelect = 'none';
 card.style.msUserSelect = 'none';
-
 card.addEventListener('mousedown', handleMouseDown);
 card.addEventListener('mouseup', handleMouseUp);
 card.addEventListener('mouseenter', (e) => { showPreview(e, name); });
@@ -2271,7 +2031,6 @@ hidePreview();
 openEditModal(name);
 }
 });
-
 const content = document.createElement('div');
 content.className = 'item-card-content';
 const title = document.createElement('div');
@@ -2286,21 +2045,16 @@ content.appendChild(badge);
 card.appendChild(content);
 return card;
 }
-
 function handleMouseDown(e) {
 if (e.button !== 0) return;
-
 const card = this;
 const isInvisible = card.classList.contains('invisible');
-
 longPressActive = false;
 hasMoved = false;
 clickStartTime = Date.now();
 dragStartPos = {x: e.clientX, y: e.clientY};
-
 hidePreview();
 clearTimeout(longPressTimer);
-
 if (!isInvisible) {
 longPressTimer = setTimeout(() => {
 if (hasMoved) return;
@@ -2310,18 +2064,15 @@ card.classList.add('dragging');
 dragIndicator.style.left = (e.clientX - 12) + 'px';
 dragIndicator.style.top = (e.clientY - 12) + 'px';
 dragIndicator.classList.add('active');
-
 document.addEventListener('mousemove', handleDragMove);
 document.addEventListener('mouseup', handleDragEnd);
 }, DRAG_DELAY);
 }
-
 document.addEventListener('mousemove', handleMouseMoveCheck);
 document.addEventListener('mouseup', () => {
 document.removeEventListener('mousemove', handleMouseMoveCheck);
 });
 }
-
 function handleMouseMoveCheck(e) {
 const dx = e.clientX - dragStartPos.x;
 const dy = e.clientY - dragStartPos.y;
@@ -2330,19 +2081,16 @@ hasMoved = true;
 clearTimeout(longPressTimer);
 }
 }
-
 function handleMouseUp(e) {
 clearTimeout(longPressTimer);
 document.removeEventListener('mousemove', handleMouseMoveCheck);
 }
-
 function handleDragMove(e) {
 if (!longPressActive || !draggedItem) return;
 dragIndicator.style.left = (e.clientX - 12) + 'px';
 dragIndicator.style.top = (e.clientY - 12) + 'px';
 highlightDropTarget(e);
 }
-
 function highlightDropTarget(e) {
 const cards = Array.from(itemsList.querySelectorAll('.item-card:not(.invisible)'));
 let target = null;
@@ -2358,17 +2106,14 @@ if (target && target !== draggedItem) {
 target.classList.add('drag-over');
 }
 }
-
 function handleDragEnd(e) {
 clearTimeout(longPressTimer);
 document.removeEventListener('mousemove', handleDragMove);
 document.removeEventListener('mouseup', handleDragEnd);
 document.removeEventListener('mousemove', handleMouseMoveCheck);
-
 if (longPressActive && draggedItem) {
 const cards = Array.from(itemsList.querySelectorAll('.item-card:not(.invisible)'));
 const dropTarget = cards.find(c => c.classList.contains('drag-over'));
-
 if (dropTarget && dropTarget !== draggedItem) {
 const draggedIndex = cards.indexOf(draggedItem);
 const targetIndex = cards.indexOf(dropTarget);
@@ -2379,17 +2124,14 @@ dropTarget.parentNode.insertBefore(draggedItem, dropTarget);
 }
 updateVisibleOrder();
 }
-
 draggedItem.classList.remove('dragging');
 cards.forEach(c => c.classList.remove('drag-over'));
 saveOrder();
 }
-
 hideDragIndicator();
 draggedItem = null;
 longPressActive = false;
 }
-
 function hideDragIndicator() {
 clearTimeout(longPressTimer);
 dragIndicator.classList.remove('active');
@@ -2399,11 +2141,9 @@ document.removeEventListener('mousemove', handleMouseMoveCheck);
 draggedItem = null;
 longPressActive = false;
 }
-
 function updateVisibleOrder() {
 visibleItems = Array.from(itemsList.querySelectorAll('.item-card:not(.invisible)')).map(card => card.dataset.name);
 }
-
 async function saveOrder() {
 if (!currentBlock) return;
 try {
@@ -2420,7 +2160,6 @@ if (result !== 'OK') await loadItems();
 await loadItems();
 }
 }
-
 function handleContextMenu(e, name, isInvisible) {
 e.preventDefault();
 e.stopPropagation();
@@ -2428,30 +2167,33 @@ hideDragIndicator();
 hidePreview();
 contextTarget = {name, isInvisible};
 ctxHideText.textContent = isInvisible ? 'Показать' : 'Скрыть';
-contextMenu.style.left = `${e.pageX}px`;
-contextMenu.style.top = `${e.pageY}px`;
+const x = e.clientX;
+let y = e.clientY;
+contextMenu.style.left = `${x}px`;
+contextMenu.style.top = `${y}px`;
 contextMenu.classList.add('active');
+const menuRect = contextMenu.getBoundingClientRect();
+if (y + menuRect.height > window.innerHeight) {
+y = Math.max(0, y - menuRect.height);
+contextMenu.style.top = `${y}px`;
 }
-
+}
 function hideContextMenu() {
 contextMenu.classList.remove('active');
 contextTarget = null;
 }
-
 async function handleContextHide() {
 if (contextTarget) {
 await toggleVisibility(contextTarget.name, contextTarget.isInvisible);
 }
 hideContextMenu();
 }
-
 async function handleContextDelete() {
 if (contextTarget) {
 await deleteItem(contextTarget.name);
 }
 hideContextMenu();
 }
-
 async function toggleVisibility(name, isInvisible) {
 try {
 let order = [...visibleItems];
@@ -2476,7 +2218,6 @@ showNotification('Видимость изменена', `Элемент ${isInvi
 showNotification('Ошибка', 'Не удалось изменить видимость', 'error');
 }
 }
-
 async function deleteItem(itemName) {
 if (!confirm(`Подтвердите удаление элемента "${itemName}". Это действие необратимо.`)) return;
 try {
@@ -2496,21 +2237,31 @@ showNotification('Удалено', 'Элемент успешно удален',
 showNotification('Ошибка', 'Не удалось удалить элемент', 'error');
 }
 }
-
 function hidePreview() {
 clearTimeout(previewTimer);
 previewTarget = null;
 itemPreview.classList.remove('active');
 }
-
+function updatePreviewPosition(x, y) {
+const previewWidth = itemPreview.offsetWidth;
+const previewHeight = itemPreview.offsetHeight;
+if (x + previewWidth > window.innerWidth) {
+x = window.innerWidth - previewWidth - 5;
+}
+if (y + previewHeight > window.innerHeight) {
+y = window.innerHeight - previewHeight - 5;
+}
+if (x < 0) x = 5;
+if (y < 0) y = 5;
+itemPreview.style.left = `${x}px`;
+itemPreview.style.top = `${y}px`;
+}
 function movePreview(e) {
 currentMousePos = {x: e.clientX, y: e.clientY};
 if (itemPreview.classList.contains('active')) {
-itemPreview.style.left = (currentMousePos.x + 15) + 'px';
-itemPreview.style.top = (currentMousePos.y + 15) + 'px';
+updatePreviewPosition(currentMousePos.x + 15, currentMousePos.y + 15);
 }
 }
-
 async function showPreview(e, name) {
 if (longPressActive || draggedItem || isTransitioning) return;
 previewTarget = name;
@@ -2538,13 +2289,13 @@ html += `<div class="item-preview-field"><span class="item-preview-label">${disp
 }
 html += '</div>';
 itemPreview.innerHTML = html;
-itemPreview.style.left = (currentMousePos.x + 15) + 'px';
-itemPreview.style.top = (currentMousePos.y + 15) + 'px';
 itemPreview.classList.add('active');
+requestAnimationFrame(() => {
+updatePreviewPosition(currentMousePos.x + 15, currentMousePos.y + 15);
+});
 } catch (err) {}
 }, 500);
 }
-
 function startTransition() {
 if (isTransitioning) return Promise.reject();
 isTransitioning = true;
@@ -2552,7 +2303,6 @@ itemsList.classList.add('fade-out');
 createItemBtn.disabled = true;
 return new Promise(resolve => setTimeout(resolve, 250));
 }
-
 function endTransition() {
 itemsList.classList.remove('fade-out');
 itemsList.classList.add('fade-in');
@@ -2562,12 +2312,10 @@ itemsList.classList.remove('fade-in');
 isTransitioning = false;
 }, 250);
 }
-
 function closeModal(id) {
 document.getElementById(id).classList.remove('active');
 if (id === 'createModal') createNameInput.value = '';
 }
-
 function closeModals() {
 document.querySelectorAll('.modal').forEach(m => {
 m.classList.remove('active');
@@ -2576,7 +2324,6 @@ if (m.id === 'createModal') createNameInput.value = '';
 hideDragIndicator();
 hidePreview();
 }
-
 function generateFormFields() {
 formFields.innerHTML = '';
 if (!blockRequires || !blockRequires.json) return;
@@ -2651,7 +2398,6 @@ group.appendChild(input);
 formFields.appendChild(group);
 });
 }
-
 function addTag(container, value) {
 const tag = document.createElement('span');
 tag.className = 'tag';
@@ -2659,11 +2405,9 @@ tag.innerHTML = `${value}<span class="tag-remove">&times;</span>`;
 tag.querySelector('.tag-remove').onclick = () => tag.remove();
 container.appendChild(tag);
 }
-
 function getExtensionFromMime(mime) {
 return ATTACHMENT_MAPPING[mime] || '.bin';
 }
-
 function generateAttachmentsSection(itemName) {
 attachmentsSection.innerHTML = '';
 if (!blockRequires || !blockRequires.attachments || !blockRequires.attachments.length) {
@@ -2786,11 +2530,9 @@ uploadGroup.appendChild(fileWrapper);
 attachmentsSection.appendChild(uploadGroup);
 });
 }
-
 function downloadAttachment(itemName, sysname) {
 window.open(`${API_BASE}/block/${encodeURIComponent(currentBlock)}/attachment?name=${encodeURIComponent(itemName)}&attachment=${encodeURIComponent(sysname)}&secret=${encodeURIComponent(SECRET)}`, '_blank');
 }
-
 async function uploadPendingAttachments(itemName) {
 for (const [sysname, file] of Object.entries(pendingAttachments)) {
 const formData = new FormData();
@@ -2809,7 +2551,6 @@ return false;
 }
 return true;
 }
-
 async function detachAttachment(itemName, sysname) {
 if (!confirm('Подтвердите удаление вложения. Файл будет безвозвратно удалён с сервера.')) return;
 try {
@@ -2831,7 +2572,6 @@ showNotification('Удалено', 'Вложение удалено', 'success')
 showNotification('Ошибка', 'Не удалось удалить вложение', 'error');
 }
 }
-
 async function openEditModal(itemName) {
 hideDragIndicator();
 hidePreview();
@@ -2849,7 +2589,6 @@ generateAttachmentsSection(itemName);
 await loadItemData(itemName);
 itemModal.classList.add('active');
 }
-
 async function loadItemData(itemName) {
 if (!blockRequires || !blockRequires.json) return;
 try {
@@ -2892,7 +2631,6 @@ formFields.insertBefore(badge, formFields.firstChild);
 }
 } catch (e) {}
 }
-
 async function handleItemSubmit(e) {
 e.preventDefault();
 const itemName = itemNameInput.value;
@@ -2945,7 +2683,6 @@ showNotification('Сохранено', 'Изменения сохранены', 
 showNotification('Ошибка', 'Не удалось сохранить изменения', 'error');
 }
 }
-
 async function handleCreateSubmit(e) {
 e.preventDefault();
 const block = createBlockInput.value;
