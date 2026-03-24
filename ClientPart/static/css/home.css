@@ -23,7 +23,7 @@
     display: flex;
     align-items: center;
     gap: 20px;
-    margin-bottom: 48px;
+    margin-bottom: 18px;
 }
 
 .about__person-photo {
@@ -316,119 +316,6 @@
 .events__btn:hover {
     background: #0d3a5c;
     transform: translateY(-2px);
-}
-
-/* About Popup - ОБНОВЛЕННАЯ ВЕРСИЯ */
-.about-popup {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s, visibility 0.3s;
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
-    padding: 20px;
-}
-
-.about-popup.active {
-    opacity: 1;
-    visibility: visible;
-}
-
-.about-popup__content {
-    position: relative;
-    background: #ffffff;
-    border-radius: 16px;
-    max-width: 1000px;
-    width: 100%;
-    max-height: 85vh;
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 30px;
-    padding: 40px;
-    z-index: 10000;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-    overflow: hidden;
-}
-
-.about-popup__close {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    transition: background 0.2s;
-    z-index: 10001;
-    width: 36px;
-    height: 36px;
-}
-
-.about-popup__close:hover {
-    background: rgba(0, 0, 0, 0.05);
-}
-
-.about-popup__close img {
-    width: 20px;
-    height: 20px;
-}
-
-.about-popup__photo {
-    position: sticky;
-    top: 0;
-    border-radius: 8px;
-    overflow: hidden;
-    align-self: start;
-    width: 100%;
-}
-
-.about-popup__photo img {
-    width: 100%;
-    height: auto;
-    display: block;
-    object-fit: cover;
-}
-
-.about-popup__text-wrapper {
-    overflow-y: auto;
-    padding-right: 10px;
-    max-height: calc(85vh - 80px);
-}
-
-.about-popup__text--1 {
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 150%;
-    color: #333333;
-    text-align: justify;
-    margin: 0 0 20px 0;
-    padding-bottom: 20px;
-    border-bottom: 1px solid rgba(26, 92, 158, 0.1);
-}
-
-.about-popup__text p {
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 150%;
-    color: #333333;
-    text-align: justify;
-    margin: 0 0 15px 0;
-}
-
-.about-popup__text p:last-child {
-    margin-bottom: 0;
 }
 
 /* News Popup */
@@ -858,50 +745,6 @@
         width: 100%;
     }
 
-    /* About popup - мобильная адаптация */
-    .about-popup {
-        padding: 0;
-    }
-
-    .about-popup__content {
-        grid-template-columns: 1fr;
-        gap: 20px;
-        width: 100%;
-        max-width: 100%;
-        max-height: 100vh;
-        height: 100vh;
-        border-radius: 0;
-        padding: 60px 16px 20px;
-        overflow-y: auto;
-    }
-
-    .about-popup__photo {
-        position: static;
-        max-width: 250px;
-        margin: 0 auto;
-    }
-
-    .about-popup__text-wrapper {
-        max-height: none;
-        overflow-y: visible;
-        padding-right: 0;
-    }
-
-    .about-popup__text--1 {
-        width: 100%;
-        display: block;
-        font-size: 13px;
-    }
-
-    .about-popup__text p {
-        font-size: 13px;
-    }
-
-    .about-popup__close {
-        top: 16px;
-        right: 12px;
-    }
-
     /* News popup - мобильная адаптация */
     .news-popup {
         padding: 0;
@@ -989,12 +832,6 @@
 
 /* Дополнительная адаптация для планшетов */
 @media (min-width: 431px) and (max-width: 768px) {
-    .about-popup__content {
-        grid-template-columns: 220px 1fr;
-        gap: 20px;
-        padding: 30px;
-    }
-
     .news-popup__content {
         flex-direction: column;
     }
