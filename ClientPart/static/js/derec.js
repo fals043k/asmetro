@@ -9,13 +9,12 @@ const DerecPageApp = (() => {
             HERO_TITLE: '.hero__title',
             HERO_SUBTITLE: '.hero__subtitle',
             TEAM_MAIN_NAME: '.team__main-name',
-            TEAM_MAIN_LIST: '.team__main-list:first-of-type',
+            TEAM_MAIN_LIST: '.team__main-list',
             TEAM_MAIN_SECTION: '.team__main-section',
             TEAM_MAIN_TEXT: '.team__main-text',
             TEAM_MAIN_LIST_DOTS: '.team__main-list--dots',
             TASKS_TEXT: '.tasks__text:first-of-type',
-            TASKS_LIST: '.tasks__list',
-            TASKS_CONTENT: '.tasks__content p:nth-of-type(2)',
+            TASKS_LIST_MERGED: '#tasks-list-merged',
             SLIDER: '.slider',
             SLIDER_LINK: '.slider__link',
             SLIDER_PHOTO_IMG: '.slider__photo-img',
@@ -23,7 +22,7 @@ const DerecPageApp = (() => {
             SLIDER_CONTACT: '.slider__contact'
         },
         API_ENDPOINTS: {
-            LOCALE_DEREC: '/api/v1/locale/derec',
+            LOCALE_DIRECTORY: '/api/v1/locale/дирекция',
             TEAM_ORDER: '/api/v1/block/команда/order',
             TEAM_CONTENT: '/api/v1/block/команда/content',
             TEAM_ATTACHMENT: '/api/v1/block/команда/attachment'
@@ -33,7 +32,8 @@ const DerecPageApp = (() => {
     };
 
     let state = {
-        objectUrls: []
+        objectUrls: [],
+        scrollAnimation: null
     };
 
     function init() {
@@ -45,7 +45,7 @@ const DerecPageApp = (() => {
             
             await loadMainTexts();
             await loadTeamMembers();
-            initSliderScroll();
+            initSmoothSliderScroll();
         });
     }
 
@@ -80,7 +80,7 @@ const DerecPageApp = (() => {
             const timeoutId = setTimeout(() => controller.abort(), CONFIG.TIMEOUT_MS);
             
             const response = await fetch(
-                `${CONFIG.API_BASE_URL}${CONFIG.API_ENDPOINTS.LOCALE_DEREC}`,
+                `${CONFIG.API_BASE_URL}${CONFIG.API_ENDPOINTS.LOCALE_DIRECTORY}`,
                 { signal: controller.signal }
             );
             clearTimeout(timeoutId);
@@ -97,38 +97,47 @@ const DerecPageApp = (() => {
             updateTextContent(CONFIG.SELECTORS.TEAM_MAIN_NAME, data.фио);
             
             if (data.заслуги) {
-                updateListContent(CONFIG.SELECTORS.TEAM_MAIN_LIST, data.заслуги, 'newline');
+                const container = document.querySelector(CONFIG.SELECTORS.TEAM_MAIN_LIST);
+                if (container) {
+                    updateListContent(container, data.заслуги);
+                }
             }
             
             if (data.образование) {
                 const educationSection = document.querySelector(`${CONFIG.SELECTORS.TEAM_MAIN_SECTION}:nth-of-type(1) ${CONFIG.SELECTORS.TEAM_MAIN_LIST}`);
                 if (educationSection) {
-                    updateListContent(educationSection, data.образование, 'newline');
+                    updateListContent(educationSection, data.образование);
                 }
             }
             
             if (data.опыт) {
-                updateParagraphContent(`${CONFIG.SELECTORS.TEAM_MAIN_SECTION}:nth-of-type(2)`, data.опыт, CONFIG.SELECTORS.TEAM_MAIN_TEXT);
+                const section = document.querySelector(`${CONFIG.SELECTORS.TEAM_MAIN_SECTION}:nth-of-type(2)`);
+                if (section) {
+                    updateParagraphContent(section, data.опыт, CONFIG.SELECTORS.TEAM_MAIN_TEXT);
+                }
             }
             
             if (data.факты) {
                 const factsSection = document.querySelector(`${CONFIG.SELECTORS.TEAM_MAIN_SECTION}:nth-of-type(2) ${CONFIG.SELECTORS.TEAM_MAIN_LIST_DOTS}`);
                 if (factsSection) {
-                    updateListContent(factsSection, data.факты, 'newline');
+                    updateListContent(factsSection, data.факты);
                 }
             }
             
             if (data.коллектив) {
-                updateParagraphContent(`${CONFIG.SELECTORS.TEAM_MAIN_SECTION}:nth-of-type(3)`, data.коллектив, CONFIG.SELECTORS.TEAM_MAIN_TEXT);
+                const section = document.querySelector(`${CONFIG.SELECTORS.TEAM_MAIN_SECTION}:nth-of-type(3)`);
+                if (section) {
+                    updateParagraphContent(section, data.коллектив, CONFIG.SELECTORS.TEAM_MAIN_TEXT);
+                }
             }
             
-            updateTextContent(CONFIG.SELECTORS.TASKS_TEXT, data.цель);
+            if (data.цели) {
+                updateTextContent(CONFIG.SELECTORS.TASKS_TEXT, data.цели);
+            }
             
             if (data.задачи) {
-                updateTasksLists(data.задачи);
+                updateMergedTasksList(data.задачи);
             }
-            
-            updateTextContent(CONFIG.SELECTORS.TASKS_CONTENT, data.кроме_того);
             
         } catch (error) {
             console.error('Ошибка загрузки текстов для страницы дирекции:', error);
@@ -141,21 +150,18 @@ const DerecPageApp = (() => {
         if (element) element.textContent = text;
     }
 
-    function updateListContent(container, text, delimiter = 'newline') {
-        if (!container) return;
+    function updateListContent(container, text) {
+        if (!container || !text) return;
         
-        const items = delimiter === 'newline' 
-            ? text.split('\n').filter(item => item.trim() !== '')
-            : text.split('\n\n').filter(item => item.trim() !== '');
-        
+        const items = text.split('\n').filter(item => item.trim() !== '');
         container.innerHTML = items.map(item => `<li>${escapeHtml(item.trim())}</li>`).join('');
     }
 
-    function updateParagraphContent(sectionSelector, text, paragraphClass) {
-        const section = document.querySelector(sectionSelector);
+    function updateParagraphContent(section, text, paragraphClass) {
         if (!section) return;
         
         const title = section.querySelector('.team__main-section-title');
+        
         section.innerHTML = '';
         if (title) section.appendChild(title);
         
@@ -166,29 +172,29 @@ const DerecPageApp = (() => {
             p.textContent = paragraph.trim();
             section.appendChild(p);
         });
+        
+        if (paragraphs.length === 0 && text.trim()) {
+            const p = document.createElement('p');
+            p.className = paragraphClass;
+            p.textContent = text.trim();
+            section.appendChild(p);
+        }
     }
 
-    function updateTasksLists(text) {
-        const tasksLists = document.querySelectorAll(CONFIG.SELECTORS.TASKS_LIST);
-        if (tasksLists.length < 2) return;
+    function updateMergedTasksList(text) {
+        const tasksListElement = document.querySelector(CONFIG.SELECTORS.TASKS_LIST_MERGED);
+        if (!tasksListElement) return;
         
         const allTasks = text.split('\n').filter(task => task.trim() !== '');
-        const кромеТогоIndex = allTasks.findIndex(task => 
-            task.toLowerCase().includes('кроме того') || 
-            task.toLowerCase().includes('кроме того,')
-        );
         
-        if (кромеТогоIndex !== -1) {
-            const firstTasks = allTasks.slice(0, кромеТогоIndex);
-            const secondTasks = allTasks.slice(кромеТогоIndex + 1);
-            
-            tasksLists[0].innerHTML = firstTasks.map(task => `<li>${escapeHtml(task.trim())}</li>`).join('');
-            tasksLists[1].innerHTML = secondTasks.map(task => `<li>${escapeHtml(task.trim())}</li>`).join('');
-        } else {
-            const mid = Math.floor(allTasks.length / 2);
-            tasksLists[0].innerHTML = allTasks.slice(0, mid).map(task => `<li>${escapeHtml(task.trim())}</li>`).join('');
-            tasksLists[1].innerHTML = allTasks.slice(mid).map(task => `<li>${escapeHtml(task.trim())}</li>`).join('');
-        }
+        const filteredTasks = allTasks.filter(task => {
+            const lowerTask = task.toLowerCase();
+            return !lowerTask.includes('кроме того, ассоциация осуществляет:') &&
+                   !lowerTask.includes('кроме того, ассоциация осуществляет') &&
+                   !lowerTask.includes('кроме того');
+        });
+        
+        tasksListElement.innerHTML = filteredTasks.map(task => `<li>${escapeHtml(task.trim())}</li>`).join('');
     }
 
     async function loadTeamMembers() {
@@ -330,16 +336,55 @@ const DerecPageApp = (() => {
         }
     }
 
-    function initSliderScroll() {
+    function initSmoothSliderScroll() {
         const slider = document.querySelector(CONFIG.SELECTORS.SLIDER);
         if (!slider) return;
 
+        let isScrolling = false;
+        let scrollTimeout;
+
         slider.addEventListener('wheel', (event) => {
-            if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
-                event.preventDefault();
-                slider.scrollLeft += event.deltaY;
+            event.preventDefault();
+            
+            if (state.scrollAnimation) {
+                cancelAnimationFrame(state.scrollAnimation);
             }
+            
+            const delta = event.deltaY || event.deltaX;
+            const targetScroll = slider.scrollLeft + delta;
+            
+            const startScroll = slider.scrollLeft;
+            const distance = targetScroll - startScroll;
+            const duration = Math.min(Math.abs(distance) * 0.5, 200);
+            const startTime = performance.now();
+            
+            const animateScroll = (currentTime) => {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+                const newScrollLeft = startScroll + distance * easeProgress;
+                
+                slider.scrollLeft = newScrollLeft;
+                
+                if (progress < 1) {
+                    state.scrollAnimation = requestAnimationFrame(animateScroll);
+                } else {
+                    state.scrollAnimation = null;
+                }
+            };
+            
+            state.scrollAnimation = requestAnimationFrame(animateScroll);
+            
+            clearTimeout(scrollTimeout);
+            isScrolling = true;
+            scrollTimeout = setTimeout(() => {
+                isScrolling = false;
+            }, 150);
+            
         }, { passive: false });
+        
+        slider.style.scrollBehavior = 'auto';
     }
 
     function escapeHtml(text) {
@@ -352,6 +397,9 @@ const DerecPageApp = (() => {
     function cleanup() {
         state.objectUrls.forEach(url => URL.revokeObjectURL(url));
         state.objectUrls = [];
+        if (state.scrollAnimation) {
+            cancelAnimationFrame(state.scrollAnimation);
+        }
     }
 
     window.addEventListener('beforeunload', cleanup);

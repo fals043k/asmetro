@@ -10,6 +10,7 @@ const HomePageApp = (() => {
             HERO_SUBTITLE: '.hero__subtitle',
             ABOUT_TEXT: '.about__text',
             ABOUT_BTN: '.about__btn',
+            ABOUT_BTN_WRAPPER: '.about__btn-wrapper',
             NEWS_LIST: '.news__list',
             NEWS_ITEM: 'a.news__item',
             NEWS_TITLE: '.news__title',
@@ -20,7 +21,7 @@ const HomePageApp = (() => {
             EVENTS_DATE: '.events__date'
         },
         API_ENDPOINTS: {
-            MAIN_LOCALE: '/api/v1/locale/main',
+            MAIN_LOCALE: '/api/v1/locale/главная',
             NEWS_ORDER: '/api/v1/block/новости/order',
             NEWS_CONTENT: '/api/v1/block/новости/content',
             NEWS_ATTACHMENT: '/api/v1/block/новости/attachment',
@@ -38,7 +39,9 @@ const HomePageApp = (() => {
         newsPopupElement: null,
         eventsPopupElement: null,
         newsObjectUrls: [],
-        eventsObjectUrls: []
+        eventsObjectUrls: [],
+        fullAboutText: '',
+        shortAboutText: ''
     };
 
     function init() {
@@ -49,7 +52,7 @@ const HomePageApp = (() => {
             ]);
             
             await loadMainPageTexts();
-            initAboutPopup();
+            initAboutText();
             loadNews();
             loadEvents();
         });
@@ -108,34 +111,106 @@ const HomePageApp = (() => {
                 heroSubtitle.textContent = data.описание;
             }
             
-            const aboutText = document.querySelector(CONFIG.SELECTORS.ABOUT_TEXT);
-            if (aboutText && data.подробнее) {
-                aboutText.textContent = data.подробнее;
+            const aboutTexts = document.querySelectorAll(CONFIG.SELECTORS.ABOUT_TEXT);
+            
+            if (data.подробнее) {
+                state.shortAboutText = data.подробнее;
+            }
+            
+            if (data.полное) {
+                state.fullAboutText = data.полное;
+            }
+            
+            if (aboutTexts.length >= 1 && state.shortAboutText) {
+                aboutTexts[0].textContent = state.shortAboutText;
+            }
+            
+            if (aboutTexts.length >= 2 && state.fullAboutText) {
+                aboutTexts[1].textContent = state.fullAboutText;
             }
         } catch (e) {
             console.error('Ошибка загрузки текстов для главной:', e);
         }
     }
 
-    function initAboutPopup() {
-        const aboutBtn = document.querySelector(CONFIG.SELECTORS.ABOUT_BTN);
-        const aboutTextEl = document.querySelector('.about .about__container .about__text:last-of-type');
-
-        if (!aboutBtn || !aboutTextEl) return;
-
-        const shortText = 'На сегодняшний день очевидна огромная роль общественного транспорта в напряжённой жизни современного мегаполиса и, в первую очередь роль метрополитена, как наиболее надёжного и чётко функционирующего городского перевозчика практически независимого от воздействия внешних факторов. Тот факт, что метрополитены Ассоциации...';
+    function checkTextHeight(element) {
+        if (!element) return false;
         
-        const fullText = 'На сегодняшний день очевидна огромная роль общественного транспорта в напряжённой жизни современного мегаполиса и, в первую очередь роль метрополитена, как наиболее надёжного и чётко функционирующего городского перевозчика практически независимого от воздействия внешних факторов. Тот факт, что метрополитены Ассоциации ежедневно перевозят почти 16 млн. человек, а годовая перевозка составляет почти 5 млрд. человек, ярко свидетельствует о значении метрополитена для жителей городов, поддержания их деловой и социальной стабильности. Совместная работа в составе Ассоциации стала залогом развития метрополитенов, как наиболее передовых предприятий, выступающих на рынке транспортных услуг городов. Внедрение новейших достижений научно-технического прогресса, новой техники, совершенствование технологических процессов – вот далеко не полный перечень вопросов, которые успешно решают метрополитены, принимая участие в работе Международной Ассоциации "Метро". За этот период Ассоциация «Метро» завоевала авторитет и уважение не только среди организаций России, но и на международной арене. Она является действительным членом Международного Союза Общественного Транспорта, активно участвуя в мероприятиях, проводимых этой организацией, объединяющей транспортных операторов всего мира.';
+        const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
+        const totalHeight = element.scrollHeight;
+        const lineCount = Math.ceil(totalHeight / lineHeight);
+        
+        return lineCount > 3;
+    }
 
+    function initAboutText() {
+    const aboutTexts = document.querySelectorAll(CONFIG.SELECTORS.ABOUT_TEXT);
+    const aboutTextEl = aboutTexts.length >= 2 ? aboutTexts[1] : null;
+    const aboutBtnWrapper = document.querySelector(CONFIG.SELECTORS.ABOUT_BTN_WRAPPER);
+    const aboutBtn = document.querySelector(CONFIG.SELECTORS.ABOUT_BTN);
+
+    if (!aboutTextEl) return;
+
+    const fullText = state.fullAboutText;
+    
+    if (!fullText || fullText.trim() === '') {
+        if (aboutBtnWrapper) aboutBtnWrapper.style.display = 'none';
+        return;
+    }
+
+    const formattedFullText = fullText.replace(/\n/g, '<br>');
+    const formattedShortText = state.shortAboutText ? state.shortAboutText.replace(/\n/g, '<br>') : '';
+
+    if (aboutTexts.length >= 1 && formattedShortText) {
+        aboutTexts[0].innerHTML = formattedShortText;
+    }
+
+    aboutTextEl.innerHTML = formattedFullText;
+    const needsTruncation = checkTextHeight(aboutTextEl);
+    
+    if (needsTruncation) {
+        if (aboutBtnWrapper) aboutBtnWrapper.style.display = 'flex';
+        
         let isExpanded = false;
-
-        aboutBtn.addEventListener('click', (e) => {
+        
+        const btnClickHandler = (e) => {
             e.preventDefault();
             isExpanded = !isExpanded;
-            aboutTextEl.textContent = isExpanded ? fullText : shortText;
-            aboutBtn.textContent = isExpanded ? 'Скрыть' : 'Читать далее';
-        });
+            
+            if (isExpanded) {
+                aboutTextEl.innerHTML = formattedFullText;
+                aboutTextEl.style.display = 'block';
+                aboutTextEl.style.webkitLineClamp = 'unset';
+                aboutTextEl.style.webkitBoxOrient = 'unset';
+                aboutTextEl.style.overflow = 'visible';
+                aboutTextEl.style.textOverflow = 'clip';
+                aboutBtn.textContent = 'Скрыть';
+            } else {
+                aboutTextEl.innerHTML = formattedFullText;
+                aboutTextEl.style.display = '-webkit-box';
+                aboutTextEl.style.webkitLineClamp = '3';
+                aboutTextEl.style.webkitBoxOrient = 'vertical';
+                aboutTextEl.style.overflow = 'hidden';
+                aboutTextEl.style.textOverflow = 'ellipsis';
+                aboutBtn.textContent = 'Читать далее';
+            }
+        };
+        
+        aboutBtn.removeEventListener('click', btnClickHandler);
+        aboutBtn.addEventListener('click', btnClickHandler);
+        
+        aboutTextEl.innerHTML = formattedFullText;
+        aboutTextEl.style.display = '-webkit-box';
+        aboutTextEl.style.webkitLineClamp = '3';
+        aboutTextEl.style.webkitBoxOrient = 'vertical';
+        aboutTextEl.style.overflow = 'hidden';
+        aboutTextEl.style.textOverflow = 'ellipsis';
+    } else {
+        aboutTextEl.innerHTML = formattedFullText;
+        aboutTextEl.style.display = 'block';
+        if (aboutBtnWrapper) aboutBtnWrapper.style.display = 'none';
     }
+}
 
     async function loadNews() {
         const newsList = document.querySelector(CONFIG.SELECTORS.NEWS_LIST);

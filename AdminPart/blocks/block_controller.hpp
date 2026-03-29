@@ -3,14 +3,14 @@
 
 #include "../fals/server_request.hpp"
 #include "../fals/server_response.hpp"
-#include "block.hpp"
+#include "block_callbacks.hpp"
 
 
 class fals_BLOCK {
 public:
 	static std::shared_ptr<server_response> process_get(req request) {
 		if (request->api.size() == 4 && request->api[3] == "list") {
-			if (!request->query.contains("secret") || request->query["secret"] != fals_GLOBAL::secret)
+			if (!request->query.contains("secret") || !fals_GLOBAL::is_secret(std::move(request->query["secret"])))
 				return text_resp();
 
 			auto blocks = Block::get_blocks();
@@ -33,7 +33,7 @@ public:
 			if (request->api[4] == "requires")
 				return (*block)->get_requires(request);
 
-			else if (request->api[4] == "actives")
+			else if (request->api[4] == "attachments")
 				return (*block)->get_active_attachments(request);
 
 			else if (request->api[4] == "content")
@@ -52,7 +52,7 @@ public:
 
 	static std::shared_ptr<server_response> process_post(req request) {
 		auto secret = request->get_form_by_key("secret");
-		if (secret.empty() || secret.value != fals_GLOBAL::secret)
+		if (secret.empty() || !fals_GLOBAL::is_secret(std::move(secret.value)))
 			return text_resp();
 
 
@@ -67,7 +67,7 @@ public:
 				return (*block)->set_content(request);
 
 			else if (request->api[4] == "attach")
-				return (*block)->set_attachment(request);
+				return (*block)->add_attachment(request);
 
 			else if (request->api[4] == "detach")
 				return (*block)->delete_attachment(request);

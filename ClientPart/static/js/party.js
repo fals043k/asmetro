@@ -32,6 +32,8 @@ const FALLBACK_COMPANY_DATA = {
     }
 };
 
+const EMPTY_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
 function formatTextWithLineBreaks(text) {
     if (!text || typeof text !== 'string') return '';
     const escaped = text
@@ -44,16 +46,15 @@ function formatTextWithLineBreaks(text) {
 document.addEventListener('DOMContentLoaded', function() {
     loadHeader();
     loadFooter();
-    loadPartyText(); // Загружаем описание для hero секции
+    loadPartyText();
     loadMetro();
     loadPredpriyatiya();
     initModal();
 });
 
-// Загрузка текста для страницы Участники
 async function loadPartyText() {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/locale/party`);
+        const response = await fetch(`${API_BASE_URL}/api/v1/locale/участники`);
         if (!response.ok) {
             console.warn('Не удалось загрузить описание для страницы участников');
             return;
@@ -61,13 +62,10 @@ async function loadPartyText() {
         
         const data = await response.json();
         
-        // Заполняем описание в hero секции
         const heroSubtitle = document.querySelector('.hero__subtitle');
         if (heroSubtitle && data.описание) {
             heroSubtitle.textContent = data.описание;
         }
-        
-        console.log('Party text loaded:', data); // Для отладки
     } catch (error) {
         console.error('Ошибка загрузки описания для страницы участников:', error);
     }
@@ -119,7 +117,7 @@ function openMetroModal(metroId, metroData) {
         modalContent.appendChild(closeBtn);
     }
 
-    loadModalAttachments('метро', metroId);
+    loadModalImages('метро', metroId);
 }
 
 function openPredpriyatiyaModal(companyId, companyData) {
@@ -147,21 +145,19 @@ function openPredpriyatiyaModal(companyId, companyData) {
         modalContent.appendChild(closeBtn);
     }
 
-    loadModalAttachments('предприятия', companyId);
+    loadModalImages('предприятия', companyId);
 }
 
 function generateMetroContent(data, metroId) {
-    const placeholder = 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20viewBox%3D%220%200%20400%20300%22%3E%3Crect%20fill%3D%22%23f0f0f0%22%20width%3D%22400%22%20height%3D%22300%22%2F%3E%3Ctext%20fill%3D%22%23999%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20text-anchor%3D%22middle%22%20dy%3D%22.3em%22%20font-size%3D%2220%22%3EЗагрузка...%3C%2Ftext%3E%3C%2Fsvg%3E';
-
     let html = `
         <div class="hero--piter">
             <div class="hero__container">
                 <div class="hero__content">
-                    <h1 class="hero__title">${data.name || 'МЕТРОПОЛИТЕН'}</h1>
+                    <h1 class="hero__title">${escapeHtml(data.name || 'МЕТРОПОЛИТЕН')}</h1>
                     <p class="hero__subtitle">${formatTextWithLineBreaks(data.short_desc)}</p>
                 </div>
-                <div class="hero__logo">
-                    <img src="${placeholder}" alt="Логотип" data-metro-id="${metroId}" data-attachment="logo" class="metro-attachment">
+                <div class="hero__logo" id="logo-container-${metroId}">
+                    <img src="${EMPTY_PIXEL}" alt="Логотип" data-id="${metroId}" data-type="метро" data-attachment="logo" class="modal-image">
                 </div>
             </div>
         </div>
@@ -169,10 +165,10 @@ function generateMetroContent(data, metroId) {
 
     if (data.full_desc_one) {
         html += `
-            <div class="piter-section piter-section--white">
+            <div class="piter-section piter-section--white" id="section-desc-one-${metroId}" data-section-type="image-text">
                 <div class="piter-section__container">
-                    <div class="piter-section__image">
-                        <img src="${placeholder}" alt="" data-metro-id="${metroId}" data-attachment="desc_one" class="metro-attachment">
+                    <div class="piter-section__image" id="image-desc-one-${metroId}">
+                        <img src="${EMPTY_PIXEL}" alt="" data-id="${metroId}" data-type="метро" data-attachment="desc_one" class="modal-image">
                         <p class="piter-section__caption">Станция метро</p>
                     </div>
                     <div class="piter-section__text">
@@ -186,13 +182,13 @@ function generateMetroContent(data, metroId) {
 
     if (data.full_desc_two) {
         html += `
-            <div class="piter-section piter-section--blue">
+            <div class="piter-section piter-section--blue" id="section-desc-two-${metroId}" data-section-type="image-text">
                 <div class="piter-section__container">
                     <div class="piter-section__text">
                         <p class="piter-section__paragraph">${formatTextWithLineBreaks(data.full_desc_two)}</p>
                     </div>
-                    <div class="piter-section__image">
-                        <img src="${placeholder}" alt="" data-metro-id="${metroId}" data-attachment="desc_two" class="metro-attachment">
+                    <div class="piter-section__image" id="image-desc-two-${metroId}">
+                        <img src="${EMPTY_PIXEL}" alt="" data-id="${metroId}" data-type="метро" data-attachment="desc_two" class="modal-image">
                     </div>
                 </div>
             </div>
@@ -201,10 +197,10 @@ function generateMetroContent(data, metroId) {
 
     if (data.scheme_desc) {
         html += `
-            <div class="piter-section piter-section--white">
+            <div class="piter-section piter-section--white" id="section-scheme-${metroId}" data-section-type="image-text">
                 <div class="piter-section__container">
-                    <div class="piter-section__image">
-                        <img src="${placeholder}" alt="" data-metro-id="${metroId}" data-attachment="scheme" class="metro-attachment">
+                    <div class="piter-section__image" id="image-scheme-${metroId}">
+                        <img src="${EMPTY_PIXEL}" alt="" data-id="${metroId}" data-type="метро" data-attachment="scheme" class="modal-image">
                         <p class="piter-section__caption">Схема линий</p>
                     </div>
                     <div class="piter-section__text">
@@ -218,14 +214,14 @@ function generateMetroContent(data, metroId) {
 
     if (data.modern_desc) {
         html += `
-            <div class="piter-section piter-section--blue">
+            <div class="piter-section piter-section--blue" id="section-modern-${metroId}" data-section-type="image-text">
                 <div class="piter-section__container">
                     <div class="piter-section__text">
                         <h2 class="piter-section__title">МОДЕРНИЗАЦИЯ</h2>
                         <p class="piter-section__paragraph">${formatTextWithLineBreaks(data.modern_desc)}</p>
                     </div>
-                    <div class="piter-section__image">
-                        <img src="${placeholder}" alt="" data-metro-id="${metroId}" data-attachment="modern" class="metro-attachment">
+                    <div class="piter-section__image" id="image-modern-${metroId}">
+                        <img src="${EMPTY_PIXEL}" alt="" data-id="${metroId}" data-type="метро" data-attachment="modern" class="modal-image">
                     </div>
                 </div>
             </div>
@@ -234,10 +230,10 @@ function generateMetroContent(data, metroId) {
 
     if (data.struct_desc) {
         html += `
-            <div class="piter-section piter-section--white">
+            <div class="piter-section piter-section--white" id="section-struct-${metroId}" data-section-type="image-text">
                 <div class="piter-section__container">
-                    <div class="piter-section__image">
-                        <img src="${placeholder}" alt="" data-metro-id="${metroId}" data-attachment="struct" class="metro-attachment">
+                    <div class="piter-section__image" id="image-struct-${metroId}">
+                        <img src="${EMPTY_PIXEL}" alt="" data-id="${metroId}" data-type="метро" data-attachment="struct" class="modal-image">
                     </div>
                     <div class="piter-section__text">
                         <h2 class="piter-section__title">ИНФРАСТРУКТУРА</h2>
@@ -250,14 +246,14 @@ function generateMetroContent(data, metroId) {
 
     if (data.partnership_desc) {
         html += `
-            <div class="piter-section piter-section--blue">
+            <div class="piter-section piter-section--blue" id="section-partnership-${metroId}" data-section-type="image-text">
                 <div class="piter-section__container">
                     <div class="piter-section__text">
                         <h2 class="piter-section__title">РАЗВИТИЕ И ПАРТНЁРСТВО</h2>
                         <p class="piter-section__paragraph">${formatTextWithLineBreaks(data.partnership_desc)}</p>
                     </div>
-                    <div class="piter-section__image">
-                        <img src="${placeholder}" alt="" data-metro-id="${metroId}" data-attachment="partnership" class="metro-attachment">
+                    <div class="piter-section__image" id="image-partnership-${metroId}">
+                        <img src="${EMPTY_PIXEL}" alt="" data-id="${metroId}" data-type="метро" data-attachment="partnership" class="modal-image">
                     </div>
                 </div>
             </div>
@@ -289,17 +285,15 @@ function generateMetroContent(data, metroId) {
 }
 
 function generatePredpriyatiyaContent(data, companyId) {
-    const placeholder = 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20viewBox%3D%220%200%20400%20300%22%3E%3Crect%20fill%3D%22%23f0f0f0%22%20width%3D%22400%22%20height%3D%22300%22%2F%3E%3Ctext%20fill%3D%22%23999%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20text-anchor%3D%22middle%22%20dy%3D%22.3em%22%20font-size%3D%2220%22%3EЗагрузка...%3C%2Ftext%3E%3C%2Fsvg%3E';
-
     let html = `
         <div class="hero--piter">
             <div class="hero__container">
                 <div class="hero__content">
-                    <h1 class="hero__title">${data.name || 'ПРЕДПРИЯТИЕ'}</h1>
+                    <h1 class="hero__title">${escapeHtml(data.name || 'ПРЕДПРИЯТИЕ')}</h1>
                     <p class="hero__subtitle">${formatTextWithLineBreaks(data.short_desc)}</p>
                 </div>
-                <div class="hero__logo">
-                    <img src="${placeholder}" alt="Логотип" data-metro-id="${companyId}" data-attachment="logo" class="metro-attachment">
+                <div class="hero__logo" id="logo-container-${companyId}">
+                    <img src="${EMPTY_PIXEL}" alt="Логотип" data-id="${companyId}" data-type="предприятия" data-attachment="logo" class="modal-image">
                 </div>
             </div>
         </div>
@@ -307,10 +301,10 @@ function generatePredpriyatiyaContent(data, companyId) {
 
     if (data.full_desc_one) {
         html += `
-            <div class="piter-section piter-section--white">
+            <div class="piter-section piter-section--white" id="section-desc-one-${companyId}" data-section-type="image-text">
                 <div class="piter-section__container">
-                    <div class="piter-section__image">
-                        <img src="${placeholder}" alt="" data-metro-id="${companyId}" data-attachment="desc_one" class="metro-attachment">
+                    <div class="piter-section__image" id="image-desc-one-${companyId}">
+                        <img src="${EMPTY_PIXEL}" alt="" data-id="${companyId}" data-type="предприятия" data-attachment="desc_one" class="modal-image">
                         <p class="piter-section__caption">Производство</p>
                     </div>
                     <div class="piter-section__text">
@@ -324,13 +318,13 @@ function generatePredpriyatiyaContent(data, companyId) {
 
     if (data.full_desc_two) {
         html += `
-            <div class="piter-section piter-section--blue">
+            <div class="piter-section piter-section--blue" id="section-desc-two-${companyId}" data-section-type="image-text">
                 <div class="piter-section__container">
                     <div class="piter-section__text">
                         <p class="piter-section__paragraph">${formatTextWithLineBreaks(data.full_desc_two)}</p>
                     </div>
-                    <div class="piter-section__image">
-                        <img src="${placeholder}" alt="" data-metro-id="${companyId}" data-attachment="desc_two" class="metro-attachment">
+                    <div class="piter-section__image" id="image-desc-two-${companyId}">
+                        <img src="${EMPTY_PIXEL}" alt="" data-id="${companyId}" data-type="предприятия" data-attachment="desc_two" class="modal-image">
                     </div>
                 </div>
             </div>
@@ -339,10 +333,10 @@ function generatePredpriyatiyaContent(data, companyId) {
 
     if (data.spec_desc) {
         html += `
-            <div class="piter-section piter-section--white">
+            <div class="piter-section piter-section--white" id="section-spec-${companyId}" data-section-type="image-text">
                 <div class="piter-section__container">
-                    <div class="piter-section__image">
-                        <img src="${placeholder}" alt="" data-metro-id="${companyId}" data-attachment="spec" class="metro-attachment">
+                    <div class="piter-section__image" id="image-spec-${companyId}">
+                        <img src="${EMPTY_PIXEL}" alt="" data-id="${companyId}" data-type="предприятия" data-attachment="spec" class="modal-image">
                         <p class="piter-section__caption">Специализация</p>
                     </div>
                     <div class="piter-section__text">
@@ -356,14 +350,14 @@ function generatePredpriyatiyaContent(data, companyId) {
 
     if (data.struct_desc) {
         html += `
-            <div class="piter-section piter-section--blue">
+            <div class="piter-section piter-section--blue" id="section-struct-${companyId}" data-section-type="image-text">
                 <div class="piter-section__container">
                     <div class="piter-section__text">
                         <h2 class="piter-section__title">ИНФРАСТРУКТУРА</h2>
                         <p class="piter-section__paragraph">${formatTextWithLineBreaks(data.struct_desc)}</p>
                     </div>
-                    <div class="piter-section__image">
-                        <img src="${placeholder}" alt="" data-metro-id="${companyId}" data-attachment="struct" class="metro-attachment">
+                    <div class="piter-section__image" id="image-struct-${companyId}">
+                        <img src="${EMPTY_PIXEL}" alt="" data-id="${companyId}" data-type="предприятия" data-attachment="struct" class="modal-image">
                         <p class="piter-section__caption">Инфраструктура</p>
                     </div>
                 </div>
@@ -395,11 +389,17 @@ function generatePredpriyatiyaContent(data, companyId) {
     return html;
 }
 
-function loadModalAttachments(type, id) {
-    const images = document.querySelectorAll(`.metro-attachment[data-metro-id="${id}"]`);
+function loadModalImages(type, id) {
+    const images = document.querySelectorAll(`.modal-image[data-id="${id}"]`);
+    
     images.forEach(img => {
         if (img.dataset.loaded) return;
+        
         const attachment = img.dataset.attachment;
+        const imageContainer = img.closest('.piter-section__image');
+        const logoContainer = img.closest('.hero__logo');
+        const section = img.closest('.piter-section');
+        
         fetch(`${API_BASE_URL}/api/v1/block/${type}/attachment?name=${encodeURIComponent(id)}&attachment=${encodeURIComponent(attachment)}`)
             .then(response => {
                 if (!response.ok) throw new Error('Network error');
@@ -408,14 +408,46 @@ function loadModalAttachments(type, id) {
             .then(blob => {
                 const src = URL.createObjectURL(blob);
                 img.src = src;
+                img.style.display = 'block';
                 img.dataset.loaded = 'true';
                 img.onload = () => URL.revokeObjectURL(src);
+                
+                if (imageContainer) {
+                    imageContainer.style.display = 'block';
+                    if (section && section.classList.contains('piter-section--no-image')) {
+                        section.classList.remove('piter-section--no-image');
+                    }
+                }
+                if (logoContainer) {
+                    logoContainer.style.display = 'flex';
+                }
             })
             .catch(() => {
-                img.src = 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22600%22%20height%3D%22400%22%20viewBox%3D%220%200%20600%20400%22%3E%3Crect%20fill%3D%22%23f0f0f0%22%20width%3D%22600%22%20height%3D%22400%22%2F%3E%3Ctext%20fill%3D%22%23999%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20text-anchor%3D%22middle%22%20dy%3D%22.3em%22%20font-size%3D%2224%22%3E%D0%9D%D0%B5%D1%82%20%D1%84%D0%BE%D1%82%D0%BE%3C%2Ftext%3E%3C%2Fsvg%3E';
+                img.style.display = 'none';
                 img.dataset.loaded = 'true';
+                
+                if (imageContainer) {
+                    imageContainer.style.display = 'none';
+                    if (section && section.dataset.sectionType === 'image-text') {
+                        section.classList.add('piter-section--no-image');
+                    }
+                }
+                
+                if (logoContainer) {
+                    logoContainer.style.display = 'none';
+                }
             });
     });
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 }
 
 async function loadHeader() {
@@ -430,7 +462,9 @@ async function loadHeader() {
             const block = document.getElementById('header-block');
             if (block) block.appendChild(headerContent);
         }
-    } catch (e) {}
+    } catch (e) {
+        console.error('Header load error:', e);
+    }
 }
 
 async function loadFooter() {
@@ -445,29 +479,37 @@ async function loadFooter() {
             const block = document.getElementById('footer-block');
             if (block) block.appendChild(footerContent);
         }
-    } catch (e) {}
+    } catch (e) {
+        console.error('Footer load error:', e);
+    }
 }
 
 async function loadMetro() {
     const grid = document.getElementById('metro-grid');
     if (!grid) return;
+    
     try {
         const listResp = await fetch(`${API_BASE_URL}/api/v1/block/метро/order`);
         if (!listResp.ok) throw new Error(`HTTP ${listResp.status}`);
         const listData = await listResp.json();
         const ids = Array.isArray(listData) ? listData : [];
+        
         if (ids.length === 0) {
             grid.innerHTML = '<p class="no-data">Нет данных о метрополитенах</p>';
             return;
         }
+        
         grid.innerHTML = '';
+        
         for (const id of ids) {
             try {
                 const contentResp = await fetch(
                     `${API_BASE_URL}/api/v1/block/метро/content?name=${encodeURIComponent(id)}`
                 );
                 if (!contentResp.ok) continue;
+                
                 const contentData = await contentResp.json();
+                
                 if (contentData.status === 'content aint exists') {
                     const fallbackData = { ...FALLBACK_METRO_DATA['123'], name: id };
                     const card = createMetroCard(id, fallbackData, id);
@@ -477,19 +519,24 @@ async function loadMetro() {
                     const card = createMetroCard(name, contentData, id);
                     grid.appendChild(card);
                 }
+                
                 const img = grid.lastChild.querySelector('.metro-item__image img');
                 if (img) {
                     loadMetroLogo(id, img);
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.error(`Error loading metro ${id}:`, e);
+            }
         }
     } catch (error) {
+        console.error('Error loading metro list:', error);
         grid.innerHTML = '<p class="error">Ошибка загрузки данных</p>';
     }
 }
 
 function loadMetroLogo(id, imgElement) {
     if (!imgElement || imgElement.dataset.loaded) return;
+    
     fetch(`${API_BASE_URL}/api/v1/block/метро/attachment?name=${encodeURIComponent(id)}&attachment=logo`)
         .then(response => {
             if (!response.ok) throw new Error('Network error');
@@ -498,12 +545,18 @@ function loadMetroLogo(id, imgElement) {
         .then(blob => {
             const src = URL.createObjectURL(blob);
             imgElement.src = src;
+            imgElement.style.display = 'block';
             imgElement.dataset.loaded = 'true';
             imgElement.onload = () => URL.revokeObjectURL(src);
         })
         .catch(() => {
-            imgElement.src = 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%20viewBox%3D%220%200%20120%20120%22%3E%3Crect%20fill%3D%22%23e0e0e0%22%20width%3D%22120%22%20height%3D%22120%22%2F%3E%3Ctext%20fill%3D%22%23999%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20text-anchor%3D%22middle%22%20dy%3D%22.3em%22%20font-size%3D%2214%22%3E%D0%9D%D0%B5%D1%82%20%D0%BB%D0%BE%D0%B3%D0%BE%3C%2Ftext%3E%3C%2Fsvg%3E';
+            imgElement.style.display = 'none';
             imgElement.dataset.loaded = 'true';
+            
+            const parentDiv = imgElement.closest('.metro-item__image');
+            if (parentDiv) {
+                parentDiv.style.display = 'none';
+            }
         });
 }
 
@@ -514,9 +567,9 @@ function createMetroCard(name, data, id) {
     card.style.cursor = 'pointer';
     card.innerHTML = `
         <div class="metro-item__image">
-            <img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%20viewBox%3D%220%200%20120%20120%22%3E%3Crect%20fill%3D%22%23e0e0e0%22%20width%3D%22120%22%20height%3D%22120%22%2F%3E%3C%2Fsvg%3E" alt="${name}" loading="lazy">
+            <img src="${EMPTY_PIXEL}" alt="${escapeHtml(name)}" loading="lazy" style="display: none;">
         </div>
-        <p class="metro-item__name">${name}</p>
+        <p class="metro-item__name">${escapeHtml(name)}</p>
     `;
     if (data.short_desc) card.title = data.short_desc;
     card.metroData = data;
@@ -532,19 +585,24 @@ function createMetroCard(name, data, id) {
 async function loadPredpriyatiya() {
     const grid = document.getElementById('predpriyatiya-grid');
     if (!grid) return;
+    
     try {
         const listResp = await fetch(`${API_BASE_URL}/api/v1/block/предприятия/order`);
         if (!listResp.ok) throw new Error(`HTTP ${listResp.status}`);
         const listData = await listResp.json();
         const ids = Array.isArray(listData) ? listData : [];
+        
         if (ids.length === 0) {
             grid.innerHTML = '<p class="no-data">Нет данных о предприятиях</p>';
             return;
         }
+        
         grid.innerHTML = '';
+        
         for (const id of ids) {
             let contentData = {};
             let name = id;
+            
             try {
                 const contentResp = await fetch(
                     `${API_BASE_URL}/api/v1/block/предприятия/content?name=${encodeURIComponent(id)}`
@@ -553,21 +611,27 @@ async function loadPredpriyatiya() {
                     contentData = await contentResp.json();
                     if (contentData.name) name = contentData.name;
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.error(`Error loading company ${id}:`, e);
+            }
+            
             const card = createPredpriyatiyaCard(name, contentData, id);
             grid.appendChild(card);
+            
             const img = card.querySelector('.predpriyatiya-item__image img');
             if (img) {
                 loadPredpriyatiyaLogo(id, img);
             }
         }
     } catch (error) {
+        console.error('Error loading companies list:', error);
         grid.innerHTML = '<p class="error">Ошибка загрузки данных</p>';
     }
 }
 
 function loadPredpriyatiyaLogo(id, imgElement) {
     if (!imgElement || imgElement.dataset.loaded) return;
+    
     fetch(`${API_BASE_URL}/api/v1/block/предприятия/attachment?name=${encodeURIComponent(id)}&attachment=logo`)
         .then(response => {
             if (!response.ok) throw new Error('Network error');
@@ -576,12 +640,18 @@ function loadPredpriyatiyaLogo(id, imgElement) {
         .then(blob => {
             const src = URL.createObjectURL(blob);
             imgElement.src = src;
+            imgElement.style.display = 'block';
             imgElement.dataset.loaded = 'true';
             imgElement.onload = () => URL.revokeObjectURL(src);
         })
         .catch(() => {
-            imgElement.src = 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%20viewBox%3D%220%200%20120%20120%22%3E%3Crect%20fill%3D%22%23e0e0e0%22%20width%3D%22120%22%20height%3D%22120%22%2F%3E%3Ctext%20fill%3D%22%23999%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20text-anchor%3D%22middle%22%20dy%3D%22.3em%22%20font-size%3D%2214%22%3E%D0%9D%D0%B5%D1%82%20%D0%BB%D0%BE%D0%B3%D0%BE%3C%2Ftext%3E%3C%2Fsvg%3E';
+            imgElement.style.display = 'none';
             imgElement.dataset.loaded = 'true';
+            
+            const parentDiv = imgElement.closest('.predpriyatiya-item__image');
+            if (parentDiv) {
+                parentDiv.style.display = 'none';
+            }
         });
 }
 
@@ -592,9 +662,9 @@ function createPredpriyatiyaCard(name, data, id) {
     card.style.cursor = 'pointer';
     card.innerHTML = `
         <div class="predpriyatiya-item__image">
-            <img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%20viewBox%3D%220%200%20120%20120%22%3E%3Crect%20fill%3D%22%23e0e0e0%22%20width%3D%22120%22%20height%3D%22120%22%2F%3E%3C%2Fsvg%3E" alt="${name}" loading="lazy">
+            <img src="${EMPTY_PIXEL}" alt="${escapeHtml(name)}" loading="lazy" style="display: none;">
         </div>
-        <p class="predpriyatiya-item__name">${name}</p>
+        <p class="predpriyatiya-item__name">${escapeHtml(name)}</p>
     `;
     if (data.short_desc) card.title = data.short_desc;
     card.predpriyatiyaData = data;
