@@ -2,7 +2,7 @@
 
 
 #include "../fals/main_server.hpp"
-#include "locale.hpp"
+#include "locale_callbacks.hpp"
 
 
 class fals_LOCALE {
@@ -12,17 +12,20 @@ public:
 			auto locales = Locale::get_locales();
 
 			if (request->api[3] == "list") {
+				if (!request->query.contains("secret") || !fals_GLOBAL::is_secret(std::move(request->query["secret"])))
+					return text_resp();
+
 				nlohmann::json js = nlohmann::json::array();
 
 				for (Locale* locale : locales) {
-					js.push_back(locale->_name);
+					js.push_back(locale->name_);
 				}
 
 				return text_resp(request->socket, 200, "OK", "application/json", js.dump());
 			}
 
 			auto locale = std::find_if(locales.begin(), locales.end(), [&](Locale* locale) {
-				return locale->_name == request->api[3];
+				return locale->name_ == request->api[3];
 			});
 
 			if (locale != locales.end()) {
@@ -35,11 +38,15 @@ public:
 
 
 	static std::shared_ptr<server_response> process_post(req request) {
+		auto secret = request->get_form_by_key("secret");
+		if (secret.empty() || !fals_GLOBAL::is_secret(std::move(secret.value)))
+			return text_resp();
+
 		if (request->api.size() == 4) {
 			auto locales = Locale::get_locales();
 
 			auto locale = std::find_if(locales.begin(), locales.end(), [&](Locale* locale) {
-				return locale->_name == request->api[3];
+				return locale->name_ == request->api[3];
 				});
 
 			if (locale != locales.end()) {

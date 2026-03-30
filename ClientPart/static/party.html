@@ -8,15 +8,13 @@
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/hero.css">
-    <link rel="stylesheet" href="css/party.css"> <!-- Основные стили страницы -->
+    <link rel="stylesheet" href="css/party.css">
     <link rel="stylesheet" href="css/footer.css">
 </head>
 <body>
     <div class="wrapper">
         <div class="content">
-            <!-- Hero секция -->
             <section class="hero">
-                <!-- Header будет загружен через JS -->
                 <div id="header-block"></div>
 
                 <div class="hero__container container">
@@ -26,9 +24,7 @@
                 <img class="hero__img" src="img/background-pattern1.png" alt="">
             </section>
 
-            <!-- Секция Участники -->
             <section class="participants" id="metro">
-                <!-- Метрополитены -->
                 <div class="metro-section">
                     <div class="container">
                         <h2 class="section-title section-title--underline">Метрополитены</h2>
@@ -36,21 +32,25 @@
                     </div>
                 </div>
 
-                <!-- Предприятия -->
                 <div class="predpriyatiya-section" id="companies">
                     <div class="container">
                         <h2 class="section-title section-title--underline">Предприятия</h2>
                         <div class="predpriyatiya-grid" id="predpriyatiya-grid"></div>
                     </div>
                 </div>
+
+                <div class="comitet-section" id="comitet">
+                    <div class="container">
+                        <h2 class="section-title section-title--underline">Комитет</h2>
+                        <div class="predpriyatiya-grid" id="comitet-grid"></div>
+                    </div>
+                </div>
             </section>
 
-            <!-- Footer будет загружен через JS -->
             <div id="footer-block"></div>
         </div>
     </div>
 
-    <!-- Модальное окно (изначально скрыто) -->
     <div class="metro-modal" id="metroModal">
         <div class="modal-overlay" id="modalOverlay"></div>
         <div class="modal-container">

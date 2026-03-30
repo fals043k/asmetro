@@ -10,10 +10,7 @@ const HomePageApp = (() => {
             HERO_SUBTITLE: '.hero__subtitle',
             ABOUT_TEXT: '.about__text',
             ABOUT_BTN: '.about__btn',
-            ABOUT_POPUP: '#about-popup',
-            ABOUT_POPUP_CLOSE: '#about-popup-close',
-            ABOUT_POPUP_TEXT_1: '.about-popup__text--1',
-            ABOUT_POPUP_TEXT: '.about-popup__text',
+            ABOUT_BTN_WRAPPER: '.about__btn-wrapper',
             NEWS_LIST: '.news__list',
             NEWS_ITEM: 'a.news__item',
             NEWS_TITLE: '.news__title',
@@ -24,7 +21,7 @@ const HomePageApp = (() => {
             EVENTS_DATE: '.events__date'
         },
         API_ENDPOINTS: {
-            MAIN_LOCALE: '/api/v1/locale/main',
+            MAIN_LOCALE: '/api/v1/locale/главная',
             NEWS_ORDER: '/api/v1/block/новости/order',
             NEWS_CONTENT: '/api/v1/block/новости/content',
             NEWS_ATTACHMENT: '/api/v1/block/новости/attachment',
@@ -42,7 +39,9 @@ const HomePageApp = (() => {
         newsPopupElement: null,
         eventsPopupElement: null,
         newsObjectUrls: [],
-        eventsObjectUrls: []
+        eventsObjectUrls: [],
+        fullAboutText: '',
+        shortAboutText: ''
     };
 
     function init() {
@@ -53,7 +52,7 @@ const HomePageApp = (() => {
             ]);
             
             await loadMainPageTexts();
-            initAboutPopup();
+            initAboutText();
             loadNews();
             loadEvents();
         });
@@ -112,71 +111,106 @@ const HomePageApp = (() => {
                 heroSubtitle.textContent = data.описание;
             }
             
-            const aboutText = document.querySelector(CONFIG.SELECTORS.ABOUT_TEXT);
-            if (aboutText && data.подробнее) {
-                aboutText.textContent = data.подробнее;
+            const aboutTexts = document.querySelectorAll(CONFIG.SELECTORS.ABOUT_TEXT);
+            
+            if (data.подробнее) {
+                state.shortAboutText = data.подробнее;
             }
             
             if (data.полное) {
-                const aboutPopupText1 = document.querySelector(CONFIG.SELECTORS.ABOUT_POPUP_TEXT_1);
-                const aboutPopupText = document.querySelector(CONFIG.SELECTORS.ABOUT_POPUP_TEXT);
-                
-                if (aboutPopupText1) aboutPopupText1.innerHTML = '';
-                if (aboutPopupText) aboutPopupText.innerHTML = '';
-                
-                const paragraphs = data.полное.split('\n\n').filter(p => p.trim() !== '');
-                
-                if (paragraphs.length > 0 && aboutPopupText1) {
-                    aboutPopupText1.innerHTML = `<p>${escapeHtml(paragraphs[0])}</p>`;
-                }
-                
-                if (aboutPopupText) {
-                    for (let i = 1; i < paragraphs.length; i++) {
-                        const p = document.createElement('p');
-                        p.textContent = paragraphs[i];
-                        aboutPopupText.appendChild(p);
-                    }
-                }
+                state.fullAboutText = data.полное;
+            }
+            
+            if (aboutTexts.length >= 1 && state.shortAboutText) {
+                aboutTexts[0].textContent = state.shortAboutText;
+            }
+            
+            if (aboutTexts.length >= 2 && state.fullAboutText) {
+                aboutTexts[1].textContent = state.fullAboutText;
             }
         } catch (e) {
             console.error('Ошибка загрузки текстов для главной:', e);
         }
     }
 
-    function initAboutPopup() {
-        const aboutBtn = document.querySelector(CONFIG.SELECTORS.ABOUT_BTN);
-        const aboutPopup = document.querySelector(CONFIG.SELECTORS.ABOUT_POPUP);
-        const aboutPopupClose = document.querySelector(CONFIG.SELECTORS.ABOUT_POPUP_CLOSE);
+    function checkTextHeight(element) {
+        if (!element) return false;
         
-        if (!aboutBtn || !aboutPopup) return;
+        const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
+        const totalHeight = element.scrollHeight;
+        const lineCount = Math.ceil(totalHeight / lineHeight);
         
-        aboutBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            aboutPopup.classList.add(CONFIG.CLASSES.ACTIVE);
-            document.body.style.overflow = 'hidden';
-        });
-        
-        if (aboutPopupClose) {
-            aboutPopupClose.addEventListener('click', () => {
-                aboutPopup.classList.remove(CONFIG.CLASSES.ACTIVE);
-                document.body.style.overflow = '';
-            });
-        }
-        
-        aboutPopup.addEventListener('click', (e) => {
-            if (e.target === aboutPopup) {
-                aboutPopup.classList.remove(CONFIG.CLASSES.ACTIVE);
-                document.body.style.overflow = '';
-            }
-        });
-        
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && aboutPopup.classList.contains(CONFIG.CLASSES.ACTIVE)) {
-                aboutPopup.classList.remove(CONFIG.CLASSES.ACTIVE);
-                document.body.style.overflow = '';
-            }
-        });
+        return lineCount > 3;
     }
+
+    function initAboutText() {
+    const aboutTexts = document.querySelectorAll(CONFIG.SELECTORS.ABOUT_TEXT);
+    const aboutTextEl = aboutTexts.length >= 2 ? aboutTexts[1] : null;
+    const aboutBtnWrapper = document.querySelector(CONFIG.SELECTORS.ABOUT_BTN_WRAPPER);
+    const aboutBtn = document.querySelector(CONFIG.SELECTORS.ABOUT_BTN);
+
+    if (!aboutTextEl) return;
+
+    const fullText = state.fullAboutText;
+    
+    if (!fullText || fullText.trim() === '') {
+        if (aboutBtnWrapper) aboutBtnWrapper.style.display = 'none';
+        return;
+    }
+
+    const formattedFullText = fullText.replace(/\n/g, '<br>');
+    const formattedShortText = state.shortAboutText ? state.shortAboutText.replace(/\n/g, '<br>') : '';
+
+    if (aboutTexts.length >= 1 && formattedShortText) {
+        aboutTexts[0].innerHTML = formattedShortText;
+    }
+
+    aboutTextEl.innerHTML = formattedFullText;
+    const needsTruncation = checkTextHeight(aboutTextEl);
+    
+    if (needsTruncation) {
+        if (aboutBtnWrapper) aboutBtnWrapper.style.display = 'flex';
+        
+        let isExpanded = false;
+        
+        const btnClickHandler = (e) => {
+            e.preventDefault();
+            isExpanded = !isExpanded;
+            
+            if (isExpanded) {
+                aboutTextEl.innerHTML = formattedFullText;
+                aboutTextEl.style.display = 'block';
+                aboutTextEl.style.webkitLineClamp = 'unset';
+                aboutTextEl.style.webkitBoxOrient = 'unset';
+                aboutTextEl.style.overflow = 'visible';
+                aboutTextEl.style.textOverflow = 'clip';
+                aboutBtn.textContent = 'Скрыть';
+            } else {
+                aboutTextEl.innerHTML = formattedFullText;
+                aboutTextEl.style.display = '-webkit-box';
+                aboutTextEl.style.webkitLineClamp = '3';
+                aboutTextEl.style.webkitBoxOrient = 'vertical';
+                aboutTextEl.style.overflow = 'hidden';
+                aboutTextEl.style.textOverflow = 'ellipsis';
+                aboutBtn.textContent = 'Читать далее';
+            }
+        };
+        
+        aboutBtn.removeEventListener('click', btnClickHandler);
+        aboutBtn.addEventListener('click', btnClickHandler);
+        
+        aboutTextEl.innerHTML = formattedFullText;
+        aboutTextEl.style.display = '-webkit-box';
+        aboutTextEl.style.webkitLineClamp = '3';
+        aboutTextEl.style.webkitBoxOrient = 'vertical';
+        aboutTextEl.style.overflow = 'hidden';
+        aboutTextEl.style.textOverflow = 'ellipsis';
+    } else {
+        aboutTextEl.innerHTML = formattedFullText;
+        aboutTextEl.style.display = 'block';
+        if (aboutBtnWrapper) aboutBtnWrapper.style.display = 'none';
+    }
+}
 
     async function loadNews() {
         const newsList = document.querySelector(CONFIG.SELECTORS.NEWS_LIST);

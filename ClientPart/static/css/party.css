@@ -1,6 +1,3 @@
-/* =============================================
-   СЕКЦИЯ УЧАСТНИКОВ (ОСНОВНАЯ СТРАНИЦА)
-   ============================================= */
 .participants {
     background: #f5f7fa;
     padding: 60px 0 80px;
@@ -10,7 +7,8 @@
     margin-bottom: 80px;
 }
 
-.predpriyatiya-section {
+.predpriyatiya-section,
+.comitet-section {
     margin-bottom: 40px;
 }
 
@@ -23,7 +21,8 @@
 }
 
 .metro-item,
-.predpriyatiya-item {
+.predpriyatiya-item,
+.comitet-item {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -35,12 +34,14 @@
 }
 
 .metro-item:hover,
-.predpriyatiya-item:hover {
+.predpriyatiya-item:hover,
+.comitet-item:hover {
     transform: scale(1.05);
 }
 
 .metro-item__image,
-.predpriyatiya-item__image {
+.predpriyatiya-item__image,
+.comitet-item__image {
     width: 120px;
     height: 120px;
     display: flex;
@@ -50,14 +51,16 @@
 }
 
 .metro-item__image img,
-.predpriyatiya-item__image img {
+.predpriyatiya-item__image img,
+.comitet-item__image img {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
 }
 
 .metro-item__name,
-.predpriyatiya-item__name {
+.predpriyatiya-item__name,
+.comitet-item__name {
     font-weight: 400;
     font-size: 14px;
     line-height: 140%;
@@ -65,9 +68,6 @@
     text-align: center;
 }
 
-/* =============================================
-   МОДАЛЬНОЕ ОКНО (СТИЛЬ PITER-METRO)
-   ============================================= */
 .metro-modal {
     display: none;
     position: fixed;
@@ -112,7 +112,6 @@
     scroll-behavior: smooth;
 }
 
-/* Кнопка закрытия */
 .modal-close {
     position: absolute;
     top: 20px;
@@ -139,7 +138,6 @@
     transform: scale(1.1);
 }
 
-/* Hero секция внутри модалки */
 .hero--piter {
     background: linear-gradient(180deg, #1a5c9e 0%, #0d4a7a 100%);
     padding: 60px 0;
@@ -191,28 +189,27 @@
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
-    filter: brightness(0) invert(1); /* Для цветных логотипов на синем фоне */
+    filter: brightness(0) invert(1);
 }
 
-/* =============================================
-   ОБЩИЕ СТИЛИ ДЛЯ СЕКЦИЙ В МОДАЛКЕ
-   ============================================= */
 .piter-section {
     padding: 80px 0;
 }
 
 .piter-section__container {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 60px;
+    gap: 40px;
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
 }
 
 .piter-section__image {
+    width: 100%;
+    max-width: 800px;
     flex-shrink: 0;
-    width: 48%;
 }
 
 .piter-section__image img {
@@ -237,7 +234,9 @@
 }
 
 .piter-section__text {
-    width: 48%;
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
 }
 
 .piter-section__title {
@@ -246,6 +245,7 @@
     line-height: 130%;
     text-transform: uppercase;
     margin-bottom: 24px;
+    text-align: center;
 }
 
 .piter-section__paragraph {
@@ -254,15 +254,13 @@
     line-height: 160%;
     margin-bottom: 16px;
     white-space: pre-line;
+    text-align: center;
 }
 
 .piter-section__paragraph:last-child {
     margin-bottom: 0;
 }
 
-/* =============================================
-   БЕЛАЯ СЕКЦИЯ (светлый фон, тёмный текст)
-   ============================================= */
 .piter-section--white {
     background-color: #ffffff;
 }
@@ -279,9 +277,6 @@
     color: #666666;
 }
 
-/* =============================================
-   СИНЯЯ СЕКЦИЯ (тёмный фон, светлый текст)
-   ============================================= */
 .piter-section--blue {
     background-color: #1a5c9e;
 }
@@ -298,36 +293,73 @@
     color: rgba(255, 255, 255, 0.7);
 }
 
-/* =============================================
-   СЕКЦИЯ С ДВУМЯ ТЕКСТОВЫМИ БЛОКАМИ (БЕЗ ОБВОДКИ)
-   ============================================= */
 .piter-section--double-text .piter-section__container {
     display: flex;
-    justify-content: space-between;
-    gap: 60px;
+    flex-direction: column;
+    gap: 40px;
 }
 
 .piter-section--double-text .piter-section__text-block {
-    width: 48%;
-    /* Убраны background, padding, box-shadow - теперь без обводки */
+    width: 100%;
+    max-width: 800px;
 }
 
 .piter-section--double-text .piter-section__text-block .piter-section__title {
     color: #1a5c9e;
     font-size: 20px;
     margin-bottom: 20px;
+    text-align: center;
 }
 
 .piter-section--double-text .piter-section__text-block .piter-section__paragraph {
     color: #333333;
     font-size: 15px;
+    text-align: center;
 }
 
-/* =============================================
-   АДАПТАЦИЯ ДЛЯ ЭКРАНОВ ДО 430px
-   ============================================= */
+.piter-section--no-image .piter-section__container {
+    justify-content: center;
+}
+
+.piter-section--no-image .piter-section__image {
+    display: none !important;
+}
+
+.piter-section--no-image .piter-section__text {
+    width: 100% !important;
+    max-width: 100% !important;
+    text-align: center;
+}
+
+.piter-section--no-image .piter-section__title,
+.piter-section--no-image .piter-section__paragraph {
+    text-align: center;
+}
+
+.piter-section__image[style*="display: none"],
+.hero__logo[style*="display: none"] {
+    display: none !important;
+}
+
+.metro-item__image:empty,
+.predpriyatiya-item__image:empty,
+.comitet-item__image:empty {
+    display: none;
+}
+
+.metro-item .metro-item__image[style*="display: none"],
+.predpriyatiya-item .predpriyatiya-item__image[style*="display: none"],
+.comitet-item .comitet-item__image[style*="display: none"] {
+    display: none !important;
+}
+
+.metro-item .metro-item__image[style*="display: none"] + .metro-item__name,
+.predpriyatiya-item .predpriyatiya-item__image[style*="display: none"] + .predpriyatiya-item__name,
+.comitet-item .comitet-item__image[style*="display: none"] + .comitet-item__name {
+    margin-top: 0;
+}
+
 @media (max-width: 430px) {
-    /* Основная страница */
     .participants {
         padding: 40px 16px;
     }
@@ -336,7 +368,8 @@
         margin-bottom: 44px;
     }
 
-    .predpriyatiya-section {
+    .predpriyatiya-section,
+    .comitet-section {
         margin-bottom: 24px;
     }
 
@@ -353,13 +386,13 @@
     }
 
     .metro-item__image,
-    .predpriyatiya-item__image {
+    .predpriyatiya-item__image,
+    .comitet-item__image {
         width: 110px;
         height: 110px;
         margin-bottom: 0;
     }
 
-    /* Модальное окно */
     .modal-container {
         width: 100%;
         height: 100vh;
@@ -396,14 +429,15 @@
 
     .piter-section__container {
         flex-direction: column;
-        gap: 16px;
+        gap: 24px;
         padding: 0 16px;
-        align-items: stretch;
+        align-items: center;
     }
 
     .piter-section__image,
     .piter-section__text {
         width: 100%;
+        max-width: 100%;
     }
 
     .piter-section__caption {
@@ -414,17 +448,18 @@
     .piter-section__title {
         font-size: 18px;
         margin-bottom: 14px;
-        text-align: left;
+        text-align: center;
     }
 
     .piter-section__paragraph {
         font-size: 13px;
         line-height: 150%;
+        text-align: center;
     }
 
     .piter-section--double-text .piter-section__container {
         flex-direction: column;
-        gap: 18px;
+        gap: 24px;
     }
 
     .piter-section--double-text .piter-section__text-block {
