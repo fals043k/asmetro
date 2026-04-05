@@ -18,7 +18,12 @@ const HomePageApp = (() => {
             EVENTS_LIST: '.events__list',
             EVENTS_ITEM: '.events__item',
             EVENTS_TITLE: '.events__title',
-            EVENTS_DATE: '.events__date'
+            EVENTS_DATE: '.events__date',
+            HOME_TEAM_SLIDER: '#home-team-slider',
+            HOME_TEAM_CARD: '.home-team__card',
+            HOME_TEAM_PHOTO: '.home-team__photo img',
+            HOME_TEAM_NAME: '.home-team__name',
+            HOME_TEAM_POSITION: '.home-team__position'
         },
         API_ENDPOINTS: {
             MAIN_LOCALE: '/api/v1/locale/главная',
@@ -26,13 +31,17 @@ const HomePageApp = (() => {
             NEWS_CONTENT: '/api/v1/block/новости/content',
             NEWS_ATTACHMENT: '/api/v1/block/новости/attachment',
             EVENTS_ORDER: '/api/v1/block/мероприятия/order',
-            EVENTS_CONTENT: '/api/v1/block/мероприятия/content'
+            EVENTS_CONTENT: '/api/v1/block/мероприятия/content',
+            TEAM_ORDER: '/api/v1/block/команда/order',
+            TEAM_CONTENT: '/api/v1/block/команда/content',
+            TEAM_ATTACHMENT: '/api/v1/block/команда/attachment'
         },
         CLASSES: {
             ACTIVE: 'active'
         },
         TIMEOUT_MS: 10000,
-        MAX_VISIBLE_ITEMS: 10
+        MAX_VISIBLE_ITEMS: 10,
+        PLACEHOLDER_SVG: 'image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'%3E%3Crect fill=\'%23e0e0e0\' width=\'200\' height=\'200\'/%3E%3Ctext fill=\'%23999\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' font-size=\'14\'%3EНет фото%3C/text%3E%3C/svg%3E'
     };
 
     let state = {
@@ -40,6 +49,7 @@ const HomePageApp = (() => {
         eventsPopupElement: null,
         newsObjectUrls: [],
         eventsObjectUrls: [],
+        teamObjectUrls: [],
         fullAboutText: '',
         shortAboutText: ''
     };
@@ -55,6 +65,7 @@ const HomePageApp = (() => {
             initAboutText();
             loadNews();
             loadEvents();
+            loadHomeTeam();
         });
     }
 
@@ -587,6 +598,128 @@ const HomePageApp = (() => {
         document.body.style.overflow = 'hidden';
     }
 
+    async function loadHomeTeam() {
+        const slider = document.querySelector(CONFIG.SELECTORS.HOME_TEAM_SLIDER);
+        if (!slider) return;
+
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), CONFIG.TIMEOUT_MS);
+            
+            const resp = await fetch(
+                `${CONFIG.API_BASE_URL}${CONFIG.API_ENDPOINTS.TEAM_ORDER}`,
+                { signal: controller.signal }
+            );
+            clearTimeout(timeoutId);
+            
+            if (!resp.ok) return;
+            
+            const ids = await resp.json();
+            const teamIds = Array.isArray(ids) ? ids.slice(0, 5) : [];
+            
+            if (!teamIds.length) return;
+            
+            slider.innerHTML = '';
+            
+            for (const id of teamIds) {
+                let contentData = {};
+                let fullname = id;
+                
+                try {
+                    const contentCtrl = new AbortController();
+                    const contentTimeout = setTimeout(() => contentCtrl.abort(), CONFIG.TIMEOUT_MS);
+                    
+                    const contentResp = await fetch(
+                        `${CONFIG.API_BASE_URL}${CONFIG.API_ENDPOINTS.TEAM_CONTENT}?name=${encodeURIComponent(id)}`,
+                        { signal: contentCtrl.signal }
+                    );
+                    clearTimeout(contentTimeout);
+                    
+                    if (contentResp.ok) {
+                        contentData = await contentResp.json();
+                        if (contentData.fullname) fullname = contentData.fullname;
+                    }
+                } catch (e) {
+                    if (e.name !== 'AbortError') console.warn(`Team content load failed: ${id}`, e);
+                }
+                
+                const card = document.createElement('a');
+                card.href = '#';
+                card.className = 'home-team__card';
+                
+                const position = contentData.post || contentData.position || '';
+                const phone = contentData.number || contentData.phone || '';
+                const email = contentData.email || '';
+                
+                card.innerHTML = `
+                    <div class="home-team__photo">
+                        <img src="" alt="${escapeHtml(fullname)}">
+                    </div>
+                    <h3 class="home-team__name">${escapeHtml(fullname)}</h3>
+                    <p class="home-team__position">${escapeHtml(position)}</p>
+                    <div class="home-team__contacts">
+                        <p class="home-team__contact">${escapeHtml(phone)}</p>
+                        <p class="home-team__contact">${escapeHtml(email)}</p>
+                    </div>
+                `;
+                
+                const imgEl = card.querySelector(CONFIG.SELECTORS.HOME_TEAM_PHOTO);
+                if (imgEl) loadTeamPhoto(id, imgEl);
+                
+                card.addEventListener('click', (e) => e.preventDefault());
+                
+                slider.appendChild(card);
+            }
+            
+            initHomeTeamSliderScroll(slider);
+            
+        } catch (e) {
+            if (e.name !== 'AbortError') console.error('Home team load failed:', e);
+        }
+    }
+
+    async function loadTeamPhoto(id, imgElement) {
+        if (!imgElement || imgElement.dataset.loaded) return;
+        imgElement.dataset.loaded = 'true';
+        
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), CONFIG.TIMEOUT_MS);
+            
+            const url = `${CONFIG.API_BASE_URL}${CONFIG.API_ENDPOINTS.TEAM_ATTACHMENT}?name=${encodeURIComponent(id)}&attachment=photo`;
+            const resp = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            
+            const blob = await resp.blob();
+            const objectUrl = URL.createObjectURL(blob);
+            state.teamObjectUrls.push(objectUrl);
+            
+            imgElement.src = objectUrl;
+            imgElement.onload = () => URL.revokeObjectURL(objectUrl);
+        } catch (e) {
+            if (e.name !== 'AbortError') console.warn(`Photo load failed: ${id}`, e);
+            imgElement.src = CONFIG.PLACEHOLDER_SVG;
+        }
+    }
+
+    function initHomeTeamSliderScroll(slider) {
+        let scrollTimeout;
+        
+        slider.addEventListener('wheel', (e) => {
+            if (Math.abs(e.deltaX) < Math.abs(e.deltaY)) {
+                e.preventDefault();
+                slider.scrollLeft += e.deltaY;
+            }
+            
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {}, 150);
+        }, { passive: false });
+        
+        slider.style.scrollBehavior = 'smooth';
+    }
+
     function escapeHtml(text) {
         if (!text) return '';
         const div = document.createElement('div');
@@ -597,8 +730,10 @@ const HomePageApp = (() => {
     function cleanup() {
         state.newsObjectUrls.forEach(url => URL.revokeObjectURL(url));
         state.eventsObjectUrls.forEach(url => URL.revokeObjectURL(url));
+        state.teamObjectUrls.forEach(url => URL.revokeObjectURL(url));
         state.newsObjectUrls = [];
         state.eventsObjectUrls = [];
+        state.teamObjectUrls = [];
     }
 
     window.addEventListener('beforeunload', cleanup);
