@@ -17,6 +17,14 @@
     color: #333333;
     margin-bottom: 32px;
     text-align: justify;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-all;
+    hyphens: auto;
 }
 
 .about__person {
@@ -63,6 +71,7 @@
 .about__btn-wrapper {
     display: flex;
     justify-content: center;
+    margin-top: 16px;
 }
 
 .about__btn {
@@ -91,7 +100,6 @@
     transform: translateY(0);
 }
 
-/* Новости и мероприятия */
 .news-events {
     position: relative;
     background: #f5f7fa;
@@ -129,7 +137,6 @@
     pointer-events: none;
 }
 
-/* Новости */
 .news {
     margin-bottom: 60px;
 }
@@ -218,7 +225,6 @@
     transform: translateY(-2px);
 }
 
-/* Мероприятия */
 .events {
     margin-bottom: 40px;
 }
@@ -318,7 +324,10 @@
     transform: translateY(-2px);
 }
 
+<<<<<<< HEAD
 /* News Popup */
+=======
+>>>>>>> 9755f213638c049c3f6bfefcbcd3d839414eddae
 .news-popup {
     position: fixed;
     top: 0;
@@ -498,7 +507,6 @@
     object-fit: cover;
 }
 
-/* Events Popup */
 .events-popup {
     position: fixed;
     top: 0;
@@ -617,7 +625,6 @@
     line-height: 150%;
 }
 
-/* Адаптация home страницы */
 @media (max-width: 430px) {
     .about {
         padding: 40px 0 40px;
@@ -675,7 +682,6 @@
         margin-bottom: 20px;
     }
 
-    /* Новости как горизонтальный слайдер */
     .news {
         margin-bottom: 32px;
     }
@@ -718,7 +724,6 @@
         width: 100%;
     }
 
-    /* Мероприятия */
     .events__list {
         flex-direction: column;
         gap: 12px;
@@ -745,7 +750,10 @@
         width: 100%;
     }
 
+<<<<<<< HEAD
     /* News popup - мобильная адаптация */
+=======
+>>>>>>> 9755f213638c049c3f6bfefcbcd3d839414eddae
     .news-popup {
         padding: 0;
     }
@@ -794,7 +802,6 @@
         right: 12px;
     }
 
-    /* Events popup - мобильная адаптация */
     .events-popup {
         padding: 0;
     }
@@ -830,7 +837,6 @@
     }
 }
 
-/* Дополнительная адаптация для планшетов */
 @media (min-width: 431px) and (max-width: 768px) {
     .news-popup__content {
         flex-direction: column;

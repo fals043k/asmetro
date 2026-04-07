@@ -9,12 +9,12 @@
 #include <map>
 
 
+using boost::asio::ip::tcp;
+
+
 #define text_resp(...) std::static_pointer_cast<server_response>(std::make_shared<text_response>(__VA_ARGS__))
 #define file_resp(...) std::static_pointer_cast<server_response>(std::make_shared<file_response>(__VA_ARGS__))
 #define redirect_resp(...) std::static_pointer_cast<server_response>(std::make_shared<redirect_response>(__VA_ARGS__))
-
-
-using boost::asio::ip::tcp;
 
 
 class server_response : public std::enable_shared_from_this<server_response> {

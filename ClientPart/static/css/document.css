@@ -1,4 +1,3 @@
-
 .hero--documents .hero__links {
     list-style: none;
     padding: 0;
@@ -31,9 +30,6 @@
     opacity: 0.8;
 }
 
-/* =============================================
-   ОБЩИЕ СТИЛИ ДЛЯ СЕКЦИЙ
-   ============================================= */
 .doc-section {
     padding: 80px 0;
 }
@@ -56,19 +52,14 @@
     color: #ffffff;
 }
 
-/* Светлая секция */
 .doc-section--light {
     background-color: #f5f5f5;
 }
 
-/* Синяя секция */
 .doc-section--blue {
     background-color: #1a5c9e;
 }
 
-/* =============================================
-   СЕКЦИЯ УСТАВ
-   ============================================= */
 .doc-item {
     margin-top: 20px;
 }
@@ -86,13 +77,41 @@
     opacity: 0.7;
 }
 
-/* =============================================
-   СЕКЦИЯ ПРОФЕССИОНАЛЬНЫЕ СТАНДАРТЫ
-   ============================================= */
+.standards-list__group {
+    margin-bottom: 30px;
+}
+
+.standards-list__group-title {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 140%;
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
 .standards-list__items {
     list-style: none;
     padding: 0;
-    margin: 0 0 30px 0;
+    margin: 0;
+}
+
+.standards-list__items--knowledge {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.standards-list__items--knowledge li {
+    margin-bottom: 12px;
+    position: relative;
+    padding-left: 20px;
+}
+
+.standards-list__items--knowledge li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: rgba(255, 255, 255, 0.6);
 }
 .standards-list__items--knowledge {
     list-style: none;
@@ -184,7 +203,6 @@
     color: #ffffff;
 }
 
-/* Скрытые элементы */
 .standards-list__item--hidden {
     display: none;
 }
@@ -201,7 +219,6 @@
     display: block;
 }
 
-/* Скрытая секция материалов */
 .meetings-subsection--hidden {
     display: none;
 }
@@ -210,7 +227,6 @@
     display: block;
 }
 
-/* Кнопка скрытия/раскрытия */
 .doc-section__toggle {
     display: flex;
     flex-direction: column;
@@ -248,7 +264,6 @@
     transform: rotate(180deg);
 }
 
-/* Кнопка для светлой секции */
 .doc-section__toggle--light {
     margin: 40px auto 0;
 }
@@ -261,9 +276,6 @@
     filter: none;
 }
 
-/* =============================================
-   СЕКЦИЯ МАТЕРИАЛЫ СОВЕЩАНИЙ
-   ============================================= */
 .meetings-year {
     margin-bottom: 40px;
 }
@@ -333,9 +345,17 @@
     margin-bottom: 30px;
 }
 
-/* =============================================
-   АДАПТАЦИЯ
-   ============================================= */
+.loading-spinner {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-size: 14px;
+}
+
+.doc-section--blue .loading-spinner {
+    color: rgba(255, 255, 255, 0.7);
+}
+
 @media (max-width: 430px) {
     .section-title {
         font-size: 22px;
@@ -411,4 +431,30 @@
         width: 26px;
         height: 26px;
     }
+}
+
+.doc-section--blue .empty-message,
+.doc-section--blue .error-message {
+    color: rgba(255, 255, 255, 0.8);
+    padding: 20px 0;
+    font-size: 15px;
+}
+
+.doc-section--light .empty-message,
+.doc-section--light .error-message {
+    color: #666;
+    padding: 20px 0;
+    font-size: 15px;
+}
+
+.meetings-item--hidden {
+    display: none;
+}
+
+.meetings-list .meetings-item--hidden {
+    display: none;
+}
+
+.meetings-list.expanded .meetings-item--hidden {
+    display: list-item;
 }

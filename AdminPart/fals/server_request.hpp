@@ -46,23 +46,23 @@ public:
 
     std::vector<form> parse_forms() {
         std::vector<form> forms;
-        parse_parts([&forms, this](const std::string_view& part) {
+        parse_parts([&forms, this](std::string part) {
             form form;
             if (this->parse_form(part, form)) {
                 forms.push_back(std::move(form));
             }
-        });
+            });
         return forms;
     }
 
     std::vector<file> parse_files() {
         std::vector<file> files;
-        parse_parts([&files, this](const std::string_view& part) {
+        parse_parts([&files, this](std::string part) {
             file file;
             if (this->parse_file(part, file)) {
                 files.push_back(std::move(file));
             }
-        });
+            });
         return files;
     }
 
@@ -75,24 +75,24 @@ private:
         std::string del = "--" + boundary;
         size_t pos = 0;
         size_t start = 0;
-        
+
         while ((pos = body.find(del, start)) != std::string::npos) {
             if (pos > start) {
-                std::string_view part(body.data() + start, pos - start);
-                
+                std::string part = body.substr(start, pos - start);
+
                 if (!part.empty()) {
                     if (part.size() >= 2 && part[0] == '\r' && part[1] == '\n') {
-                        part.remove_prefix(2);
+                        part = part.substr(2);
                     }
-                    
+
                     if (!part.empty()) {
-                        callback(part);
+                        callback(std::move(part));
                     }
                 }
             }
-            
+
             start = pos + del.length();
-            
+
             if (body.compare(start, 2, "--") == 0) {
                 break;
             }

@@ -1,5 +1,5 @@
 .main-header {
-    position: fixed;
+    position: sticky;
     top: 20px;
     left: 0;
     right: 0;
@@ -21,6 +21,7 @@
     backdrop-filter: blur(4px);
     border-radius: 16px;
     padding: 12px 24px;
+    transition: border-radius 0.2s ease, background 0.2s ease;
 }
 
 .main-header__container:hover,
@@ -188,7 +189,7 @@
 
 /* Мобильное меню */
 .mobile-nav {
-    position: fixed;
+    position: sticky;
     inset: 0;
     z-index: 1100;
     display: none;
@@ -481,5 +482,6 @@
     }
 }
 
-
-
+#header-block {
+    padding-top: 20px;
+}
