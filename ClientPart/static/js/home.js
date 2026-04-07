@@ -10,10 +10,6 @@ const HomePageApp = (() => {
             HERO_SUBTITLE: '.hero__subtitle',
             ABOUT_TEXT: '.about__text',
             ABOUT_BTN: '.about__btn',
-            ABOUT_POPUP: '#about-popup',
-            ABOUT_POPUP_CLOSE: '#about-popup-close',
-            ABOUT_POPUP_TEXT_1: '.about-popup__text--1',
-            ABOUT_POPUP_TEXT: '.about-popup__text',
             NEWS_LIST: '.news__list',
             NEWS_ITEM: 'a.news__item',
             NEWS_TITLE: '.news__title',
@@ -51,6 +47,10 @@ const HomePageApp = (() => {
                 loadComponent(CONFIG.SELECTORS.HEADER_BLOCK, '1header.html', '.main-header'),
                 loadComponent(CONFIG.SELECTORS.FOOTER_BLOCK, '2footer.html', '.footer')
             ]);
+
+            if (typeof initHeaderDropdown === 'function') initHeaderDropdown();
+            if (typeof initMobileHeader === 'function') initMobileHeader();
+            if (typeof initHeaderSearch === 'function') initHeaderSearch();
             
             await loadMainPageTexts();
             initAboutPopup();
@@ -116,28 +116,6 @@ const HomePageApp = (() => {
             if (aboutText && data.подробнее) {
                 aboutText.textContent = data.подробнее;
             }
-            
-            if (data.полное) {
-                const aboutPopupText1 = document.querySelector(CONFIG.SELECTORS.ABOUT_POPUP_TEXT_1);
-                const aboutPopupText = document.querySelector(CONFIG.SELECTORS.ABOUT_POPUP_TEXT);
-                
-                if (aboutPopupText1) aboutPopupText1.innerHTML = '';
-                if (aboutPopupText) aboutPopupText.innerHTML = '';
-                
-                const paragraphs = data.полное.split('\n\n').filter(p => p.trim() !== '');
-                
-                if (paragraphs.length > 0 && aboutPopupText1) {
-                    aboutPopupText1.innerHTML = `<p>${escapeHtml(paragraphs[0])}</p>`;
-                }
-                
-                if (aboutPopupText) {
-                    for (let i = 1; i < paragraphs.length; i++) {
-                        const p = document.createElement('p');
-                        p.textContent = paragraphs[i];
-                        aboutPopupText.appendChild(p);
-                    }
-                }
-            }
         } catch (e) {
             console.error('Ошибка загрузки текстов для главной:', e);
         }
@@ -145,36 +123,21 @@ const HomePageApp = (() => {
 
     function initAboutPopup() {
         const aboutBtn = document.querySelector(CONFIG.SELECTORS.ABOUT_BTN);
-        const aboutPopup = document.querySelector(CONFIG.SELECTORS.ABOUT_POPUP);
-        const aboutPopupClose = document.querySelector(CONFIG.SELECTORS.ABOUT_POPUP_CLOSE);
+        const aboutTextEl = document.querySelector('.about .about__container .about__text:last-of-type');
+
+        if (!aboutBtn || !aboutTextEl) return;
+
+        const shortText = 'На сегодняшний день очевидна огромная роль общественного транспорта в напряжённой жизни современного мегаполиса и, в первую очередь роль метрополитена, как наиболее надёжного и чётко функционирующего городского перевозчика практически независимого от воздействия внешних факторов. Тот факт, что метрополитены Ассоциации...';
         
-        if (!aboutBtn || !aboutPopup) return;
-        
+        const fullText = 'На сегодняшний день очевидна огромная роль общественного транспорта в напряжённой жизни современного мегаполиса и, в первую очередь роль метрополитена, как наиболее надёжного и чётко функционирующего городского перевозчика практически независимого от воздействия внешних факторов. Тот факт, что метрополитены Ассоциации ежедневно перевозят почти 16 млн. человек, а годовая перевозка составляет почти 5 млрд. человек, ярко свидетельствует о значении метрополитена для жителей городов, поддержания их деловой и социальной стабильности. Совместная работа в составе Ассоциации стала залогом развития метрополитенов, как наиболее передовых предприятий, выступающих на рынке транспортных услуг городов. Внедрение новейших достижений научно-технического прогресса, новой техники, совершенствование технологических процессов – вот далеко не полный перечень вопросов, которые успешно решают метрополитены, принимая участие в работе Международной Ассоциации "Метро". За этот период Ассоциация «Метро» завоевала авторитет и уважение не только среди организаций России, но и на международной арене. Она является действительным членом Международного Союза Общественного Транспорта, активно участвуя в мероприятиях, проводимых этой организацией, объединяющей транспортных операторов всего мира.';
+
+        let isExpanded = false;
+
         aboutBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            aboutPopup.classList.add(CONFIG.CLASSES.ACTIVE);
-            document.body.style.overflow = 'hidden';
-        });
-        
-        if (aboutPopupClose) {
-            aboutPopupClose.addEventListener('click', () => {
-                aboutPopup.classList.remove(CONFIG.CLASSES.ACTIVE);
-                document.body.style.overflow = '';
-            });
-        }
-        
-        aboutPopup.addEventListener('click', (e) => {
-            if (e.target === aboutPopup) {
-                aboutPopup.classList.remove(CONFIG.CLASSES.ACTIVE);
-                document.body.style.overflow = '';
-            }
-        });
-        
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && aboutPopup.classList.contains(CONFIG.CLASSES.ACTIVE)) {
-                aboutPopup.classList.remove(CONFIG.CLASSES.ACTIVE);
-                document.body.style.overflow = '';
-            }
+            isExpanded = !isExpanded;
+            aboutTextEl.textContent = isExpanded ? fullText : shortText;
+            aboutBtn.textContent = isExpanded ? 'Скрыть' : 'Читать далее';
         });
     }
 

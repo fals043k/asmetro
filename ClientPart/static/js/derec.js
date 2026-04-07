@@ -42,6 +42,10 @@ const DerecPageApp = (() => {
                 loadComponent(CONFIG.SELECTORS.HEADER_BLOCK, '1header.html', '.main-header'),
                 loadComponent(CONFIG.SELECTORS.FOOTER_BLOCK, '2footer.html', '.footer')
             ]);
+
+            if (typeof initHeaderDropdown === 'function') initHeaderDropdown();
+            if (typeof initMobileHeader === 'function') initMobileHeader();
+            if (typeof initHeaderSearch === 'function') initHeaderSearch();
             
             await loadMainTexts();
             await loadTeamMembers();

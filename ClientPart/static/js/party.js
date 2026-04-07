@@ -430,6 +430,10 @@ async function loadHeader() {
             const block = document.getElementById('header-block');
             if (block) block.appendChild(headerContent);
         }
+
+        if (typeof initHeaderDropdown === 'function') initHeaderDropdown();
+        if (typeof initMobileHeader === 'function') initMobileHeader();
+        if (typeof initHeaderSearch === 'function') initHeaderSearch();
     } catch (e) {}
 }
 

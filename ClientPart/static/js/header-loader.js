@@ -23,6 +23,10 @@ async function loadHeader() {
         if (typeof initMobileHeader === 'function') {
             initMobileHeader();
         }
+
+        if (typeof initHeaderSearch === 'function') {
+            initHeaderSearch();
+        }
     } catch (error) {
         console.error('Ошибка при загрузке header:', error);
     }

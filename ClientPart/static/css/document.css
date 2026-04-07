@@ -94,7 +94,22 @@
     padding: 0;
     margin: 0 0 30px 0;
 }
-
+.standards-list__items--knowledge {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 30px 0;
+}
+.standards-list__items--knowledge li::before{
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: rgba(255, 255, 255, 0.6);
+}
+.standards-list__items--knowledge li {
+    margin-bottom: 12px;
+    position: relative;
+    padding-left: 20px;
+}
 .standards-list__items li {
     margin-bottom: 12px;
     position: relative;

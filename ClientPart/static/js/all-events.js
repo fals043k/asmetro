@@ -40,6 +40,7 @@ const EventApp = (() => {
             ]).then(() => {
                 if (typeof initHeaderDropdown === 'function') initHeaderDropdown();
                 if (typeof initMobileHeader === 'function') initMobileHeader();
+                if (typeof initHeaderSearch === 'function') initHeaderSearch();
             }).catch(console.error);
             
             initFilterDropdown();

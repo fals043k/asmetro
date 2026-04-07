@@ -29,6 +29,7 @@ async function loadHeader() {
         
         if (typeof initHeaderDropdown === 'function') initHeaderDropdown();
         if (typeof initMobileHeader === 'function') initMobileHeader();
+        if (typeof initHeaderSearch === 'function') initHeaderSearch();
     } catch (error) {
         console.error('Header load failed:', error);
     }
