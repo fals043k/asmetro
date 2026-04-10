@@ -1,61 +1,42 @@
-<header class="main-header" id="main-header">
+<header class="main-header">
     <div class="main-header__container">
-        <div class="header">
+        <div class="header container">
             <a href="home.html" class="logo">
                 <img class="logo__img logo__img--desktop" src="img/logo-header.svg" alt="Логотип Метро">
                 <img class="logo__img logo__img--mobile" src="img/logo-blue.svg" alt="Логотип Метро">
             </a>
             <nav class="nav">
                 <ul class="nav__list">
-                    <li class="nav__item" data-dropdown="about">
-                        <a href="#" class="nav__link">О нас</a>
-                    </li>
-                    <li class="nav__item">
-                        <a href="all-events.html" class="nav__link">Мероприятия</a>
-                    </li>
-                    <li class="nav__item">
-                        <a href="statistics.html" class="nav__link">Транспортная статистика</a>
-                    </li>
-                    <li class="nav__item" data-dropdown="knowledge">
-                        <a href="#" class="nav__link">База знаний</a>
-                    </li>
-                    <li class="nav__item">
-                        <a href="contacts.html" class="nav__link">Контакты</a>
-                    </li>
+                    <li class="nav__item"><a href="derec.html" class="nav__link">О нас</a></li>
+                    <li class="nav__item"><a href="party.html" class="nav__link">Мероприятия</a></li>
+                    <li class="nav__item"><a href="document.html" class="nav__link">Транспортная статистика</a></li>
+                    <li class="nav__item"><a href="international-activities.html" class="nav__link">База знаний</a></li>
+                    <li class="nav__item"><a href="contacts.html" class="nav__link">Контакты</a></li>
                 </ul>
             </nav>
             <div class="header__actions">
-                <button class="header__icon-btn header__search-btn" type="button" aria-label="Поиск">
-                    <img src="img/search-icon.svg" alt="">
-                </button>
                 <button class="header__icon-btn header__burger-btn" type="button" aria-label="Открыть меню">
                     <img src="img/burger-menu-icon.svg" alt="">
                 </button>
             </div>
         </div>
     </div>
-
-    <!-- ВЫПАДАЮЩИЙ БЛОК (десктоп) -->
-    <div class="nav__dropdown" id="nav-dropdown">
-        <div class="nav__dropdown-content">
-            <div class="nav__group" data-group="about">
-                <h3 class="nav__group-title">О нас</h3>
-                <a href="party.html" class="nav__dropdown-link">Члены ассоциации</a>
-                <a href="party.html#committee" class="nav__dropdown-link">Комитет</a>
-                <a href="derec.html" class="nav__dropdown-link">Команда</a>
-                <a href="documents.html" class="nav__dropdown-link">Уставные документы</a>
-                <a href="join.html" class="nav__dropdown-link">Заявка на вступление</a>
-            </div>
-            <div class="nav__group" data-group="knowledge">
-                <h3 class="nav__group-title">База знаний</h3>
-                <a href="tech-lit.html" class="nav__dropdown-link">Техническая литература</a>
-                <a href="library.html" class="nav__dropdown-link">Библиотека</a>
-                <a href="document.html" class="nav__dropdown-link">Документы</a>
-            </div>
+    <div class="nav__dropdown">
+        <div class="nav__dropdown-column">
+            <a href="derec.html#team" class="nav__dropdown-link">Члены ассоциации</a>
+            <a href="derec.html#tasks" class="nav__dropdown-link">Комитеты</a>
+            <a href="derec.html#tasks" class="nav__dropdown-link">Команда</a>
+            <a href="derec.html#tasks" class="nav__dropdown-link">Уставные документы</a>
+            <a href="derec.html#tasks" class="nav__dropdown-link">Заявка на вступление</a>
+        </div>
+        <div class="nav__dropdown-column column--2"></div>
+        <div class="nav__dropdown-column column--3"></div>
+        <div class="nav__dropdown-column">
+            <a href="international-activities.html#msot" class="nav__dropdown-link">Техническая литература</a>
+            <a href="international-activities.html#journal" class="nav__dropdown-link">Библиотека</a>
+            <a href="international-activities.html#electrotrans" class="nav__dropdown-link">Документы</a>
         </div>
     </div>
-
-    <!-- МОБИЛЬНОЕ МЕНЮ (бургер) -->
     <div class="mobile-nav" id="mobile-nav">
         <div class="mobile-nav__overlay"></div>
         <div class="mobile-nav__panel">
@@ -64,39 +45,11 @@
             </button>
             <nav class="mobile-nav__nav">
                 <ul class="mobile-nav__list">
-                    <li class="mobile-nav__item">
-                        <a href="#" class="mobile-nav__link mobile-nav__link--parent" data-submenu="about-sub">
-                            О нас
-                            <span class="mobile-nav__arrow">▼</span>
-                        </a>
-                        <div class="mobile-nav__submenu" id="about-sub">
-                            <a href="party.html" class="mobile-nav__sublink">Члены ассоциации</a>
-                            <a href="party.html#committee" class="mobile-nav__sublink">Комитет</a>
-                            <a href="derec.html" class="mobile-nav__sublink">Команда</a>
-                            <a href="documents.html" class="mobile-nav__sublink">Уставные документы</a>
-                            <a href="join.html" class="mobile-nav__sublink">Заявка на вступление</a>
-                        </div>
-                    </li>
-                    <li class="mobile-nav__item">
-                        <a href="all-events.html" class="mobile-nav__link">Мероприятия</a>
-                    </li>
-                    <li class="mobile-nav__item">
-                        <a href="statistics.html" class="mobile-nav__link">Транспортная статистика</a>
-                    </li>
-                    <li class="mobile-nav__item">
-                        <a href="#" class="mobile-nav__link mobile-nav__link--parent" data-submenu="knowledge-sub">
-                            База знаний
-                            <span class="mobile-nav__arrow">▼</span>
-                        </a>
-                        <div class="mobile-nav__submenu" id="knowledge-sub">
-                            <a href="tech-lit.html" class="mobile-nav__sublink">Техническая литература</a>
-                            <a href="library.html" class="mobile-nav__sublink">Библиотека</a>
-                            <a href="document.html" class="mobile-nav__sublink">Документы</a>
-                        </div>
-                    </li>
-                    <li class="mobile-nav__item">
-                        <a href="contacts.html" class="mobile-nav__link">Контакты</a>
-                    </li>
+                    <li class="mobile-nav__item"><a href="derec.html" class="mobile-nav__link">О нас</a></li>
+                    <li class="mobile-nav__item"><a href="party.html" class="mobile-nav__link">Мероприятия</a></li>
+                    <li class="mobile-nav__item"><a href="document.html" class="mobile-nav__link">Транспортная статистика</a></li>
+                    <li class="mobile-nav__item"><a href="international-activities.html" class="mobile-nav__link">База знаний</a></li>
+                    <li class="mobile-nav__item"><a href="contacts.html" class="mobile-nav__link">Контакты</a></li>
                 </ul>
             </nav>
         </div>
