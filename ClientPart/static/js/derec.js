@@ -182,19 +182,31 @@ const DerecPageApp = (() => {
     }
 
     function updateMergedTasksList(text) {
-        const tasksListElement = document.querySelector(CONFIG.SELECTORS.TASKS_LIST_MERGED);
-        if (!tasksListElement) return;
+        const container = document.querySelector(CONFIG.SELECTORS.TASKS_LIST_MERGED);
+        if (!container) return;
         
         const allTasks = text.split('\n').filter(task => task.trim() !== '');
         
-        const filteredTasks = allTasks.filter(task => {
-            const lowerTask = task.toLowerCase();
-            return !lowerTask.includes('кроме того, ассоциация осуществляет:') &&
-                   !lowerTask.includes('кроме того, ассоциация осуществляет') &&
-                   !lowerTask.includes('кроме того');
-        });
+        let html = '';
         
-        tasksListElement.innerHTML = filteredTasks.map(task => `<li>${escapeHtml(task.trim())}</li>`).join('');
+        allTasks.forEach(task => {
+            const lowerTask = task.toLowerCase();
+            const isSpecial = lowerTask.includes('кроме того, ассоциация осуществляет:') ||
+                            lowerTask.includes('кроме того, ассоциация осуществляет') ||
+                            lowerTask.includes('кроме того');
+            
+            if (isSpecial) {
+                html += `<div>${escapeHtml(task.trim())}</div>`;
+            } else {
+                html += `<li>${escapeHtml(task.trim())}</li>`;
+            }
+        });
+
+        if (html.includes('<li>')) {
+            container.innerHTML = `<ul style="list-style-type: none; padding-left: 0; margin: 0;">${html}</ul>`;
+        } else {
+            container.innerHTML = html;
+        }
     }
 
     async function loadTeamMembers() {
