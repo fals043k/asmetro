@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>fals CMS — вход</title>
+    <title>FalsCMS — вход</title>
     <link rel="stylesheet" href="global.css">
 </head>
 <body class="login-page">
     <div class="login-container">
-        <h1 class="login-title">fals CMS</h1>
-        <p class="subtitle">введите секретный ключ</p>
+        <h1 class="login-title">Admin</h1>
+        <p class="subtitle">Введите секретный ключ</p>
 
         <div class="auto-login-status" id="autoLoginStatus"></div>
 
         <form id="loginForm">
             <div class="form-group">
-                <label class="form-label" for="secretKey">ключ доступа</label>
+                <label class="form-label" for="secretKey">Ключ доступа</label>
                 <div class="input-wrapper">
                     <input 
                         type="password" 
@@ -29,17 +29,17 @@
                     <button type="button" class="toggle-visibility" id="toggleVisibility">👁</button>
                 </div>
                 <div class="error-msg" id="errorMessage">
-                    <span id="errorText">неверный ключ</span>
+                    <span id="errorText">Неверный ключ</span>
                 </div>
             </div>
 
             <button type="submit" class="login-btn" id="loginBtn">
-                <span class="btn-text">войти</span>
+                <span class="btn-text">Войти</span>
             </button>
         </form>
 
         <div class="login-divider"></div>
-        <div class="login-footer">панель управления</div>
+        <div class="login-footer">Панель управления</div>
     </div>
 
     <script>
@@ -133,7 +133,7 @@
             loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const secret = secretKeyInput.value.trim();
-                if (!secret) { showError('введите ключ'); return; }
+                if (!secret) { showError('Введите ключ'); return; }
                 setLoading(true);
                 hideError();
                 try {
@@ -145,12 +145,12 @@
                         saveCredentials(secret);
                         window.location.href = `${ADMIN_PATH}?secret=${encodeURIComponent(secret)}`;
                     } else {
-                        showError('неверный ключ');
+                        showError('Неверный ключ');
                         secretKeyInput.value = '';
                         secretKeyInput.focus();
                     }
                 } catch {
-                    showError('ошибка сервера');
+                    showError('Ошибка сервера');
                 } finally {
                     setLoading(false);
                 }
@@ -168,7 +168,7 @@
             
             function setLoading(isLoading) {
                 loginBtn.disabled = isLoading;
-                loginBtn.querySelector('.btn-text').textContent = isLoading ? 'проверка...' : 'войти';
+                loginBtn.querySelector('.btn-text').textContent = isLoading ? 'Проверка...' : 'Войти';
                 secretKeyInput.disabled = isLoading;
             }
             

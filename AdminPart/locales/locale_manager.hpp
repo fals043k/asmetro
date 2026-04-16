@@ -27,7 +27,7 @@ public:
 	}
 
 
-	static bool set_locale(const std::string& locale, nlohmann::json&& data) {
+	static bool set_locale(const std::string& locale, nlohmann::ordered_json&& data) {
 		std::string pth = path() + '/' + locale + ".json";
 		std::ofstream file{ pth };
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>fals CMS — админка</title>
+<title>FalsCMS — управление</title>
 <link rel="stylesheet" href="global.css">
 </head>
 <body>
@@ -12,24 +12,24 @@
 <header>
 <h1>fals CMS</h1>
 <div class="header-controls">
-<button class="header-btn" id="keyBtn">сменить ключ</button>
-<button class="header-btn danger" id="logoutBtn">выход</button>
-<button class="header-btn primary" id="devModeToggle">dev</button>
+<button class="header-btn" id="keyBtn">Сменить ключ</button>
+<button class="header-btn danger" id="logoutBtn">Выход</button>
+<button class="header-btn primary" id="devModeToggle">Dev</button>
 </div>
 </header>
 <div class="tabs" id="tabs">
-<button class="tab active" data-tab="locales">локализации</button>
-<button class="tab" data-tab="blocks">блоки</button>
-<button class="tab" data-tab="folders">папки</button>
+<button class="tab active" data-tab="locales">Локализации</button>
+<button class="tab" data-tab="blocks">Блоки</button>
+<button class="tab" data-tab="folders">Папки</button>
 </div>
 <div class="panel" id="contentPanel">
 <div id="localesTab" class="tab-content">
 <div class="panel-header">
-<span class="panel-title" id="localesPanelTitle">управление локалями: main</span>
+<span class="panel-title" id="localesPanelTitle">Управление локалями: main</span>
 <div class="locale-selector">
-<label for="localeSelect">локаль</label>
+<label for="localeSelect">Локаль</label>
 <select id="localeSelect" class="locale-select">
-<option value="">загрузка...</option>
+<option value="">Загрузка...</option>
 </select>
 </div>
 </div>
@@ -37,26 +37,26 @@
 <div class="params-content">
 <div class="params-table" id="paramsContainer">
 <div class="param-row header">
-<div class="param-cell">ключ</div>
-<div class="param-cell">значение</div>
+<div class="param-cell">Ключ</div>
+<div class="param-cell">Значение</div>
 </div>
 </div>
 </div>
 </div>
 <div class="save-section">
-<button class="btn" id="saveBtn">сохранить</button>
-<button class="btn btn-secondary docs-btn" id="docsBtn">документация</button>
+<button class="btn" id="saveBtn">Сохранить</button>
+<button class="btn btn-secondary docs-btn" id="docsBtn">Документация</button>
 </div>
 </div>
 
 <div id="blocksTab" class="tab-content hidden">
 <div class="panel-header">
-<h2 class="panel-title" id="panelTitle">управление блоками</h2>
-<button class="btn" id="createItemBtn" disabled>+ создать</button>
+<h2 class="panel-title" id="panelTitle">Управление блоками</h2>
+<button class="btn" id="createItemBtn" disabled>Создать</button>
 <div class="locale-selector">
-<label for="blockSelect">блок</label>
+<label for="blockSelect">Блок</label>
 <select id="blockSelect" class="locale-select">
-<option value="">загрузка...</option>
+<option value="">Загрузка...</option>
 </select>
 </div>
 </div>
@@ -65,25 +65,25 @@
 🖱️ клик — редактирование, долгое нажатие — перетаскивание, пкм — меню
 </div>
 <div class="save-section">
-<button class="btn btn-secondary docs-btn" id="blocksDocsBtn">документация</button>
+<button class="btn btn-secondary docs-btn" id="blocksDocsBtn">Документация</button>
 </div>
 </div>
 
 <div id="foldersTab" class="tab-content hidden">
 <div class="panel-header">
-<h2 class="panel-title" id="foldersPanelTitle">управление папками</h2>
+<h2 class="panel-title" id="foldersPanelTitle">Управление папками</h2>
 <div class="locale-selector">
-<label for="folderSelect">папка</label>
+<label for="folderSelect">Папка</label>
 <select id="folderSelect" class="locale-select">
-<option value="">загрузка...</option>
+<option value="">Загрузка...</option>
 </select>
 </div>
 </div>
 <div class="folders-list" id="foldersList">
-<div class="empty-state">выберите папку для просмотра файлов</div>
+<div class="empty-state">Выберите папку для просмотра файлов</div>
 </div>
 <div class="save-section">
-<button class="btn btn-secondary docs-btn" id="foldersDocsBtn">документация</button>
+<button class="btn btn-secondary docs-btn" id="foldersDocsBtn">Документация</button>
 </div>
 </div>
 </div>
@@ -92,24 +92,24 @@
 <div class="modal" id="keyModal">
 <div class="modal-content modal-content-sm">
 <div class="modal-header">
-<h3 class="modal-title">смена ключа</h3>
+<h3 class="modal-title">Смена ключа</h3>
 <button class="modal-close" id="closeKeyModal">&times;</button>
 </div>
 <form id="keyForm">
 <div class="form-group">
-<label class="form-label">новый ключ</label>
+<label class="form-label">Новый ключ</label>
 <input type="password" class="form-input" id="newKey" required minlength="6">
 </div>
 <div class="form-group">
-<label class="form-label">подтверждение</label>
+<label class="form-label">Подтверждение</label>
 <input type="password" class="form-input" id="confirmKey" required>
 </div>
 <div class="error-msg" id="keyErrorMsg">
 <span id="keyErrorText"></span>
 </div>
 <div class="form-actions">
-<button type="button" class="btn btn-secondary" id="cancelKeyBtn">отмена</button>
-<button type="submit" class="btn">сменить</button>
+<button type="button" class="btn btn-secondary" id="cancelKeyBtn">Отмена</button>
+<button type="submit" class="btn">Сменить</button>
 </div>
 </form>
 </div>
@@ -118,7 +118,7 @@
 <div class="modal" id="itemModal">
 <div class="modal-content">
 <div class="modal-header">
-<h3 class="modal-title" id="modalTitle">редактирование</h3>
+<h3 class="modal-title" id="modalTitle">Редактирование</h3>
 <button class="modal-close" id="modalClose">&times;</button>
 </div>
 <form id="itemForm">
@@ -127,8 +127,8 @@
 <div id="formFields"></div>
 <div id="attachmentsSection"></div>
 <div class="form-actions">
-<button type="button" class="btn btn-secondary" id="cancelBtn">отмена</button>
-<button type="submit" class="btn">сохранить</button>
+<button type="button" class="btn btn-secondary" id="cancelBtn">Отмена</button>
+<button type="submit" class="btn">Сохранить</button>
 </div>
 </form>
 </div>
@@ -137,18 +137,18 @@
 <div class="modal" id="createModal">
 <div class="modal-content">
 <div class="modal-header">
-<h3 class="modal-title">создание элемента</h3>
+<h3 class="modal-title">Создание элемента</h3>
 <button class="modal-close" id="createModalClose">&times;</button>
 </div>
 <form id="createForm">
 <input type="hidden" id="createBlock">
 <div class="form-group">
-<label class="form-label">название</label>
+<label class="form-label">Название</label>
 <input type="text" class="form-input" id="createName" required placeholder="уникальное название">
 </div>
 <div class="form-actions">
-<button type="button" class="btn btn-secondary" id="createCancelBtn">отмена</button>
-<button type="submit" class="btn">создать</button>
+<button type="button" class="btn btn-secondary" id="createCancelBtn">Отмена</button>
+<button type="submit" class="btn">Создать</button>
 </div>
 </form>
 </div>
@@ -157,27 +157,27 @@
 <div class="modal" id="renameFileModal">
 <div class="modal-content">
 <div class="modal-header">
-<h3 class="modal-title">переименование файла</h3>
+<h3 class="modal-title">Переименование файла</h3>
 <button class="modal-close" id="renameFileModalClose">&times;</button>
 </div>
 <form id="renameFileForm">
 <input type="hidden" id="renameFolderName">
 <input type="hidden" id="renameOldName">
 <div class="form-group">
-<label class="form-label">новое название</label>
+<label class="form-label">Новое название</label>
 <input type="text" class="form-input" id="renameNewName" required>
 </div>
 <div class="form-actions">
 <button type="button" class="btn btn-secondary" id="renameFileCancelBtn">отмена</button>
-<button type="submit" class="btn">переименовать</button>
+<button type="submit" class="btn">Переименовать</button>
 </div>
 </form>
 </div>
 </div>
 
 <div class="context-menu" id="contextMenu">
-<div class="context-menu-item" id="ctxHide">скрыть/показать</div>
-<div class="context-menu-item danger" id="ctxDelete">удалить</div>
+<div class="context-menu-item" id="ctxHide">Скрыть/Показать</div>
+<div class="context-menu-item danger" id="ctxDelete">Удалить</div>
 </div>
 
 <div class="drag-indicator" id="dragIndicator"></div>
@@ -186,7 +186,7 @@
 <div class="docs-modal" id="docsModal">
 <div class="docs-content">
 <div class="docs-header">
-<div class="docs-title" id="docsModalTitle">документация API</div>
+<div class="docs-title" id="docsModalTitle">Документация API</div>
 <button class="docs-close" id="docsModalClose">&times;</button>
 </div>
 <div class="docs-body">
@@ -415,11 +415,11 @@ function createCopyButton(codeToCopy) {
                 button.innerHTML = '📋';
                 button.style.background = 'var(--secondary)';
             }, 1500);
-            showNotification('код скопирован', 'success');
+            showNotification('Код скопирован', 'success');
         } catch (err) {
             button.innerHTML = '❌';
             setTimeout(() => button.innerHTML = '📋', 1500);
-            showNotification('не удалось скопировать', 'error');
+            showNotification('Не удалось скопировать', 'error');
         }
     };
     return button;
@@ -436,7 +436,7 @@ function initCopyButtons() {
 }
 
 async function openLocaleDocs() {
-    docsModalTitle.textContent = `документация: локализация / ${currentLocale}`;
+    docsModalTitle.textContent = `Документация: локализация / ${currentLocale}`;
     docsMain.innerHTML = '<div style="padding:24px;color:var(--text-muted)">загрузка...</div>';
     try {
         const res = await fetch(`/api/v1/locale/${encodeURIComponent(currentLocale)}`);
@@ -458,8 +458,8 @@ async function openLocaleDocs() {
 }
 
 async function openBlockDocs() {
-    if (!currentBlock) { showNotification('выберите блок', 'warning'); return; }
-    docsModalTitle.textContent = `документация: блок / ${currentBlock}`;
+    if (!currentBlock) { showNotification('Выберите блок', 'warning'); return; }
+    docsModalTitle.textContent = `Документация: блок / ${currentBlock}`;
     docsMain.innerHTML = '<div style="padding:24px;color:var(--text-muted)">загрузка...</div>';
     try {
         const requiresRes = await fetch(`${API_BASE}/block/${encodeURIComponent(currentBlock)}/requires?secret=${encodeURIComponent(SECRET)}`);
@@ -479,8 +479,8 @@ async function openBlockDocs() {
 }
 
 async function openFoldersDocs() {
-    if (!currentFolder) { showNotification('выберите папку', 'warning'); return; }
-    docsModalTitle.textContent = `документация: папка / ${currentFolder}`;
+    if (!currentFolder) { showNotification('Выберите папку', 'warning'); return; }
+    docsModalTitle.textContent = `Документация: папка / ${currentFolder}`;
     docsMain.innerHTML = '<div style="padding:24px;color:var(--text-muted)">загрузка...</div>';
     try {
         let code = `// Получение списка файлов\nconst filesResponse = await fetch('/api/v1/folder/${encodeURIComponent(currentFolder)}/list');\nconst files = await filesResponse.json();\n\n// Получение файла\nconst fileResponse = await fetch('/api/v1/folder/${encodeURIComponent(currentFolder)}/get?attachment=ИМЯ_ФАЙЛА');\nconst fileBlob = await fileResponse.blob();\n\n// Загрузка файла\nconst formData = new FormData();\nformData.append('secret', '${SECRET}');\nformData.append('attachment', 'название_файла');\nformData.append('file', fileObject);\nawait fetch('/api/v1/folder/${encodeURIComponent(currentFolder)}/add', { method: 'POST', body: formData });\n\n// Удаление файла\nconst deleteFormData = new FormData();\ndeleteFormData.append('secret', '${SECRET}');\ndeleteFormData.append('attachment', 'название_файла');\nawait fetch('/api/v1/folder/${encodeURIComponent(currentFolder)}/remove', { method: 'POST', body: deleteFormData });\n\n// Список папок\nconst foldersResponse = await fetch('/api/v1/folder/list?secret=${SECRET}');\nconst folders = await foldersResponse.json();`;
@@ -495,7 +495,7 @@ async function openFoldersDocs() {
 
 function openDocumentation() {
     if (!devMode) {
-        showNotification('режим разработчика отключен', 'warning');
+        showNotification('Режим разработчика отключен', 'warning');
         return;
     }
     const activeTab = document.querySelector('.tab.active').dataset.tab;
@@ -521,13 +521,13 @@ async function loadLocalesList() {
         availableLocales.forEach(loc => {
             const opt = document.createElement('option');
             opt.value = loc;
-            opt.textContent = loc;
+            opt.textContent = loc.charAt(0).toUpperCase() + loc.slice(1);
             localeSelect.appendChild(opt);
         });
         currentLocale = availableLocales.includes('main') ? 'main' : (availableLocales[0] || '');
         if (currentLocale) {
             localeSelect.value = currentLocale;
-            document.getElementById('localesPanelTitle').textContent = `управление локалями: ${currentLocale}`;
+            document.getElementById('localesPanelTitle').textContent = `Управление локалями: ${currentLocale}`;
             await fetchLocaleData(currentLocale);
         }
     } catch(e) { console.error(e); }
@@ -550,7 +550,7 @@ function renderParams() {
     if (keys.length === 0) {
         const empty = document.createElement('div');
         empty.className = 'empty-state';
-        empty.textContent = 'нет параметров';
+        empty.textContent = 'Нет параметров';
         paramsContainer.appendChild(empty);
         return;
     }
@@ -559,7 +559,7 @@ function renderParams() {
         row.className = 'param-row';
         const keyCell = document.createElement('div');
         keyCell.className = 'param-cell';
-        keyCell.textContent = key;
+        keyCell.textContent = key.charAt(0).toUpperCase() + key.slice(1);
         const valCell = document.createElement('div');
         valCell.className = 'param-cell';
         const textarea = document.createElement('textarea');
@@ -578,7 +578,7 @@ function renderEmptyState() {
     paramsContainer.appendChild(header);
     const empty = document.createElement('div');
     empty.className = 'empty-state';
-    empty.textContent = 'нет данных';
+    empty.textContent = 'Нет данных';
     paramsContainer.appendChild(empty);
 }
 
@@ -592,11 +592,11 @@ async function saveData() {
         
         const res = await fetch(`/api/v1/locale/${encodeURIComponent(currentLocale)}`, { method: 'POST', body: fd });
         if (res.ok) {
-            showNotification('сохранено', 'success');
+            showNotification('Сохранено', 'success');
             await fetchLocaleData(currentLocale);
         } else throw new Error();
     } catch(e) { 
-        showNotification('ошибка сохранения', 'error');
+        showNotification('Ошибка сохранения', 'error');
         console.error(e);
     }
     finally { saveBtn.disabled = false; }
@@ -611,7 +611,7 @@ async function fetchBlocksList() {
             availableBlocks.forEach(block => {
                 const opt = document.createElement('option');
                 opt.value = block;
-                opt.textContent = block;
+                opt.textContent = block.charAt(0).toUpperCase() + block.slice(1);
                 blockSelect.appendChild(opt);
             });
             if (availableBlocks.length > 0 && !currentBlock) {
@@ -621,7 +621,7 @@ async function fetchBlocksList() {
         }
     } catch(e) { 
         blockSelect.innerHTML = '';
-        showNotification('ошибка загрузки блоков', 'error');
+        showNotification('Ошибка загрузки блоков', 'error');
     }
 }
 
@@ -637,7 +637,7 @@ async function selectBlock(block) {
     createItemBtn.disabled = true;
     setTimeout(async () => {
         currentBlock = block;
-        document.getElementById('panelTitle').textContent = `управление блоками: ${block}`;
+        document.getElementById('panelTitle').textContent = `Управление блоками: ${block}`;
         createItemBtn.disabled = false;
         createBlockInput.value = block;
         try {
@@ -673,7 +673,7 @@ function renderItemsList() {
     const hasVisible = visibleItems.length > 0;
     const hasInvisible = invisibleItems.length > 0;
     if (!hasVisible && !hasInvisible) {
-        itemsList.innerHTML = '<div class="empty-state">нет элементов</div>';
+        itemsList.innerHTML = '<div class="empty-state">Нет элементов</div>';
         dragHint.style.display = 'none';
         return;
     }
@@ -718,7 +718,7 @@ function createItemCard(name, isInvisible) {
     title.textContent = name;
     const badge = document.createElement('span');
     badge.className = `visibility-badge ${isInvisible ? 'invisible' : 'visible'}`;
-    badge.textContent = isInvisible ? 'скрыт' : 'видим';
+    badge.textContent = isInvisible ? 'Скрыт' : 'Видим';
     content.appendChild(title);
     content.appendChild(badge);
     card.appendChild(content);
@@ -826,7 +826,7 @@ function handleContextMenu(e, name, isInvisible) {
     e.preventDefault();
     hidePreview();
     contextTarget = { name, isInvisible };
-    ctxHide.textContent = isInvisible ? 'показать' : 'скрыть';
+    ctxHide.textContent = isInvisible ? 'Показать' : 'Скрыть';
     let x = e.clientX, y = e.clientY;
     contextMenu.style.left = x + 'px';
     contextMenu.style.top = y + 'px';
@@ -850,13 +850,13 @@ async function toggleVisibility(name, isInvisible) {
         const res = await fetch(`${API_BASE}/block/${encodeURIComponent(currentBlock)}/order`, { method: 'POST', body: fd });
         if (await res.text() === 'OK') {
             await loadItems();
-            showNotification(`элемент ${isInvisible ? 'показан' : 'скрыт'}`, 'success');
+            showNotification(`Элемент ${isInvisible ? 'Показан' : 'Скрыт'}`, 'success');
         }
-    } catch(e) { showNotification('ошибка', 'error'); }
+    } catch(e) { showNotification('Ошибка', 'error'); }
 }
 
 async function deleteItem(name) {
-    if (!confirm(`удалить "${name}"?`)) return;
+    if (!confirm(`Удалить "${name}"?`)) return;
     try {
         const fd = new FormData();
         fd.append('name', name);
@@ -864,9 +864,9 @@ async function deleteItem(name) {
         const res = await fetch(`${API_BASE}/block/${encodeURIComponent(currentBlock)}/remove`, { method: 'POST', body: fd });
         if (await res.text() === 'OK') {
             await loadItems();
-            showNotification('удалено', 'success');
+            showNotification('Удалено', 'success');
         }
-    } catch(e) { showNotification('ошибка', 'error'); }
+    } catch(e) { showNotification('Ошибка', 'error'); }
 }
 
 function hidePreview() { clearTimeout(previewTimer); previewTarget = null; itemPreview.classList.remove('active'); }
@@ -987,7 +987,7 @@ async function generateAttachmentsSection(itemName) {
     attachmentsSection.classList.remove('hidden');
     const title = document.createElement('div');
     title.style.cssText = 'font-weight:500;margin-bottom:12px;font-size:0.75rem;color:var(--text-secondary)';
-    title.textContent = 'вложения';
+    title.textContent = 'Вложения';
     attachmentsSection.appendChild(title);
     for (const att of blockRequires.attachments) {
         const sysname = att.sysname;
@@ -1004,7 +1004,7 @@ async function generateAttachmentsSection(itemName) {
         meta.className = 'attachment-meta';
         const status = document.createElement('span');
         status.className = `attachment-status ${exists ? 'exists' : pending ? 'pending' : 'missing'}`;
-        status.textContent = exists ? 'загружен' : pending ? 'ожидает' : 'нет';
+        status.textContent = exists ? 'Загружен' : pending ? 'Ожидает' : 'Нет';
         meta.appendChild(status);
         info.appendChild(nameDiv);
         info.appendChild(meta);
@@ -1014,13 +1014,13 @@ async function generateAttachmentsSection(itemName) {
             if (exists) {
                 const dl = document.createElement('button');
                 dl.className = 'btn btn-sm btn-secondary';
-                dl.textContent = 'скачать';
+                dl.textContent = 'Скачать';
                 dl.onclick = () => window.open(`${API_BASE}/block/${encodeURIComponent(currentBlock)}/attachment?name=${encodeURIComponent(itemName)}&attachment=${encodeURIComponent(sysname)}`, '_blank');
                 actions.appendChild(dl);
             }
             const rm = document.createElement('button');
             rm.className = 'btn btn-sm';
-            rm.textContent = 'удалить';
+            rm.textContent = 'Удалить';
             rm.style.background = 'var(--danger-bg)';
             rm.style.color = 'var(--danger)';
             rm.onclick = () => {
@@ -1068,9 +1068,9 @@ async function detachAttachment(itemName, sysname) {
         if (await res.text() === 'OK') {
             existingAttachments = existingAttachments.filter(s => s !== sysname);
             generateAttachmentsSection(itemName);
-            showNotification('вложение удалено', 'success');
+            showNotification('Вложение удалено', 'success');
         }
-    } catch(e) { showNotification('ошибка', 'error'); }
+    } catch(e) { showNotification('Ошибка', 'error'); }
 }
 
 async function uploadPendingAttachments(itemName) {
@@ -1141,7 +1141,7 @@ async function handleItemSubmit(e) {
     try {
         if (Object.keys(pendingAttachments).length) {
             if (!await uploadPendingAttachments(itemName)) {
-                showNotification('ошибка загрузки файлов', 'error');
+                showNotification('Ошибка загрузки файлов', 'error');
                 return;
             }
             pendingAttachments = {};
@@ -1154,9 +1154,9 @@ async function handleItemSubmit(e) {
         if (await res.text() === 'OK') {
             closeModal('itemModal');
             await loadItems();
-            showNotification('сохранено', 'success');
+            showNotification('Сохранено', 'success');
         }
-    } catch(e) { showNotification('ошибка', 'error'); }
+    } catch(e) { showNotification('Ошибка', 'error'); }
 }
 
 async function handleCreateSubmit(e) {
@@ -1174,9 +1174,9 @@ async function handleCreateSubmit(e) {
             closeModal('createModal');
             createNameInput.value = '';
             await loadItems();
-            showNotification('создано', 'success');
-        } else if (result.includes('exists')) showNotification('элемент существует', 'error');
-    } catch(e) { showNotification('ошибка', 'error'); }
+            showNotification('Создано', 'success');
+        } else if (result.includes('exists')) showNotification('Элемент существует', 'error');
+    } catch(e) { showNotification('Ошибка', 'error'); }
 }
 
 async function fetchFoldersList() {
@@ -1188,7 +1188,7 @@ async function fetchFoldersList() {
             availableFolders.forEach(folder => {
                 const opt = document.createElement('option');
                 opt.value = folder;
-                opt.textContent = folder;
+                opt.textContent = folder.charAt(0).toUpperCase() + folder.slice(1);
                 folderSelect.appendChild(opt);
             });
             if (availableFolders.length > 0 && !currentFolder) {
@@ -1198,7 +1198,7 @@ async function fetchFoldersList() {
         }
     } catch(e) { 
         folderSelect.innerHTML = '';
-        showNotification('ошибка загрузки папок', 'error');
+        showNotification('Ошибка загрузки папок', 'error');
     }
 }
 
@@ -1217,7 +1217,7 @@ async function selectFolder(folder) {
     foldersList.classList.add('fade-out');
     setTimeout(async () => {
         currentFolder = folder;
-        document.getElementById('foldersPanelTitle').textContent = `управление папками: ${folder}`;
+        document.getElementById('foldersPanelTitle').textContent = `Управление папками: ${folder}`;
         await loadFolderContents();
         foldersList.classList.remove('fade-out');
         foldersList.classList.add('fade-in');
@@ -1233,7 +1233,7 @@ async function loadFolderContents() {
         renderFilesList();
     } catch(e) {
         foldersList.innerHTML = '<div class="empty-state">ошибка загрузки файлов</div>';
-        showNotification('ошибка загрузки файлов', 'error');
+        showNotification('Ошибка загрузки файлов', 'error');
     }
 }
 
@@ -1244,7 +1244,7 @@ function renderFilesList() {
     uploadArea.className = 'upload-area';
     uploadArea.innerHTML = `
         <div class="upload-icon">📤</div>
-        <div class="upload-text">перетащите файл сюда или нажмите для загрузки</div>
+        <div class="upload-text">Перетащите файл сюда или нажмите для загрузки</div>
         <input type="file" class="upload-input" id="folderUploadInput" multiple>
     `;
     const uploadInput = uploadArea.querySelector('.upload-input');
@@ -1289,7 +1289,7 @@ function renderFilesList() {
         
         const downloadBtn = document.createElement('button');
         downloadBtn.className = 'btn btn-sm btn-secondary';
-        downloadBtn.textContent = 'скачать';
+        downloadBtn.textContent = 'Скачать';
         downloadBtn.onclick = (e) => {
             e.stopPropagation();
             window.open(`${API_BASE}/folder/${encodeURIComponent(currentFolder)}/get?attachment=${encodeURIComponent(file.name.replace(/\.[^/.]+$/, ''))}`, '_blank');
@@ -1297,7 +1297,7 @@ function renderFilesList() {
         
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'btn btn-sm';
-        deleteBtn.textContent = 'удалить';
+        deleteBtn.textContent = 'Удалить';
         deleteBtn.title = 'удалить';
         deleteBtn.style.background = 'var(--danger-bg)';
         deleteBtn.style.color = 'var(--danger)';
@@ -1319,7 +1319,7 @@ function renderFilesList() {
 
 async function handleFileUpload(files) {
     if (!currentFolder) {
-        showNotification('выберите папку', 'warning');
+        showNotification('Выберите папку', 'warning');
         return;
     }
     for (const file of files) {
@@ -1331,12 +1331,12 @@ async function handleFileUpload(files) {
         try {
             const res = await fetch(`${API_BASE}/folder/${encodeURIComponent(currentFolder)}/add`, { method: 'POST', body: fd });
             if (await res.text() === 'OK') {
-                showNotification(`файл ${file.name} загружен`, 'success');
+                showNotification(`Файл ${file.name} загружен`, 'success');
             } else {
-                showNotification(`ошибка загрузки ${file.name}`, 'error');
+                showNotification(`Ошибка загрузки ${file.name}`, 'error');
             }
         } catch(e) {
-            showNotification(`ошибка загрузки ${file.name}`, 'error');
+            showNotification(`Ошибка загрузки ${file.name}`, 'error');
         }
     }
     await loadFolderContents();
@@ -1352,12 +1352,12 @@ async function deleteFile(fileName) {
         const res = await fetch(`${API_BASE}/folder/${encodeURIComponent(currentFolder)}/remove`, { method: 'POST', body: fd });
         if (await res.text() === 'OK') {
             await loadFolderContents();
-            showNotification(`файл ${fileName} удален`, 'success');
+            showNotification(`Файл ${fileName} удален`, 'success');
         } else {
-            showNotification('ошибка удаления', 'error');
+            showNotification('Ошибка удаления', 'error');
         }
     } catch(e) {
-        showNotification('ошибка удаления', 'error');
+        showNotification('Ошибка удаления', 'error');
     }
 }
 
@@ -1385,24 +1385,24 @@ async function renameFile() {
         const res = await fetch(`${API_BASE}/folder/${encodeURIComponent(currentFolder)}/rename`, { method: 'POST', body: fd });
         if (await res.text() === 'OK') {
             await loadFolderContents();
-            showNotification(`переименовано в ${newName}`, 'success');
+            showNotification(`Переименовано в ${newName}`, 'success');
             closeModal('renameFileModal');
         } else {
-            showNotification('ошибка переименования', 'error');
+            showNotification('Ошибка переименования', 'error');
         }
     } catch(e) {
-        showNotification('ошибка переименования', 'error');
+        showNotification('Ошибка переименования', 'error');
     }
 }
 
 function init() {
     extractSecret();
     if (devMode) {
-        devModeToggle.textContent = 'dev on';
+        devModeToggle.textContent = 'Dev on';
         devModeToggle.style.background = 'var(--success-bg)';
         devModeToggle.style.color = 'var(--success)';
     } else {
-        devModeToggle.textContent = 'dev off';
+        devModeToggle.textContent = 'Dev off';
         devModeToggle.style.background = 'var(--bg-surface-alt)';
     }
     updateDocsButtons();
@@ -1419,8 +1419,8 @@ function init() {
         e.preventDefault();
         const newKey = newKeyInput.value.trim();
         const confirm = confirmKeyInput.value.trim();
-        if (newKey.length < 6) { keyErrorText.textContent = 'минимум 6 символов'; keyErrorMsg.classList.add('show'); return; }
-        if (newKey !== confirm) { keyErrorText.textContent = 'ключи не совпадают'; keyErrorMsg.classList.add('show'); return; }
+        if (newKey.length < 6) { keyErrorText.textContent = 'Минимум 6 символов'; keyErrorMsg.classList.add('show'); return; }
+        if (newKey !== confirm) { keyErrorText.textContent = 'Ключи не совпадают'; keyErrorMsg.classList.add('show'); return; }
         try {
             const fd = new FormData();
             fd.append('secret', SECRET);
@@ -1430,10 +1430,10 @@ function init() {
             const newSecret = await res.text();
             SECRET = newSecret;
             localStorage.setItem('admin_secret_key', newSecret);
-            showNotification('ключ изменён', 'success');
+            showNotification('Ключ изменён', 'success');
             keyModal.classList.remove('active');
             keyErrorMsg.classList.remove('show');
-        } catch(e) { keyErrorText.textContent = 'ошибка'; keyErrorMsg.classList.add('show'); }
+        } catch(e) { keyErrorText.textContent = 'Ошибка'; keyErrorMsg.classList.add('show'); }
     });
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
@@ -1470,7 +1470,7 @@ function init() {
         if (paramsContent) paramsContent.classList.add('fade-out');
         setTimeout(async () => {
             currentLocale = locale;
-            document.getElementById('localesPanelTitle').textContent = `управление локалями: ${currentLocale}`;
+            document.getElementById('localesPanelTitle').textContent = `Управление локалями: ${currentLocale}`;
             await fetchLocaleData(currentLocale);
             if (paramsContent) {
                 paramsContent.classList.remove('fade-out');
