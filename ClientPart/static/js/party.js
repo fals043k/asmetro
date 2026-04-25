@@ -65,6 +65,84 @@ function escapeHtml(str) {
         .replace(/'/g, '&#39;');
 }
 
+function buildNameCandidates(...values) {
+    const unique = new Set();
+
+    values.forEach(value => {
+        if (value === null || value === undefined) return;
+
+        const raw = String(value);
+        const normalized = raw.normalize('NFKC');
+        const compactSpaces = normalized.replace(/\s+/g, ' ');
+        const variants = [raw, normalized, compactSpaces, compactSpaces.trim()];
+
+        variants.forEach(variant => {
+            if (variant) unique.add(variant);
+        });
+    });
+
+    return Array.from(unique);
+}
+
+async function fetchAttachmentBlob(blockType, nameCandidates, attachment) {
+    const candidates = buildNameCandidates(...nameCandidates);
+    let lastError = new Error('Attachment not found');
+
+    for (const name of candidates) {
+        for (let attempt = 1; attempt <= 2; attempt++) {
+            try {
+                const cacheBust = Date.now() + '-' + Math.random().toString(16).slice(2);
+                const url = `${API_BASE_URL}/api/v1/block/${blockType}/attachment?name=${encodeURIComponent(name)}&attachment=${encodeURIComponent(attachment)}&_=${cacheBust}`;
+                const response = await fetch(url, { cache: 'no-store' });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const blob = await response.blob();
+                if (!blob || blob.size === 0) {
+                    throw new Error('Empty blob');
+                }
+
+                return blob;
+            } catch (error) {
+                lastError = error;
+                if (attempt < 2) {
+                    await new Promise(resolve => setTimeout(resolve, 150));
+                }
+            }
+        }
+    }
+
+    throw lastError;
+}
+
+function applyBlobToImage(img, blob) {
+    return new Promise((resolve, reject) => {
+        const src = URL.createObjectURL(blob);
+
+        const cleanup = () => {
+            img.onload = null;
+            img.onerror = null;
+        };
+
+        img.onload = () => {
+            cleanup();
+            URL.revokeObjectURL(src);
+            resolve();
+        };
+
+        img.onerror = () => {
+            cleanup();
+            URL.revokeObjectURL(src);
+            reject(new Error('Image decode failed'));
+        };
+
+        img.src = src;
+        img.style.display = 'block';
+    });
+}
+
 // Инициализация
 document.addEventListener('DOMContentLoaded', function() {
     loadHeader();
@@ -117,52 +195,50 @@ function initModal() {
 }
 
 // Загрузка изображений в модалке
-function loadModalImages(type, id) {
-    const images = document.querySelectorAll(`.modal-image[data-id="${id}"]`);
-    images.forEach(img => {
-        if (img.dataset.loaded) return;
+function loadModalImages(type, id, extraNameCandidates = []) {
+    const images = Array.from(document.querySelectorAll('.modal-image'))
+        .filter(img => String(img.dataset.id) === String(id));
+
+    const nameCandidates = buildNameCandidates(id, ...extraNameCandidates);
+
+    images.forEach(async (img) => {
+        if (img.dataset.loaded === 'true') return;
 
         const attachment = img.dataset.attachment;
         const imageContainer = img.closest('.piter-section__image');
         const logoContainer = img.closest('.hero__logo');
         const section = img.closest('.piter-section');
 
-        fetch(`${API_BASE_URL}/api/v1/block/${type}/attachment?name=${encodeURIComponent(id)}&attachment=${encodeURIComponent(attachment)}`)
-            .then(response => {
-                if (!response.ok) throw new Error('Network error');
-                return response.blob();
-            })
-            .then(blob => {
-                const src = URL.createObjectURL(blob);
-                img.src = src;
-                img.style.display = 'block';
-                img.dataset.loaded = 'true';
-                img.onload = () => URL.revokeObjectURL(src);
+        try {
+            const blob = await fetchAttachmentBlob(type, nameCandidates, attachment);
+            await applyBlobToImage(img, blob);
+            img.dataset.loaded = 'true';
 
-                if (imageContainer) {
-                    imageContainer.style.display = 'block';
-                    if (section && section.classList.contains('piter-section--no-image')) {
-                        section.classList.remove('piter-section--no-image');
-                    }
+            if (imageContainer) {
+                imageContainer.style.display = 'block';
+                if (section && section.classList.contains('piter-section--no-image')) {
+                    section.classList.remove('piter-section--no-image');
                 }
-                if (logoContainer) {
-                    logoContainer.style.display = 'flex';
-                }
-            })
-            .catch(() => {
-                img.style.display = 'none';
-                img.dataset.loaded = 'true';
+            }
+            if (logoContainer) {
+                logoContainer.style.display = 'flex';
+            }
+        } catch (error) {
+            img.style.display = 'none';
+            delete img.dataset.loaded;
 
-                if (imageContainer) {
-                    imageContainer.style.display = 'none';
-                    if (section && section.dataset.sectionType === 'image-text') {
-                        section.classList.add('piter-section--no-image');
-                    }
+            if (imageContainer) {
+                imageContainer.style.display = 'none';
+                if (section && section.dataset.sectionType === 'image-text') {
+                    section.classList.add('piter-section--no-image');
                 }
-                if (logoContainer) {
-                    logoContainer.style.display = 'none';
-                }
-            });
+            }
+            if (logoContainer) {
+                logoContainer.style.display = 'none';
+            }
+
+            console.warn(`Modal image load failed: type=${type}, id=${id}, attachment=${attachment}`, error);
+        }
     });
 }
 
@@ -379,26 +455,25 @@ async function loadMetro() {
     }
 }
 
-function loadMetroLogo(id, imgElement) {
+async function loadMetroLogo(id, imgElement) {
     if (!imgElement || imgElement.dataset.loaded) return;
-    fetch(`${API_BASE_URL}/api/v1/block/метро/attachment?name=${encodeURIComponent(id)}&attachment=logo`)
-        .then(response => {
-            if (!response.ok) throw new Error('Network error');
-            return response.blob();
-        })
-        .then(blob => {
-            const src = URL.createObjectURL(blob);
-            imgElement.src = src;
-            imgElement.style.display = 'block';
-            imgElement.dataset.loaded = 'true';
-            imgElement.onload = () => URL.revokeObjectURL(src);
-        })
-        .catch(() => {
-            imgElement.style.display = 'none';
-            imgElement.dataset.loaded = 'true';
-            const parentDiv = imgElement.closest('.metro-item__image');
-            if (parentDiv) parentDiv.style.display = 'none';
-        });
+
+    try {
+        const blob = await fetchAttachmentBlob('метро', [id], 'logo');
+        await applyBlobToImage(imgElement, blob);
+        imgElement.dataset.loaded = 'true';
+
+        const parentDiv = imgElement.closest('.metro-item__image');
+        if (parentDiv) parentDiv.style.display = 'flex';
+    } catch (error) {
+        imgElement.style.display = 'none';
+        delete imgElement.dataset.loaded;
+
+        const parentDiv = imgElement.closest('.metro-item__image');
+        if (parentDiv) parentDiv.style.display = 'none';
+
+        console.warn(`Metro logo load failed: id=${id}`, error);
+    }
 }
 
 function createMetroCard(name, data, id) {
@@ -450,7 +525,7 @@ function openPredpriyatiyaModal(companyId, companyData) {
         modalContent.appendChild(closeBtn);
     }
 
-    loadModalImages('предприятия', companyId);
+    loadModalImages('предприятия', companyId, [companyData?.name]);
 }
 
 function generatePredpriyatiyaContent(data, companyId) {
@@ -594,7 +669,7 @@ async function loadPredpriyatiya() {
             grid.appendChild(card);
 
             const img = card.querySelector('.predpriyatiya-item__image img');
-            if (img) loadPredpriyatiyaLogo(id, img);
+            if (img) loadPredpriyatiyaLogo(id, img, [name]);
         }
     } catch (error) {
         console.error('Error loading companies list:', error);
@@ -602,26 +677,25 @@ async function loadPredpriyatiya() {
     }
 }
 
-function loadPredpriyatiyaLogo(id, imgElement) {
+async function loadPredpriyatiyaLogo(id, imgElement, extraNameCandidates = []) {
     if (!imgElement || imgElement.dataset.loaded) return;
-    fetch(`${API_BASE_URL}/api/v1/block/предприятия/attachment?name=${encodeURIComponent(id)}&attachment=logo`)
-        .then(response => {
-            if (!response.ok) throw new Error('Network error');
-            return response.blob();
-        })
-        .then(blob => {
-            const src = URL.createObjectURL(blob);
-            imgElement.src = src;
-            imgElement.style.display = 'block';
-            imgElement.dataset.loaded = 'true';
-            imgElement.onload = () => URL.revokeObjectURL(src);
-        })
-        .catch(() => {
-            imgElement.style.display = 'none';
-            imgElement.dataset.loaded = 'true';
-            const parentDiv = imgElement.closest('.predpriyatiya-item__image');
-            if (parentDiv) parentDiv.style.display = 'none';
-        });
+
+    try {
+        const blob = await fetchAttachmentBlob('предприятия', [id, ...extraNameCandidates], 'logo');
+        await applyBlobToImage(imgElement, blob);
+        imgElement.dataset.loaded = 'true';
+
+        const parentDiv = imgElement.closest('.predpriyatiya-item__image');
+        if (parentDiv) parentDiv.style.display = 'flex';
+    } catch (error) {
+        imgElement.style.display = 'none';
+        delete imgElement.dataset.loaded;
+
+        const parentDiv = imgElement.closest('.predpriyatiya-item__image');
+        if (parentDiv) parentDiv.style.display = 'none';
+
+        console.warn(`Company logo load failed: id=${id}`, error);
+    }
 }
 
 function createPredpriyatiyaCard(name, data, id) {
@@ -791,27 +865,25 @@ async function loadComitet() {
     }
 }
 
-function loadComitetLogo(id, imgElement) {
+async function loadComitetLogo(id, imgElement) {
     if (!imgElement || imgElement.dataset.loaded) return;
-    
-    fetch(`${API_BASE_URL}/api/v1/block/комитет/attachment?name=${encodeURIComponent(id)}&attachment=logo`)
-        .then(response => {
-            if (!response.ok) throw new Error('Network error');
-            return response.blob();
-        })
-        .then(blob => {
-            const src = URL.createObjectURL(blob);
-            imgElement.src = src;
-            imgElement.style.display = 'block';
-            imgElement.dataset.loaded = 'true';
-            imgElement.onload = () => URL.revokeObjectURL(src);
-        })
-        .catch(() => {
-            imgElement.style.display = 'none';
-            imgElement.dataset.loaded = 'true';
-            const parentDiv = imgElement.closest('.comitet-item__image');
-            if (parentDiv) parentDiv.style.display = 'none';
-        });
+
+    try {
+        const blob = await fetchAttachmentBlob('комитет', [id], 'logo');
+        await applyBlobToImage(imgElement, blob);
+        imgElement.dataset.loaded = 'true';
+
+        const parentDiv = imgElement.closest('.comitet-item__image');
+        if (parentDiv) parentDiv.style.display = 'flex';
+    } catch (error) {
+        imgElement.style.display = 'none';
+        delete imgElement.dataset.loaded;
+
+        const parentDiv = imgElement.closest('.comitet-item__image');
+        if (parentDiv) parentDiv.style.display = 'none';
+
+        console.warn(`Comitet logo load failed: id=${id}`, error);
+    }
 }
 
 function createComitetCard(name, data, id) {

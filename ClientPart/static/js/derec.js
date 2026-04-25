@@ -182,31 +182,19 @@ const DerecPageApp = (() => {
     }
 
     function updateMergedTasksList(text) {
-        const container = document.querySelector(CONFIG.SELECTORS.TASKS_LIST_MERGED);
-        if (!container) return;
+        const tasksListElement = document.querySelector(CONFIG.SELECTORS.TASKS_LIST_MERGED);
+        if (!tasksListElement) return;
         
         const allTasks = text.split('\n').filter(task => task.trim() !== '');
         
-        let html = '';
-        
-        allTasks.forEach(task => {
+        const filteredTasks = allTasks.filter(task => {
             const lowerTask = task.toLowerCase();
-            const isSpecial = lowerTask.includes('кроме того, ассоциация осуществляет:') ||
-                            lowerTask.includes('кроме того, ассоциация осуществляет') ||
-                            lowerTask.includes('кроме того');
-            
-            if (isSpecial) {
-                html += `<div>${escapeHtml(task.trim())}</div>`;
-            } else {
-                html += `<li>${escapeHtml(task.trim())}</li>`;
-            }
+            return !lowerTask.includes('кроме того, ассоциация осуществляет:') &&
+                   !lowerTask.includes('кроме того, ассоциация осуществляет') &&
+                   !lowerTask.includes('кроме того');
         });
-
-        if (html.includes('<li>')) {
-            container.innerHTML = `<ul style="list-style-type: none; padding-left: 0; margin: 0;">${html}</ul>`;
-        } else {
-            container.innerHTML = html;
-        }
+        
+        tasksListElement.innerHTML = filteredTasks.map(task => `<li>${escapeHtml(task.trim())}</li>`).join('');
     }
 
     async function loadTeamMembers() {
