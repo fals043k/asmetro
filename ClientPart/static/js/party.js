@@ -4,7 +4,6 @@ const OVERLAY_ID = 'modalOverlay';
 const CONTENT_ID = 'modalContent';
 const EMPTY_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
-// Утилиты
 function formatTextWithLineBreaks(text) {
     if (!text || typeof text !== 'string') return '';
     const escaped = text
@@ -100,21 +99,21 @@ function applyBlobToImage(img, blob) {
         img.onload = () => {
             cleanup();
             URL.revokeObjectURL(src);
+            img.style.display = 'block';
             resolve();
         };
 
         img.onerror = () => {
             cleanup();
             URL.revokeObjectURL(src);
+            img.style.display = 'none';
             reject(new Error('Image decode failed'));
         };
 
         img.src = src;
-        img.style.display = 'block';
     });
 }
 
-// Инициализация
 function initPartyPage() {
     loadHeader();
     loadFooter();
@@ -136,7 +135,6 @@ if (document.readyState === 'loading') {
     initPartyPage();
 }
 
-// Загрузка текста страницы
 async function loadPartyText() {
     try {
         const response = await fetch(`${API_BASE_URL}/api/v1/locale/участники`);
@@ -154,7 +152,6 @@ async function loadPartyText() {
     }
 }
 
-// Модальное окно
 function initModal() {
     const modal = document.getElementById(MODAL_ID);
     const overlay = document.getElementById(OVERLAY_ID);
@@ -176,7 +173,6 @@ function initModal() {
     });
 }
 
-// Загрузка изображений в модалке
 function loadModalImages(type, id, extraNameCandidates = []) {
     const images = Array.from(document.querySelectorAll('.modal-image'))
         .filter(img => String(img.dataset.id) === String(id));
@@ -184,17 +180,20 @@ function loadModalImages(type, id, extraNameCandidates = []) {
     const nameCandidates = buildNameCandidates(id, ...extraNameCandidates);
 
     images.forEach(async (img) => {
-        if (img.dataset.loaded === 'true') return;
+        if (img.dataset.loaded === 'true' || img.dataset.loading === 'true') return;
 
         const attachment = img.dataset.attachment;
         const imageContainer = img.closest('.piter-section__image');
         const logoContainer = img.closest('.hero__logo');
         const section = img.closest('.piter-section');
 
+        img.dataset.loading = 'true';
+
         try {
             const blob = await fetchAttachmentBlob(type, nameCandidates, attachment);
             await applyBlobToImage(img, blob);
             img.dataset.loaded = 'true';
+            delete img.dataset.loading;
 
             if (imageContainer) {
                 imageContainer.style.display = 'block';
@@ -208,6 +207,7 @@ function loadModalImages(type, id, extraNameCandidates = []) {
         } catch (error) {
             img.style.display = 'none';
             delete img.dataset.loaded;
+            delete img.dataset.loading;
 
             if (imageContainer) {
                 imageContainer.style.display = 'none';
@@ -223,8 +223,6 @@ function loadModalImages(type, id, extraNameCandidates = []) {
         }
     });
 }
-
-// ===== МЕТРОПОЛИТЕНЫ =====
 
 function openMetroModal(metroId, metroData) {
     const modal = document.getElementById(MODAL_ID);
@@ -418,8 +416,13 @@ async function loadMetro() {
                 const card = createMetroCard(name, contentData, id);
                 grid.appendChild(card);
 
-                const img = grid.lastChild.querySelector('.metro-item__image img');
-                if (img) loadMetroLogo(id, img);
+                const img = card.querySelector('.metro-item__image img');
+                if (img) {
+                    img.dataset.id = id;
+                    img.dataset.type = 'метро';
+                    img.dataset.attachment = 'logo';
+                    loadMetroLogo(id, img);
+                }
             } catch (e) {
                 console.error(`Error loading metro ${id}:`, e);
             }
@@ -435,18 +438,22 @@ async function loadMetro() {
 }
 
 async function loadMetroLogo(id, imgElement) {
-    if (!imgElement || imgElement.dataset.loaded) return;
+    if (!imgElement || imgElement.dataset.loaded === 'true' || imgElement.dataset.loading === 'true') return;
+
+    imgElement.dataset.loading = 'true';
 
     try {
         const blob = await fetchAttachmentBlob('метро', [id], 'logo');
         await applyBlobToImage(imgElement, blob);
         imgElement.dataset.loaded = 'true';
+        delete imgElement.dataset.loading;
 
         const parentDiv = imgElement.closest('.metro-item__image');
         if (parentDiv) parentDiv.style.display = 'flex';
     } catch (error) {
         imgElement.style.display = 'none';
         delete imgElement.dataset.loaded;
+        delete imgElement.dataset.loading;
 
         const parentDiv = imgElement.closest('.metro-item__image');
         if (parentDiv) parentDiv.style.display = 'none';
@@ -476,8 +483,6 @@ function createMetroCard(name, data, id) {
     };
     return card;
 }
-
-// ===== ПРЕДПРИЯТИЯ =====
 
 function openPredpriyatiyaModal(companyId, companyData) {
     const modal = document.getElementById(MODAL_ID);
@@ -648,7 +653,12 @@ async function loadPredpriyatiya() {
             grid.appendChild(card);
 
             const img = card.querySelector('.predpriyatiya-item__image img');
-            if (img) loadPredpriyatiyaLogo(id, img, [name]);
+            if (img) {
+                img.dataset.id = id;
+                img.dataset.type = 'предприятия';
+                img.dataset.attachment = 'logo';
+                loadPredpriyatiyaLogo(id, img, [name]);
+            }
         }
 
         if (!grid.children.length) {
@@ -661,18 +671,22 @@ async function loadPredpriyatiya() {
 }
 
 async function loadPredpriyatiyaLogo(id, imgElement, extraNameCandidates = []) {
-    if (!imgElement || imgElement.dataset.loaded) return;
+    if (!imgElement || imgElement.dataset.loaded === 'true' || imgElement.dataset.loading === 'true') return;
+
+    imgElement.dataset.loading = 'true';
 
     try {
         const blob = await fetchAttachmentBlob('предприятия', [id, ...extraNameCandidates], 'logo');
         await applyBlobToImage(imgElement, blob);
         imgElement.dataset.loaded = 'true';
+        delete imgElement.dataset.loading;
 
         const parentDiv = imgElement.closest('.predpriyatiya-item__image');
         if (parentDiv) parentDiv.style.display = 'flex';
     } catch (error) {
         imgElement.style.display = 'none';
         delete imgElement.dataset.loaded;
+        delete imgElement.dataset.loading;
 
         const parentDiv = imgElement.closest('.predpriyatiya-item__image');
         if (parentDiv) parentDiv.style.display = 'none';
@@ -702,8 +716,6 @@ function createPredpriyatiyaCard(name, data, id) {
     };
     return card;
 }
-
-// ===== КОМИТЕТЫ =====
 
 function openComitetModal(comitetId, comitetData, blockType = 'комитет') {
     const modal = document.getElementById(MODAL_ID);
@@ -862,7 +874,12 @@ async function loadComitet() {
             grid.appendChild(card);
 
             const img = card.querySelector('.comitet-item__image img');
-            if (img) loadComitetLogo(id, img, activeBlockType);
+            if (img) {
+                img.dataset.id = id;
+                img.dataset.type = activeBlockType;
+                img.dataset.attachment = 'logo';
+                loadComitetLogo(id, img, activeBlockType);
+            }
         }
 
         if (!grid.children.length) {
@@ -875,18 +892,22 @@ async function loadComitet() {
 }
 
 async function loadComitetLogo(id, imgElement, blockType = 'комитет') {
-    if (!imgElement || imgElement.dataset.loaded) return;
+    if (!imgElement || imgElement.dataset.loaded === 'true' || imgElement.dataset.loading === 'true') return;
+
+    imgElement.dataset.loading = 'true';
 
     try {
         const blob = await fetchAttachmentBlob(blockType, [id], 'logo');
         await applyBlobToImage(imgElement, blob);
         imgElement.dataset.loaded = 'true';
+        delete imgElement.dataset.loading;
 
         const parentDiv = imgElement.closest('.comitet-item__image');
         if (parentDiv) parentDiv.style.display = 'flex';
     } catch (error) {
         imgElement.style.display = 'none';
         delete imgElement.dataset.loaded;
+        delete imgElement.dataset.loading;
 
         const parentDiv = imgElement.closest('.comitet-item__image');
         if (parentDiv) parentDiv.style.display = 'none';
@@ -921,8 +942,6 @@ function createComitetCard(name, data, id, blockType = 'комитет') {
     
     return card;
 }
-
-// ===== ЗАГРУЗКА HEADER/FOOTER =====
 
 async function loadHeader() {
     try {
