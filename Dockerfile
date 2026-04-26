@@ -6,11 +6,20 @@ RUN apt update && apt install -y \
     libboost-all-dev \
     nlohmann-json3-dev \
     libssl-dev \
-    openssl
+    openssl \
+    locales \
+    && locale-gen ru_RU.UTF-8 \
+    && update-locale LANG=ru_RU.UTF-8 \
+    && apt clean
+
+ENV LANG=ru_RU.UTF-8
+ENV LANGUAGE=ru_RU:ru
+ENV LC_ALL=ru_RU.UTF-8
 
 RUN pip3 install fastapi uvicorn
 
 WORKDIR /app
+
 COPY . .
 
 RUN cd AdminPart && g++ -std=c++20 -o server main.cpp \
