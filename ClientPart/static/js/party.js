@@ -45,6 +45,31 @@ const FALLBACK_COMITET_DATA = {
     }
 };
 
+const STATIC_METRO_ITEMS = [
+    { id: 'moscow', name: 'Московский метрополитен', image: 'img/metro1.svg' },
+    { id: 'peterburg', name: 'Петербургский метрополитен', image: 'img/metro2.svg' },
+    { id: 'nizhny-novgorod', name: 'Нижегородское метро', image: 'img/metro3.svg' },
+    { id: 'novosibirsk', name: 'Новосибирский метрополитен', image: 'img/metro4.svg' },
+    { id: 'samara', name: 'Самарский метрополитен', image: 'img/metro5.svg' },
+    { id: 'ekaterinburg', name: 'Екатеринбургский метрополитен', image: 'img/metro6.svg' },
+    { id: 'kazan', name: 'Казанский метрополитен', image: 'img/metro7.svg' },
+    { id: 'minsk', name: 'Минский метрополитен', image: 'img/metro8.svg' }
+];
+
+const STATIC_COMPANY_ITEMS = [
+    { id: 'company-1', name: 'Предприятие - участник ассоциации', image: 'img/predp1.svg' },
+    { id: 'company-2', name: 'Предприятие - участник ассоциации', image: 'img/predp2.svg' },
+    { id: 'company-3', name: 'Предприятие - участник ассоциации', image: 'img/predp3.svg' },
+    { id: 'company-4', name: 'Предприятие - участник ассоциации', image: 'img/predp4.svg' }
+];
+
+const STATIC_COMITET_ITEMS = [
+    { id: 'operation', name: 'Комитет по эксплуатации' },
+    { id: 'safety', name: 'Комитет по безопасности' },
+    { id: 'infrastructure', name: 'Комитет по инфраструктуре' },
+    { id: 'rolling-stock', name: 'Комитет по подвижному составу' }
+];
+
 // Утилиты
 function formatTextWithLineBreaks(text) {
     if (!text || typeof text !== 'string') return '';
@@ -63,6 +88,63 @@ function escapeHtml(str) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+}
+
+function applyStaticImage(card, selector, image) {
+    const img = card.querySelector(selector);
+    const imageBox = img ? img.parentElement : null;
+
+    if (!img || !image) {
+        if (imageBox) imageBox.style.display = 'none';
+        return;
+    }
+
+    img.src = image;
+    img.style.display = 'block';
+    img.dataset.loaded = 'true';
+    if (imageBox) imageBox.style.display = 'flex';
+}
+
+function renderStaticMetroItems(grid) {
+    grid.innerHTML = '';
+    STATIC_METRO_ITEMS.forEach(item => {
+        const data = {
+            ...FALLBACK_METRO_DATA['123'],
+            name: item.name,
+            short_desc: item.name
+        };
+        const card = createMetroCard(item.name, data, item.id);
+        applyStaticImage(card, '.metro-item__image img', item.image);
+        grid.appendChild(card);
+    });
+}
+
+function renderStaticCompanyItems(grid) {
+    grid.innerHTML = '';
+    STATIC_COMPANY_ITEMS.forEach(item => {
+        const data = {
+            ...FALLBACK_COMPANY_DATA.default,
+            name: item.name,
+            short_desc: item.name
+        };
+        const card = createPredpriyatiyaCard(item.name, data, item.id);
+        applyStaticImage(card, '.predpriyatiya-item__image img', item.image);
+        grid.appendChild(card);
+    });
+}
+
+function renderStaticComitetItems(grid) {
+    grid.innerHTML = '';
+    STATIC_COMITET_ITEMS.forEach(item => {
+        const data = {
+            ...FALLBACK_COMITET_DATA.default,
+            name: item.name,
+            short_desc: item.name
+        };
+        const card = createComitetCard(item.name, data, item.id);
+        applyStaticImage(card, '.comitet-item__image img');
+        grid.appendChild(card);
+    });
 }
 
 function buildNameCandidates(...values) {
@@ -147,10 +229,15 @@ function applyBlobToImage(img, blob) {
 document.addEventListener('DOMContentLoaded', function() {
     loadHeader();
     loadFooter();
-    loadPartyText();
-    loadMetro();
-    loadPredpriyatiya();
-    loadComitet();
+
+    if (document.body.dataset.page === 'committees') {
+        loadComitet();
+    } else {
+        loadPartyText();
+        loadMetro();
+        loadPredpriyatiya();
+    }
+
     initModal();
 });
 
@@ -418,7 +505,7 @@ async function loadMetro() {
         const ids = Array.isArray(listData) ? listData : [];
 
         if (ids.length === 0) {
-            grid.innerHTML = '<p class="no-data">Нет данных о метрополитенах</p>';
+            renderStaticMetroItems(grid);
             return;
         }
 
@@ -451,7 +538,7 @@ async function loadMetro() {
         }
     } catch (error) {
         console.error('Error loading metro list:', error);
-        grid.innerHTML = '<p class="error">Ошибка загрузки данных</p>';
+        renderStaticMetroItems(grid);
     }
 }
 
@@ -643,7 +730,7 @@ async function loadPredpriyatiya() {
         const ids = Array.isArray(listData) ? listData : [];
 
         if (ids.length === 0) {
-            grid.innerHTML = '<p class="no-data">Нет данных о предприятиях</p>';
+            renderStaticCompanyItems(grid);
             return;
         }
 
@@ -673,7 +760,7 @@ async function loadPredpriyatiya() {
         }
     } catch (error) {
         console.error('Error loading companies list:', error);
-        grid.innerHTML = '<p class="error">Ошибка загрузки данных</p>';
+        renderStaticCompanyItems(grid);
     }
 }
 
@@ -722,7 +809,7 @@ function createPredpriyatiyaCard(name, data, id) {
 
 // ===== КОМИТЕТЫ =====
 
-function openComitetModal(comitetId, comitetData) {
+function openComitetModal(comitetId, comitetData, blockType = 'комитет') {
     const modal = document.getElementById(MODAL_ID);
     const modalContent = document.getElementById(CONTENT_ID);
     if (!modal || !modalContent) return;
@@ -747,7 +834,7 @@ function openComitetModal(comitetId, comitetData) {
         modalContent.appendChild(closeBtn);
     }
 
-    loadModalImages('комитет', comitetId);
+    loadModalImages(blockType, comitetId);
 }
 
 function generateComitetContent(data, comitetId) {
@@ -823,15 +910,37 @@ function generateComitetContent(data, comitetId) {
 async function loadComitet() {
     const grid = document.getElementById('comitet-grid');
     if (!grid) return;
-    
+
+    const blockTypes = ['комитет', 'коммитет'];
+    let activeBlockType = blockTypes[0];
+
     try {
-        const listResp = await fetch(`${API_BASE_URL}/api/v1/block/комитет/order`);
-        if (!listResp.ok) throw new Error(`HTTP ${listResp.status}`);
-        const listData = await listResp.json();
+        let listData = [];
+        let lastError = null;
+
+        for (const blockType of blockTypes) {
+            try {
+                const listResp = await fetch(`${API_BASE_URL}/api/v1/block/${blockType}/order`);
+                if (!listResp.ok) throw new Error(`HTTP ${listResp.status}`);
+
+                listData = await listResp.json();
+                activeBlockType = blockType;
+                if (Array.isArray(listData) && listData.length > 0) {
+                    break;
+                }
+            } catch (error) {
+                lastError = error;
+            }
+        }
+
+        if (!Array.isArray(listData) && lastError) {
+            throw lastError;
+        }
+
         const ids = Array.isArray(listData) ? listData : [];
 
         if (ids.length === 0) {
-            grid.innerHTML = '<p class="no-data">Нет данных о комитетах</p>';
+            renderStaticComitetItems(grid);
             return;
         }
 
@@ -843,7 +952,7 @@ async function loadComitet() {
 
             try {
                 const contentResp = await fetch(
-                    `${API_BASE_URL}/api/v1/block/комитет/content?name=${encodeURIComponent(id)}`
+                    `${API_BASE_URL}/api/v1/block/${activeBlockType}/content?name=${encodeURIComponent(id)}`
                 );
                 if (contentResp.ok) {
                     contentData = await contentResp.json();
@@ -853,23 +962,23 @@ async function loadComitet() {
                 console.error(`Error loading comitet ${id}:`, e);
             }
 
-            const card = createComitetCard(name, contentData, id);
+            const card = createComitetCard(name, contentData, id, activeBlockType);
             grid.appendChild(card);
 
             const img = card.querySelector('.comitet-item__image img');
-            if (img) loadComitetLogo(id, img);
+            if (img) loadComitetLogo(id, img, activeBlockType);
         }
     } catch (error) {
         console.error('Error loading comitet list:', error);
-        grid.innerHTML = '<p class="error">Ошибка загрузки данных</p>';
+        renderStaticComitetItems(grid);
     }
 }
 
-async function loadComitetLogo(id, imgElement) {
+async function loadComitetLogo(id, imgElement, blockType = 'комитет') {
     if (!imgElement || imgElement.dataset.loaded) return;
 
     try {
-        const blob = await fetchAttachmentBlob('комитет', [id], 'logo');
+        const blob = await fetchAttachmentBlob(blockType, [id], 'logo');
         await applyBlobToImage(imgElement, blob);
         imgElement.dataset.loaded = 'true';
 
@@ -886,7 +995,7 @@ async function loadComitetLogo(id, imgElement) {
     }
 }
 
-function createComitetCard(name, data, id) {
+function createComitetCard(name, data, id, blockType = 'комитет') {
     const card = document.createElement('div');
     card.className = 'comitet-item';
     card.setAttribute('data-comitet-id', id);
@@ -901,11 +1010,12 @@ function createComitetCard(name, data, id) {
     
     if (data.short_desc) card.title = data.short_desc;
     card.comitetData = data;
+    card.comitetBlockType = blockType;
     
     card.onclick = function(e) {
         e.preventDefault();
         e.stopPropagation();
-        openComitetModal(id, this.comitetData);
+        openComitetModal(id, this.comitetData, this.comitetBlockType);
         return false;
     };
     
