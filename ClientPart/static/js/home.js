@@ -65,7 +65,6 @@ const HomePageApp = (() => {
             initAboutText();
             loadNews();
             loadEvents();
-            loadHomeTeam();
         });
     }
 
@@ -596,86 +595,6 @@ const HomePageApp = (() => {
         
         state.eventsPopupElement.classList.add(CONFIG.CLASSES.ACTIVE);
         document.body.style.overflow = 'hidden';
-    }
-
-    async function loadHomeTeam() {
-        const slider = document.querySelector(CONFIG.SELECTORS.HOME_TEAM_SLIDER);
-        if (!slider) return;
-
-        try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), CONFIG.TIMEOUT_MS);
-            
-            const resp = await fetch(
-                `${CONFIG.API_BASE_URL}${CONFIG.API_ENDPOINTS.TEAM_ORDER}`,
-                { signal: controller.signal }
-            );
-            clearTimeout(timeoutId);
-            
-            if (!resp.ok) return;
-            
-            const ids = await resp.json();
-            const teamIds = Array.isArray(ids) ? ids.slice(0, 5) : [];
-            
-            if (!teamIds.length) return;
-            
-            slider.innerHTML = '';
-            
-            for (const id of teamIds) {
-                let contentData = {};
-                let fullname = id;
-                
-                try {
-                    const contentCtrl = new AbortController();
-                    const contentTimeout = setTimeout(() => contentCtrl.abort(), CONFIG.TIMEOUT_MS);
-                    
-                    const contentResp = await fetch(
-                        `${CONFIG.API_BASE_URL}${CONFIG.API_ENDPOINTS.TEAM_CONTENT}?name=${encodeURIComponent(id)}`,
-                        { signal: contentCtrl.signal }
-                    );
-                    clearTimeout(contentTimeout);
-                    
-                    if (contentResp.ok) {
-                        contentData = await contentResp.json();
-                        if (contentData.fullname) fullname = contentData.fullname;
-                    }
-                } catch (e) {
-                    if (e.name !== 'AbortError') console.warn(`Team content load failed: ${id}`, e);
-                }
-                
-                const card = document.createElement('a');
-                card.href = '#';
-                card.className = 'home-team__card';
-                
-                const position = contentData.post || contentData.position || '';
-                const phone = contentData.number || contentData.phone || '';
-                const email = contentData.email || '';
-                
-                card.innerHTML = `
-                    <div class="home-team__photo">
-                        <img src="" alt="${escapeHtml(fullname)}">
-                    </div>
-                    <h3 class="home-team__name">${escapeHtml(fullname)}</h3>
-                    <p class="home-team__position">${escapeHtml(position)}</p>
-                    <div class="home-team__contacts">
-                        <p class="home-team__contact">${escapeHtml(phone)}</p>
-                        <p class="home-team__contact">${escapeHtml(email)}</p>
-                    </div>
-                `;
-                
-                const imgEl = card.querySelector(CONFIG.SELECTORS.HOME_TEAM_PHOTO);
-                if (imgEl) loadTeamPhoto(id, imgEl);
-                
-                card.addEventListener('click', (e) => e.preventDefault());
-                
-                slider.appendChild(card);
-            }
-            
-            initHomeTeamSliderScroll(slider);
-            
-        } catch (e) {
-            if (e.name !== 'AbortError') console.error('Home team load failed:', e);
-        }
     }
 
     async function loadTeamPhoto(id, imgElement) {
