@@ -23,10 +23,6 @@ function escapeHtml(str) {
         .replace(/'/g, '&#39;');
 }
 
-function isMissingContent(data) {
-    return !data || data.status === 'content aint exists' || Object.keys(data).length === 0;
-}
-
 function showNoData(grid, message) {
     grid.innerHTML = `<p class="no-data">${escapeHtml(message)}</p>`;
 }
@@ -227,8 +223,6 @@ function openMetroModal(metroId, metroData) {
     const modalContent = document.getElementById(CONTENT_ID);
     if (!modal || !modalContent) return;
 
-    if (isMissingContent(metroData)) return;
-
     modalContent.innerHTML = generateMetroContent(metroData, metroId);
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -408,8 +402,6 @@ async function loadMetro() {
 
                 const contentData = await contentResp.json();
 
-                if (isMissingContent(contentData)) continue;
-
                 const name = contentData.name || id;
                 const card = createMetroCard(name, contentData, id);
                 grid.appendChild(card);
@@ -466,13 +458,13 @@ function createMetroCard(name, data, id) {
         <p class="metro-item__name">${escapeHtml(name)}</p>
     `;
     if (data.short_desc) card.title = data.short_desc;
-    card.metroData = data;
-    card.onclick = function(e) {
+    
+    card.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        openMetroModal(id, this.metroData);
-        return false;
-    };
+        openMetroModal(id, data);
+    });
+    
     return card;
 }
 
@@ -480,8 +472,6 @@ function openPredpriyatiyaModal(companyId, companyData) {
     const modal = document.getElementById(MODAL_ID);
     const modalContent = document.getElementById(CONTENT_ID);
     if (!modal || !modalContent) return;
-
-    if (isMissingContent(companyData)) return;
 
     modalContent.innerHTML = generatePredpriyatiyaContent(companyData, companyId);
     modal.classList.add('active');
@@ -639,8 +629,6 @@ async function loadPredpriyatiya() {
                 continue;
             }
 
-            if (isMissingContent(contentData)) continue;
-
             const card = createPredpriyatiyaCard(name, contentData, id);
             grid.appendChild(card);
 
@@ -693,13 +681,13 @@ function createPredpriyatiyaCard(name, data, id) {
         <p class="predpriyatiya-item__name">${escapeHtml(name)}</p>
     `;
     if (data.short_desc) card.title = data.short_desc;
-    card.predpriyatiyaData = data;
-    card.onclick = function(e) {
+    
+    card.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        openPredpriyatiyaModal(id, this.predpriyatiyaData);
-        return false;
-    };
+        openPredpriyatiyaModal(id, data);
+    });
+    
     return card;
 }
 
@@ -707,8 +695,6 @@ function openComitetModal(comitetId, comitetData, blockType = 'комитет') 
     const modal = document.getElementById(MODAL_ID);
     const modalContent = document.getElementById(CONTENT_ID);
     if (!modal || !modalContent) return;
-
-    if (isMissingContent(comitetData)) return;
 
     modalContent.innerHTML = generateComitetContent(comitetData, comitetId);
     modal.classList.add('active');
@@ -854,8 +840,6 @@ async function loadComitet() {
                 continue;
             }
 
-            if (isMissingContent(contentData)) continue;
-
             const card = createComitetCard(name, contentData, id, activeBlockType);
             grid.appendChild(card);
 
@@ -910,15 +894,12 @@ function createComitetCard(name, data, id, blockType = 'комитет') {
     `;
     
     if (data.short_desc) card.title = data.short_desc;
-    card.comitetData = data;
-    card.comitetBlockType = blockType;
     
-    card.onclick = function(e) {
+    card.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        openComitetModal(id, this.comitetData, this.comitetBlockType);
-        return false;
-    };
+        openComitetModal(id, data, blockType);
+    });
     
     return card;
 }
