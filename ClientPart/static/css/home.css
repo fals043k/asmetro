@@ -41,8 +41,8 @@
 }
 
 .about__person-photo {
-    width: 64px;
-    height: 64px;
+    width: 128px;
+    height: 128px;
     border-radius: 6px;
     overflow: hidden;
     flex-shrink: 0;
@@ -62,14 +62,14 @@
 
 .about__person-name {
     font-weight: 600;
-    font-size: 16px;
+    font-size: 32px;
     line-height: 140%;
     color: #1a5c9e;
 }
 
 .about__person-position {
     font-weight: 400;
-    font-size: 14px;
+    font-size: 28px;
     line-height: 140%;
     color: #888888;
 }

@@ -99,14 +99,12 @@ function applyBlobToImage(img, blob) {
         img.onload = () => {
             cleanup();
             URL.revokeObjectURL(src);
-            img.style.display = 'block';
             resolve();
         };
 
         img.onerror = () => {
             cleanup();
             URL.revokeObjectURL(src);
-            img.style.display = 'none';
             reject(new Error('Image decode failed'));
         };
 
@@ -447,17 +445,11 @@ async function loadMetroLogo(id, imgElement) {
         await applyBlobToImage(imgElement, blob);
         imgElement.dataset.loaded = 'true';
         delete imgElement.dataset.loading;
-
-        const parentDiv = imgElement.closest('.metro-item__image');
-        if (parentDiv) parentDiv.style.display = 'flex';
+        imgElement.style.display = 'block';
     } catch (error) {
         imgElement.style.display = 'none';
         delete imgElement.dataset.loaded;
         delete imgElement.dataset.loading;
-
-        const parentDiv = imgElement.closest('.metro-item__image');
-        if (parentDiv) parentDiv.style.display = 'none';
-
         console.warn(`Metro logo load failed: id=${id}`, error);
     }
 }
@@ -469,7 +461,7 @@ function createMetroCard(name, data, id) {
     card.style.cursor = 'pointer';
     card.innerHTML = `
         <div class="metro-item__image">
-            <img src="${EMPTY_PIXEL}" alt="${escapeHtml(name)}" loading="lazy" style="display: none;">
+            <img src="${EMPTY_PIXEL}" alt="${escapeHtml(name)}" loading="lazy">
         </div>
         <p class="metro-item__name">${escapeHtml(name)}</p>
     `;
@@ -680,17 +672,11 @@ async function loadPredpriyatiyaLogo(id, imgElement, extraNameCandidates = []) {
         await applyBlobToImage(imgElement, blob);
         imgElement.dataset.loaded = 'true';
         delete imgElement.dataset.loading;
-
-        const parentDiv = imgElement.closest('.predpriyatiya-item__image');
-        if (parentDiv) parentDiv.style.display = 'flex';
+        imgElement.style.display = 'block';
     } catch (error) {
         imgElement.style.display = 'none';
         delete imgElement.dataset.loaded;
         delete imgElement.dataset.loading;
-
-        const parentDiv = imgElement.closest('.predpriyatiya-item__image');
-        if (parentDiv) parentDiv.style.display = 'none';
-
         console.warn(`Company logo load failed: id=${id}`, error);
     }
 }
@@ -702,7 +688,7 @@ function createPredpriyatiyaCard(name, data, id) {
     card.style.cursor = 'pointer';
     card.innerHTML = `
         <div class="predpriyatiya-item__image">
-            <img src="${EMPTY_PIXEL}" alt="${escapeHtml(name)}" loading="lazy" style="display: none;">
+            <img src="${EMPTY_PIXEL}" alt="${escapeHtml(name)}" loading="lazy">
         </div>
         <p class="predpriyatiya-item__name">${escapeHtml(name)}</p>
     `;
@@ -901,17 +887,11 @@ async function loadComitetLogo(id, imgElement, blockType = 'комитет') {
         await applyBlobToImage(imgElement, blob);
         imgElement.dataset.loaded = 'true';
         delete imgElement.dataset.loading;
-
-        const parentDiv = imgElement.closest('.comitet-item__image');
-        if (parentDiv) parentDiv.style.display = 'flex';
+        imgElement.style.display = 'block';
     } catch (error) {
         imgElement.style.display = 'none';
         delete imgElement.dataset.loaded;
         delete imgElement.dataset.loading;
-
-        const parentDiv = imgElement.closest('.comitet-item__image');
-        if (parentDiv) parentDiv.style.display = 'none';
-
         console.warn(`Comitet logo load failed: id=${id}`, error);
     }
 }
@@ -924,7 +904,7 @@ function createComitetCard(name, data, id, blockType = 'комитет') {
     
     card.innerHTML = `
         <div class="comitet-item__image">
-            <img src="${EMPTY_PIXEL}" alt="${escapeHtml(name)}" loading="lazy" style="display: none;">
+            <img src="${EMPTY_PIXEL}" alt="${escapeHtml(name)}" loading="lazy">
         </div>
         <p class="comitet-item__name">${escapeHtml(name)}</p>
     `;
