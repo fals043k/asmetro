@@ -31,51 +31,40 @@ function showLoadError(grid) {
     grid.innerHTML = '<p class="error">Ошибка загрузки данных</p>';
 }
 
-function buildNameCandidates(...values) {
-    const unique = new Set();
-
-    values.forEach(value => {
-        if (value === null || value === undefined) return;
-
-        const raw = String(value);
-        const normalized = raw.normalize('NFKC');
-        const compactSpaces = normalized.replace(/\s+/g, ' ');
-        const variants = [raw, normalized, compactSpaces, compactSpaces.trim()];
-
-        variants.forEach(variant => {
-            if (variant) unique.add(variant);
-        });
-    });
-
-    return Array.from(unique);
+function buildNameCandidate(value) {
+    if (value === null || value === undefined) return null;
+    const raw = String(value);
+    const normalized = raw.normalize('NFKC');
+    const compact = normalized.replace(/\s+/g, ' ').trim();
+    return compact || null;
 }
 
-async function fetchAttachmentBlob(blockType, nameCandidates, attachment) {
-    const candidates = buildNameCandidates(...nameCandidates);
+async function fetchAttachmentBlob(blockType, nameCandidate, attachment) {
+    const name = buildNameCandidate(nameCandidate);
+    if (!name) throw new Error('Invalid name candidate');
+
     let lastError = new Error('Attachment not found');
 
-    for (const name of candidates) {
-        for (let attempt = 1; attempt <= 2; attempt++) {
-            try {
-                const cacheBust = Date.now() + '-' + Math.random().toString(16).slice(2);
-                const url = `${API_BASE_URL}/api/v1/block/${blockType}/attachment?name=${encodeURIComponent(name)}&attachment=${encodeURIComponent(attachment)}&_=${cacheBust}`;
-                const response = await fetch(url, { cache: 'no-store' });
+    for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+            const cacheBust = Date.now() + '-' + Math.random().toString(16).slice(2);
+            const url = `${API_BASE_URL}/api/v1/block/${blockType}/attachment?name=${encodeURIComponent(name)}&attachment=${encodeURIComponent(attachment)}&_=${cacheBust}`;
+            const response = await fetch(url, { cache: 'no-store' });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
 
-                const blob = await response.blob();
-                if (!blob || blob.size === 0) {
-                    throw new Error('Empty blob');
-                }
+            const blob = await response.blob();
+            if (!blob || blob.size === 0) {
+                throw new Error('Empty blob');
+            }
 
-                return blob;
-            } catch (error) {
-                lastError = error;
-                if (attempt < 2) {
-                    await new Promise(resolve => setTimeout(resolve, 150));
-                }
+            return blob;
+        } catch (error) {
+            lastError = error;
+            if (attempt < 2) {
+                await new Promise(resolve => setTimeout(resolve, 150));
             }
         }
     }
@@ -83,7 +72,7 @@ async function fetchAttachmentBlob(blockType, nameCandidates, attachment) {
     throw lastError;
 }
 
-function applyBlobToImage(img, blob) {
+function applyBlobToImage(img, blob, minSize = 10) {
     return new Promise((resolve, reject) => {
         const src = URL.createObjectURL(blob);
 
@@ -95,6 +84,11 @@ function applyBlobToImage(img, blob) {
         img.onload = () => {
             cleanup();
             URL.revokeObjectURL(src);
+            
+            if (img.naturalWidth < minSize || img.naturalHeight < minSize) {
+                reject(new Error('Image too small'));
+                return;
+            }
             resolve();
         };
 
@@ -167,11 +161,11 @@ function initModal() {
     });
 }
 
-function loadModalImages(type, id, extraNameCandidates = []) {
+function loadModalImages(type, id) {
     const images = Array.from(document.querySelectorAll('.modal-image'))
         .filter(img => String(img.dataset.id) === String(id));
 
-    const nameCandidates = buildNameCandidates(id, ...extraNameCandidates);
+    const nameCandidate = id;
 
     images.forEach(async (img) => {
         if (img.dataset.loaded === 'true' || img.dataset.loading === 'true') return;
@@ -184,7 +178,7 @@ function loadModalImages(type, id, extraNameCandidates = []) {
         img.dataset.loading = 'true';
 
         try {
-            const blob = await fetchAttachmentBlob(type, nameCandidates, attachment);
+            const blob = await fetchAttachmentBlob(type, nameCandidate, attachment);
             await applyBlobToImage(img, blob);
             img.dataset.loaded = 'true';
             delete img.dataset.loading;
@@ -433,7 +427,7 @@ async function loadMetroLogo(id, imgElement) {
     imgElement.dataset.loading = 'true';
 
     try {
-        const blob = await fetchAttachmentBlob('метро', [id], 'logo');
+        const blob = await fetchAttachmentBlob('метро', id, 'logo');
         await applyBlobToImage(imgElement, blob);
         imgElement.dataset.loaded = 'true';
         delete imgElement.dataset.loading;
@@ -488,7 +482,7 @@ function openPredpriyatiyaModal(companyId, companyData) {
         modalContent.appendChild(closeBtn);
     }
 
-    loadModalImages('предприятия', companyId, [companyData?.name]);
+    loadModalImages('предприятия', companyId);
 }
 
 function generatePredpriyatiyaContent(data, companyId) {
@@ -637,7 +631,7 @@ async function loadPredpriyatiya() {
                 img.dataset.id = id;
                 img.dataset.type = 'предприятия';
                 img.dataset.attachment = 'logo';
-                loadPredpriyatiyaLogo(id, img, [name]);
+                loadPredpriyatiyaLogo(id, img);
             }
         }
 
@@ -650,13 +644,13 @@ async function loadPredpriyatiya() {
     }
 }
 
-async function loadPredpriyatiyaLogo(id, imgElement, extraNameCandidates = []) {
+async function loadPredpriyatiyaLogo(id, imgElement) {
     if (!imgElement || imgElement.dataset.loaded === 'true' || imgElement.dataset.loading === 'true') return;
 
     imgElement.dataset.loading = 'true';
 
     try {
-        const blob = await fetchAttachmentBlob('предприятия', [id, ...extraNameCandidates], 'logo');
+        const blob = await fetchAttachmentBlob('предприятия', id, 'logo');
         await applyBlobToImage(imgElement, blob);
         imgElement.dataset.loaded = 'true';
         delete imgElement.dataset.loading;
@@ -867,7 +861,7 @@ async function loadComitetLogo(id, imgElement, blockType = 'комитет') {
     imgElement.dataset.loading = 'true';
 
     try {
-        const blob = await fetchAttachmentBlob(blockType, [id], 'logo');
+        const blob = await fetchAttachmentBlob(blockType, id, 'logo');
         await applyBlobToImage(imgElement, blob);
         imgElement.dataset.loaded = 'true';
         delete imgElement.dataset.loading;
