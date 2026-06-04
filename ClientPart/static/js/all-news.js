@@ -1,5 +1,5 @@
 // all-news.js
-const API_BASE_URL = `http://${window.location.hostname}:8080`;
+const API_BASE_URL = ``;
 
 document.addEventListener('DOMContentLoaded', () => {
     loadHeader();

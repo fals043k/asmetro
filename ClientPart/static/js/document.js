@@ -2,7 +2,7 @@ const DocumentsApp = (() => {
     'use strict';
 
     const CONFIG = {
-        API_BASE: `http://${window.location.hostname}:8080/api/v1`,
+        API_BASE: `/api/v1`,
         SELECTORS: {
             CHARTER_CONTAINER: '#charter-container',
             MEETINGS_CONTAINER: '#meetings-container',

@@ -2,7 +2,7 @@ const HomePageApp = (() => {
     'use strict';
 
     const CONFIG = {
-        API_BASE_URL: `http://${window.location.hostname}:8080`,
+        API_BASE_URL: ``,
         SELECTORS: {
             HEADER_BLOCK: '#header-block',
             FOOTER_BLOCK: '#footer-block',
@@ -143,84 +143,21 @@ const HomePageApp = (() => {
         }
     }
 
-    function checkTextHeight(element) {
-        if (!element) return false;
-        
-        const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
-        const totalHeight = element.scrollHeight;
-        const lineCount = Math.ceil(totalHeight / lineHeight);
-        
-        return lineCount > 3;
-    }
-
     function initAboutText() {
-    const aboutTexts = document.querySelectorAll(CONFIG.SELECTORS.ABOUT_TEXT);
-    const aboutTextEl = aboutTexts.length >= 2 ? aboutTexts[1] : null;
-    const aboutBtnWrapper = document.querySelector(CONFIG.SELECTORS.ABOUT_BTN_WRAPPER);
-    const aboutBtn = document.querySelector(CONFIG.SELECTORS.ABOUT_BTN);
+        const aboutTexts = document.querySelectorAll(CONFIG.SELECTORS.ABOUT_TEXT);
+        const aboutTextEl = aboutTexts.length >= 2 ? aboutTexts[1] : null;
+        const aboutBtnWrapper = document.querySelector(CONFIG.SELECTORS.ABOUT_BTN_WRAPPER);
 
-    if (!aboutTextEl) return;
+        if (!aboutTextEl) return;
 
-    const fullText = state.fullAboutText;
-    
-    if (!fullText || fullText.trim() === '') {
+        const fullText = state.fullAboutText;
+
         if (aboutBtnWrapper) aboutBtnWrapper.style.display = 'none';
-        return;
-    }
 
-    const formattedFullText = fullText.replace(/\n/g, '<br>');
-    const formattedShortText = state.shortAboutText ? state.shortAboutText.replace(/\n/g, '<br>') : '';
-
-    if (aboutTexts.length >= 1 && formattedShortText) {
-        aboutTexts[0].innerHTML = formattedShortText;
+        if (fullText) {
+            aboutTextEl.innerHTML = fullText.replace(/\n/g, '<br>');
+        }
     }
-
-    aboutTextEl.innerHTML = formattedFullText;
-    const needsTruncation = checkTextHeight(aboutTextEl);
-    
-    if (needsTruncation) {
-        if (aboutBtnWrapper) aboutBtnWrapper.style.display = 'flex';
-        
-        let isExpanded = false;
-        
-        const btnClickHandler = (e) => {
-            e.preventDefault();
-            isExpanded = !isExpanded;
-            
-            if (isExpanded) {
-                aboutTextEl.innerHTML = formattedFullText;
-                aboutTextEl.style.display = 'block';
-                aboutTextEl.style.webkitLineClamp = 'unset';
-                aboutTextEl.style.webkitBoxOrient = 'unset';
-                aboutTextEl.style.overflow = 'visible';
-                aboutTextEl.style.textOverflow = 'clip';
-                aboutBtn.textContent = 'Скрыть';
-            } else {
-                aboutTextEl.innerHTML = formattedFullText;
-                aboutTextEl.style.display = '-webkit-box';
-                aboutTextEl.style.webkitLineClamp = '3';
-                aboutTextEl.style.webkitBoxOrient = 'vertical';
-                aboutTextEl.style.overflow = 'hidden';
-                aboutTextEl.style.textOverflow = 'ellipsis';
-                aboutBtn.textContent = 'Читать далее';
-            }
-        };
-        
-        aboutBtn.removeEventListener('click', btnClickHandler);
-        aboutBtn.addEventListener('click', btnClickHandler);
-        
-        aboutTextEl.innerHTML = formattedFullText;
-        aboutTextEl.style.display = '-webkit-box';
-        aboutTextEl.style.webkitLineClamp = '3';
-        aboutTextEl.style.webkitBoxOrient = 'vertical';
-        aboutTextEl.style.overflow = 'hidden';
-        aboutTextEl.style.textOverflow = 'ellipsis';
-    } else {
-        aboutTextEl.innerHTML = formattedFullText;
-        aboutTextEl.style.display = 'block';
-        if (aboutBtnWrapper) aboutBtnWrapper.style.display = 'none';
-    }
-}
 
     async function loadNews() {
         const newsList = document.querySelector(CONFIG.SELECTORS.NEWS_LIST);

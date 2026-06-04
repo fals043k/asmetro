@@ -1,4 +1,4 @@
-const API_BASE_URL = `http://${window.location.hostname}:8080`;
+const API_BASE_URL = ``;
 const MODAL_ID = 'metroModal';
 const OVERLAY_ID = 'modalOverlay';
 const CONTENT_ID = 'modalContent';

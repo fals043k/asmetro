@@ -2,7 +2,7 @@ const EventApp = (() => {
     'use strict';
 
     const CONFIG = {
-        API_BASE_URL: `http://${window.location.hostname}:8080`,
+        API_BASE_URL: ``,
         SELECTORS: {
             HEADER_BLOCK: '#header-block',
             FOOTER_BLOCK: '#footer-block',
@@ -276,7 +276,7 @@ const EventApp = (() => {
             if (eventData) {
                 openEventPopup(eventData);
             }
-        }, { once: true });
+        }, { once: false });
     }
 
     function createEventPopup() {

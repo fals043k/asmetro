@@ -23,7 +23,7 @@ def redirect_if_null():
     return fastapi.responses.RedirectResponse("/home.html")
 
 
-@app.get("/admin")
+@app.get("/start_editing_content")
 async def redirect_with_dynamic_url(request: fastapi.Request):
     scheme = request.url.scheme
     host = request.url.hostname
