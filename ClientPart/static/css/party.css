@@ -16,6 +16,11 @@
     text-align: left;
 }
 
+.magazine__grid {
+    display: block;
+    margin-top: 40px;
+}
+
 .predpriyatiya-section,
 .comitet-section {
     margin-bottom: 40px;

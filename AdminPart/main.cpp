@@ -33,6 +33,7 @@ int main() {
 	Locale derec_locale{ 
         "\u0434\u0438\u0440\u0435\u043a\u0446\u0438\u044f", 
         {
+            "\u043d\u0430\u0437\u0432\u0430\u043d\u0438\u0435",
             "\u043e\u043f\u0438\u0441\u0430\u043d\u0438\u0435", 
             "\u0444\u0438\u043e", 
             "\u0437\u0430\u0441\u043b\u0443\u0433\u0438", 
@@ -154,6 +155,9 @@ int main() {
             { "name", types::STR, "\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435" },
             { "short_desc", types::STR, "\u041A\u0440\u0430\u0442\u043A\u043E\u0435 \u043E\u043F\u0438\u0441\u0430\u043D\u0438\u0435" },
 
+            { "head_name", types::STR, "\u0438\u043c\u044f \u0433\u043b\u0430\u0432\u044b" },
+            { "deputy_name", types::STR, "\u0438\u043c\u044f \u0437\u0430\u043c\u0430" },
+
             { "full_desc_one", types::STR, "\u041F\u043E\u043B\u043D\u043E\u0435 \u043E\u043F\u0438\u0441\u0430\u043D\u0438\u0435" },
             { "full_desc_two", types::STR, "\u0414\u043E\u043F. \u043E\u043F\u0438\u0441\u0430\u043D\u0438\u0435" },
 
@@ -163,8 +167,10 @@ int main() {
         {
             { "logo", IMAGE_MIMES, "\u041B\u043E\u0433\u043E\u0442\u0438\u043F" },
 
-            { "desc_one", IMAGE_MIMES, "\u041F\u043E\u043B\u043D\u043E\u0435 \u043E\u043F\u0438\u0441\u0430\u043D\u0438\u0435" },
+            { "head", IMAGE_MIMES, "\u0433\u043b\u0430\u0432\u0430"},
+            { "deputy", IMAGE_MIMES, "\u0437\u0430\u043c\u0435\u0441\u0442\u0438\u0442\u0435\u043b\u044c"},
 
+            { "desc_one", IMAGE_MIMES, "\u041F\u043E\u043B\u043D\u043E\u0435 \u043E\u043F\u0438\u0441\u0430\u043D\u0438\u0435" },
             { "desc_two", IMAGE_MIMES, "\u0414\u043E\u043F. \u043E\u043F\u0438\u0441\u0430\u043D\u0438\u0435" }
         }
     };
