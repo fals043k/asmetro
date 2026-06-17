@@ -78,6 +78,33 @@ async function openAbout(id) {
         </div>
     `;
 
+
+    if (content.head_name || content.deputy_name) {
+        let teamHtml = '<div class="team-list">';
+        
+        if (content.head_name) {
+            teamHtml += `
+                <div class="team-photo">
+                    <img src="${await AdminAPI.getBlockFileLink("комитет", id, "head")}" alt="head">
+                    <div class="piter-section__paragraph">${content.head_name.replaceAll('\n', '<br>')}</div>
+                </div>
+            `;
+        }
+        
+        if (content.deputy_name) {
+            teamHtml += `
+                <div class="team-photo">
+                    <img src="${await AdminAPI.getBlockFileLink("комитет", id, "deputy")}" alt="deputy">
+                    <div class="piter-section__paragraph">${content.deputy_name.replaceAll('\n', '<br>')}</div>
+                </div>
+            `;
+        }
+        
+        teamHtml += '</div>';
+        html += teamHtml;
+    }
+
+
     if (content.full_desc_one) {
         html += `
             <div class="piter-section piter-section--white" id="section-desc-one-${id}" data-section-type="image-text">

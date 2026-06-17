@@ -53,12 +53,100 @@ async function addTeam() {
 
         cardBack.appendChild(card);
         slider.appendChild(cardBack);
+
+        cardBack.addEventListener('click', () => {
+            openAbout(id)
+        });
     }
 }
+
+async function openAbout(id) {
+    const modal = document.getElementById('metroModal');
+    const about = document.getElementById('modalContent');
+
+    const content = await AdminAPI.getBlockContent("команда", id);
+
+    let html = `
+        <div class="hero--piter">
+            <div class="hero__container">
+                <div class="hero__content">
+                    <h1 class="hero__title">${content.name || 'Неназванный сотрудник'}</h1>
+                    <p class="hero__subtitle">${content.mini}</p>
+                </div>
+                <div class="hero__logo" id="logo-container-${id}">
+                    <img src="${await AdminAPI.getBlockFileLink("команда", id, "photo")}" alt="photo" onerror="this.style.display='none'" class="modal-image">
+                </div>
+            </div>
+        </div>
+    `;
+
+        
+    if (content.about) {
+        html += `
+            <div class="piter-section piter-section--white" id="section-desc-one-${id}" data-section-type="image-text">
+                <div class="piter-section__container">
+                    <div class="piter-section__text">
+                        <h2 class="piter-section__title">О СОТРУДНИКЕ</h2>
+                        <p class="piter-section__paragraph">${content.about.replaceAll('\n', '<br>')}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+
+    if (content.phone || content.email) {
+        html += `
+            <div class="piter-section piter-section--white piter-section--double-text">
+                <div class="piter-section__container">
+                    ${content.phone ? `
+                        <div class="piter-section__text-block">
+                            <h2 class="piter-section__title">ТЕЛЕФОН</h2>
+                            <p class="piter-section__paragraph">${content.phone}</p>
+                        </div>
+                    ` : ''}
+                    ${content.email ? `
+                        <div class="piter-section__text-block">
+                            <h2 class="piter-section__title">ПОЧТА</h2>
+                            <p class="piter-section__paragraph">${content.email}</p>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    history.pushState(null, null, location.href);
+    
+    about.innerHTML = html;
+    document.body.style.overflow = 'hidden';
+    modal.classList.add('active');
+}
+
+
+async function closeAbout() {
+    const modal = document.getElementById('metroModal');
+    const about = document.getElementById('modalContent');
+
+    about.innerHTML = '';
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
 
 async function init() {
     useLocale();
     addTeam();
+
+    const overlay = document.getElementById('modalOverlay');
+
+    overlay.addEventListener('click', () => {
+        closeAbout();
+    });
+
+    window.addEventListener('popstate', function(event) {
+        closeAbout();
+    });
 }
 
 

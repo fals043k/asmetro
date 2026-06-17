@@ -65,10 +65,13 @@ int main() {
         }
     };
 	
+
     Block team_block {
         "\u043A\u043E\u043C\u0430\u043D\u0434\u0430",
         {
             { "fullname", types::STR, "\u0424\u0418\u041E" },
+            { "mini", types::STR, "\u043a\u0440\u0430\u0442\u043a\u043e" },
+            { "about", types::STR, "\u043e\u043f\u0438\u0441\u0430\u043d\u0438\u0435" },
             { "post", types::STR, "\u0414\u043E\u043B\u0436\u043D\u043E\u0441\u0442\u044C" },
             { "number", types::STR, "\u0422\u0435\u043B\u0435\u0444\u043E\u043D" },
             { "email", types::STR, "\u041F\u043E\u0447\u0442\u0430" }
