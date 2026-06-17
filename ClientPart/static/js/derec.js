@@ -95,14 +95,14 @@ async function openAbout(id) {
     }
 
 
-    if (content.phone || content.email) {
+    if (content.number || content.email) {
         html += `
             <div class="piter-section piter-section--white piter-section--double-text">
                 <div class="piter-section__container">
-                    ${content.phone ? `
+                    ${content.number ? `
                         <div class="piter-section__text-block">
                             <h2 class="piter-section__title">ТЕЛЕФОН</h2>
-                            <p class="piter-section__paragraph">${content.phone}</p>
+                            <p class="piter-section__paragraph">${content.number}</p>
                         </div>
                     ` : ''}
                     ${content.email ? `

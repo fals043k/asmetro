@@ -201,6 +201,7 @@ int main() {
             { "date", types::STR, "\u0432\u0440\u0435\u043C\u044F" }
         },
         {
+            { "full", IMAGE_MIMES, "\u0444\u043e\u0442\u043e" }
         }
     };
 
