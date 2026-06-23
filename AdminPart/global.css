@@ -1165,12 +1165,23 @@ header h1 {
     border-radius: var(--radius-md);
     transition: all var(--transition);
     border: 1px solid transparent;
+    cursor: grab;
 }
 
 .file-card:hover {
     background: var(--bg-surface-alt);
     transform: translateX(3px);
     border-color: var(--border-subtle);
+}
+
+.file-card.dragging {
+    opacity: 0.3;
+    cursor: grabbing;
+}
+
+.file-card.drag-over {
+    background: var(--primary-bg);
+    border-color: var(--primary);
 }
 
 .file-icon {

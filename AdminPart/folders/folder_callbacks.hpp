@@ -78,4 +78,30 @@ public:
 
 		return text_resp(request->socket, 200, "OK", "application/json", js.dump());
 	}
+
+
+	std::shared_ptr<server_response> set_order(req request) {
+		auto data = request->get_form_by_key("data");
+		if (data.empty())
+			return text_resp(request->socket, 400, "Bad Request", "text/plain", "Bad Request");
+
+		std::vector<std::string> names;
+		try {
+			nlohmann::json js = nlohmann::json::parse(data.value);
+			if (!js.is_array())
+				return text_resp(request->socket, 400, "Bad Request", "text/plain", "Bad Request");
+
+			for (const auto& el : js) {
+				if (el.is_string())
+					names.push_back(el.get<std::string>());
+			}
+		}
+		catch (...) {
+			return text_resp(request->socket, 400, "Bad Request", "text/plain", "Bad Request");
+		}
+
+		bool res = folder_manager::save_order(name_, names);
+
+		return text_resp(request->socket, res ? 200 : 503, "OK", "text/plain", res ? "OK" : "Server Error");
+	}
 };

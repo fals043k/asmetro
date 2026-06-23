@@ -60,6 +60,9 @@ public:
 
 			else if (request->api[4] == "remove")
 				return (*folder)->delete_attachment(request);
+
+			else if (request->api[4] == "order")
+				return (*folder)->set_order(request);
 		}
 
 		return text_resp();

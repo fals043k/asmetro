@@ -253,6 +253,11 @@ let availableBlocks = [];
 let currentFolder = null;
 let availableFolders = [];
 let currentFiles = [];
+let folderDraggedItem = null;
+let folderLongPressActive = false;
+let folderHasMoved = false;
+let folderDragStartPos = {x:0,y:0};
+let folderPressTimer = null;
 
 const API_BASE = '/api/v1';
 const DRAG_DELAY = 400;
@@ -1267,7 +1272,8 @@ function renderFilesList() {
         const fileCard = document.createElement('div');
         fileCard.className = 'file-card';
         fileCard.dataset.name = file.name;
-        
+        fileCard.addEventListener('mousedown', handleFolderMouseDown);
+
         const fileIcon = document.createElement('div');
         fileIcon.className = 'file-icon';
         const ext = file.name.split('.').pop().toLowerCase();
@@ -1315,6 +1321,13 @@ function renderFilesList() {
         
         foldersList.appendChild(fileCard);
     });
+
+    if (currentFiles.length > 1) {
+        const hint = document.createElement('div');
+        hint.className = 'drag-hint';
+        hint.textContent = '🖱️ долгое нажатие — перетаскивание для изменения порядка';
+        foldersList.appendChild(hint);
+    }
 }
 
 async function handleFileUpload(files) {
@@ -1392,6 +1405,102 @@ async function renameFile() {
         }
     } catch(e) {
         showNotification('Ошибка переименования', 'error');
+    }
+}
+
+function handleFolderMouseDown(e) {
+    if (e.button !== 0) return;
+    if (e.target.closest('.file-actions')) return;
+    const card = this;
+    folderLongPressActive = false;
+    folderHasMoved = false;
+    folderDragStartPos = { x: e.clientX, y: e.clientY };
+    clearTimeout(folderPressTimer);
+    folderPressTimer = setTimeout(() => {
+        if (folderHasMoved) return;
+        folderLongPressActive = true;
+        folderDraggedItem = card;
+        card.classList.add('dragging');
+        dragIndicator.style.left = (e.clientX - 14) + 'px';
+        dragIndicator.style.top = (e.clientY - 14) + 'px';
+        dragIndicator.classList.add('active');
+        document.addEventListener('mousemove', handleFolderDragMove);
+        document.addEventListener('mouseup', handleFolderDragEnd);
+    }, DRAG_DELAY);
+    document.addEventListener('mousemove', handleFolderMoveCheck);
+    document.addEventListener('mouseup', folderReleaseCheck);
+}
+
+function folderReleaseCheck() {
+    clearTimeout(folderPressTimer);
+    document.removeEventListener('mousemove', handleFolderMoveCheck);
+    document.removeEventListener('mouseup', folderReleaseCheck);
+}
+
+function handleFolderMoveCheck(e) {
+    const dx = e.clientX - folderDragStartPos.x;
+    const dy = e.clientY - folderDragStartPos.y;
+    if (Math.hypot(dx, dy) > MOVE_THRESHOLD) {
+        folderHasMoved = true;
+        clearTimeout(folderPressTimer);
+    }
+}
+
+function handleFolderDragMove(e) {
+    if (!folderLongPressActive || !folderDraggedItem) return;
+    dragIndicator.style.left = (e.clientX - 14) + 'px';
+    dragIndicator.style.top = (e.clientY - 14) + 'px';
+    const cards = Array.from(foldersList.querySelectorAll('.file-card'));
+    let target = null;
+    for (const card of cards) {
+        const rect = card.getBoundingClientRect();
+        if (e.clientY >= rect.top && e.clientY <= rect.bottom) { target = card; break; }
+    }
+    cards.forEach(c => c.classList.remove('drag-over'));
+    if (target && target !== folderDraggedItem) target.classList.add('drag-over');
+}
+
+function handleFolderDragEnd(e) {
+    clearTimeout(folderPressTimer);
+    document.removeEventListener('mousemove', handleFolderDragMove);
+    document.removeEventListener('mouseup', handleFolderDragEnd);
+    document.removeEventListener('mousemove', handleFolderMoveCheck);
+    if (folderLongPressActive && folderDraggedItem) {
+        const cards = Array.from(foldersList.querySelectorAll('.file-card'));
+        const dropTarget = cards.find(c => c.classList.contains('drag-over'));
+        if (dropTarget && dropTarget !== folderDraggedItem) {
+            const draggedIdx = cards.indexOf(folderDraggedItem);
+            const targetIdx = cards.indexOf(dropTarget);
+            if (draggedIdx < targetIdx) dropTarget.parentNode.insertBefore(folderDraggedItem, dropTarget.nextSibling);
+            else dropTarget.parentNode.insertBefore(folderDraggedItem, dropTarget);
+            saveFolderOrder();
+        }
+        folderDraggedItem.classList.remove('dragging');
+        cards.forEach(c => c.classList.remove('drag-over'));
+    }
+    dragIndicator.classList.remove('active');
+    folderDraggedItem = null;
+    folderLongPressActive = false;
+}
+
+async function saveFolderOrder() {
+    if (!currentFolder) return;
+    const order = Array.from(foldersList.querySelectorAll('.file-card')).map(card => card.dataset.name);
+    currentFiles = order.map(name => currentFiles.find(f => f.name === name)).filter(Boolean);
+    try {
+        const fd = new FormData();
+        fd.append('data', JSON.stringify(order));
+        fd.append('secret', SECRET);
+        const res = await fetch(`${API_BASE}/folder/${encodeURIComponent(currentFolder)}/order`, { method: 'POST', body: fd });
+        if (await res.text() !== 'OK') {
+            await loadFolderContents();
+            showNotification('Ошибка сохранения порядка', 'error');
+        } else {
+            showNotification('Порядок сохранён', 'success');
+        }
+    } catch(e) {
+        await loadFolderContents();
+        showNotification('Ошибка сохранения порядка', 'error');
     }
 }
 

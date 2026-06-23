@@ -70,7 +70,7 @@ async function openAbout(id) {
         <div class="hero--piter">
             <div class="hero__container">
                 <div class="hero__content">
-                    <h1 class="hero__title">${content.name || 'Неназванный сотрудник'}</h1>
+                    <h1 class="hero__title">${content.fullname || 'Неназванный сотрудник'}</h1>
                     <p class="hero__subtitle">${content.mini}</p>
                 </div>
                 <div class="hero__logo" id="logo-container-${id}">
