@@ -113,7 +113,7 @@ async function openAbout(id) {
                         <img src="${await AdminAPI.getBlockFileLink("комитет", id, "desc_one")}" alt="desc_one" onerror="this.style.display='none'" class="modal-image">
                     </div>
                     <div class="piter-section__text">
-                        <h2 class="piter-section__title">О КОМИТЕТЕ</h2>
+                        <h2 class="piter-section__title">${content.is == true ? "О КОМИТЕТЕ" : "О ПОДКОМИТЕТЕ"}</h2>
                         <p class="piter-section__paragraph">${content.full_desc_one}</p>
                     </div>
                 </div>

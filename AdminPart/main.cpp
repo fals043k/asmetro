@@ -158,8 +158,12 @@ int main() {
             { "name", types::STR, "\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435" },
             { "short_desc", types::STR, "\u041A\u0440\u0430\u0442\u043A\u043E\u0435 \u043E\u043F\u0438\u0441\u0430\u043D\u0438\u0435" },
 
+            { "is", types::BOOL, "\u043a\u043e\u043c\u0438\u0442\u0435\u0442" },
+
             { "head_name", types::STR, "\u0438\u043c\u044f \u0433\u043b\u0430\u0432\u044b" },
             { "deputy_name", types::STR, "\u0438\u043c\u044f \u0437\u0430\u043c\u0430" },
+
+            { "members", types::STR, "\u0443\u0447\u0430\u0441\u0442\u043d\u0438\u043a\u0438" },
 
             { "full_desc_one", types::STR, "\u041F\u043E\u043B\u043D\u043E\u0435 \u043E\u043F\u0438\u0441\u0430\u043D\u0438\u0435" },
             { "full_desc_two", types::STR, "\u0414\u043E\u043F. \u043E\u043F\u0438\u0441\u0430\u043D\u0438\u0435" },
@@ -169,6 +173,8 @@ int main() {
         },
         {
             { "logo", IMAGE_MIMES, "\u041B\u043E\u0433\u043E\u0442\u0438\u043F" },
+            { "mini_icon", IMAGE_MIMES, "\u0438\u043a\u043e\u043d\u043a\u0430" },
+            { "file", {"*"}, "\u0444\u0430\u0439\u043b" },
 
             { "head", IMAGE_MIMES, "\u0433\u043b\u0430\u0432\u0430"},
             { "deputy", IMAGE_MIMES, "\u0437\u0430\u043c\u0435\u0441\u0442\u0438\u0442\u0435\u043b\u044c"},
